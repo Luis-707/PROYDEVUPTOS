@@ -1,0 +1,2123 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- =========================================================
+* Sneat Docs - Bootstrap Dashboard PRO | v3.0.0
+==============================================================
+
+* Product Page: https://themeselection.com/item/sneat-dashboard-pro-bootstrap/
+* Created by: ThemeSelection
+
+    * License: You must have a valid license purchased in order to legally use the theme for your project.
+  
+* Copyright ThemeSelection (https://themeselection.com)
+
+=========================================================
+ -->
+  <!-- beautify ignore:start -->
+
+<html lang="en" class="docs-page  " data-assets-path="assets/" data-skin="bordered">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Docs: Django Permissions system | Sneat - Bootstrap Dashboard PRO</title>
+
+    <meta name="description" content="MyAdmin is the best bootstrap dashboard for responsive web apps. Streamline your app development process with ease." />
+    <meta name="keywords" content="Sneat bootstrap dashboard, sneat bootstrap 5 dashboard, themeselection, html dashboard, web dashboard, frontend dashboard, responsive bootstrap theme" />
+    <meta property="og:title" content="Sneat Dashboard FREE by ThemeSelection" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://themeselection.com/item/sneat-dashboard-pro-bootstrap/" />
+    <meta property="og:image" content="https://themeselection.com/wp-content/uploads/edd/2024/08/sneat-dashboard-pro-bootstrap-smm-image.png" />
+    <meta property="og:description" content="MyAdmin is the best bootstrap dashboard for responsive web apps. Streamline your app development process with ease." />
+    <meta property="og:site_name" content="ThemeSelection" />
+
+    <!-- Canonical SEO -->
+    <link rel="canonical" href="https://themeselection.com/item/sneat-dashboard-pro-bootstrap/" />
+
+    
+      <!-- ? PROD Only:Google Tag Manager (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
+      <script>
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || [];
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : '';
+          j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+          f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-5DDHKGP');
+      </script>
+      <!-- End Google Tag Manager -->
+    
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="assets/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="assets/vendor/fonts/fontawesome.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="assets/css/demo.css" />
+    <link rel="stylesheet" href="assets/css/docs.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="assets/vendor/libs/highlight/highlight.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+    
+
+    <!-- Page CSS -->
+    
+
+    <!-- Core JS -->
+    <script src="assets/vendor/js/helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: Don't remove unless you are aware of it, To hide customizer set displayCustomizer value false in config.js.  -->
+    <!-- <script src="assets/vendor/js/template-customizer.js"></script> -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="assets/js/config.js"></script>
+  </head>
+
+  <body>
+    
+      <!-- ?PROD Only: Google Tag Manager (noscript) (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DDHKGP" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
+      <!-- End Google Tag Manager (noscript) -->
+    
+
+    <!-- Layout wrapper -->
+<div class="layout-wrapper layout-navbar-full layout-menu-fixed layout-navbar-fixed ">
+  <div class="layout-container">
+    
+    
+
+
+<!-- Navbar main -->
+
+<nav class="layout-navbar navbar navbar-expand-lg align-items-lg-center bg-primary" id="layout-navbar">
+  <div class="container-fluid">
+    
+      <!-- Menu toggle (see assets/css/demo/demo.css) -->
+      <div class="layout-menu-toggle navbar-nav d-lg-none align-items-lg-center">
+        <a class="nav-item nav-link px-0 me-md-6" href="javascript:void(0)">
+          <i class="bx bx-menu icon-base icon-sm align-middle"></i>
+        </a>
+      </div>
+    
+
+    <!-- Brand demo (see assets/css/demo/demo.css) -->
+    <div class="navbar-brand app-brand demo py-0 me-md-auto me-0 ms-md-0 ms-10">
+      <a href="index.html" class="app-brand-link gap-2">
+        <span class="app-brand-logo demo">
+<span class="text-white">
+
+  <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+      <path d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z" id="path-1"></path>
+      <path d="M5.47320593,6.00457225 C4.05321814,8.216144 4.36334763,10.0722806 6.40359441,11.5729822 C8.61520715,12.571656 10.0999176,13.2171421 10.8577257,13.5094407 L15.5088241,14.433041 L18.6192054,7.984237 C15.5364148,3.11535317 13.9273018,0.573395879 13.7918663,0.358365126 C13.5790555,0.511491653 10.8061687,2.3935607 5.47320593,6.00457225 Z" id="path-3"></path>
+      <path d="M7.50063644,21.2294429 L12.3234468,23.3159332 C14.1688022,24.7579751 14.397098,26.4880487 13.008334,28.506154 C11.6195701,30.5242593 10.3099883,31.790241 9.07958868,32.3040991 C5.78142938,33.4346997 4.13234973,34 4.13234973,34 C4.13234973,34 2.75489982,33.0538207 2.37032616e-14,31.1614621 C-0.55822714,27.8186216 -0.55822714,26.0572515 -4.05231404e-15,25.8773518 C0.83734071,25.6075023 2.77988457,22.8248993 3.3049379,22.52991 C3.65497346,22.3332504 5.05353963,21.8997614 7.50063644,21.2294429 Z" id="path-4"></path>
+      <path d="M20.6,7.13333333 L25.6,13.8 C26.2627417,14.6836556 26.0836556,15.9372583 25.2,16.6 C24.8538077,16.8596443 24.4327404,17 24,17 L14,17 C12.8954305,17 12,16.1045695 12,15 C12,14.5672596 12.1403557,14.1461923 12.4,13.8 L17.4,7.13333333 C18.0627417,6.24967773 19.3163444,6.07059163 20.2,6.73333333 C20.3516113,6.84704183 20.4862915,6.981722 20.6,7.13333333 Z" id="path-5"></path>
+    </defs>
+    <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
+        <g id="Icon" transform="translate(27.000000, 15.000000)">
+          <g id="Mask" transform="translate(0.000000, 8.000000)">
+            <mask id="mask-2" fill="white">
+              <use xlink:href="#path-1"></use>
+            </mask>
+            <use fill="currentColor" xlink:href="#path-1"></use>
+            <g id="Path-3" mask="url(#mask-2)">
+              <use fill="currentColor" xlink:href="#path-3"></use>
+              <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-3"></use>
+            </g>
+            <g id="Path-4" mask="url(#mask-2)">
+              <use fill="currentColor" xlink:href="#path-4"></use>
+              <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-4"></use>
+            </g>
+          </g>
+          <g id="Triangle" transform="translate(19.000000, 11.000000) rotate(-300.000000) translate(-19.000000, -11.000000) ">
+            <use fill="currentColor" xlink:href="#path-5"></use>
+            <use fill-opacity="0.2" fill="#FFFFFF" xlink:href="#path-5"></use>
+          </g>
+        </g>
+      </g>
+    </g>
+  </svg>
+</span>
+</span>
+        <span class="app-brand-text demo menu-text text-white fw-bold">Sneat</span>
+      </a>
+    </div>
+
+    <div class="d-flex ms-md-6">
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        <div class="navbar-nav align-items-lg-center">
+          <!-- Search -->
+          <div class="navbar-nav align-items-center">
+            <div class="nav-item navbar-search-wrapper mb-0">
+              <a class="nav-item nav-link search-toggler rounded-3 py-2 d-flex align-items-center" href="javascript:void(0);">
+                <span class="d-inline-block text-body-secondary fw-normal" id="autocomplete"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+          <div class="d-flex align-items-center gap-3">
+            <span class="navbar-toggler-icon"></span>
+          </div>
+        </button>
+      </div>
+
+      <div class="navbar-collapse collapse" id="navbar-collapse">
+        <!-- Divider -->
+        <hr class="d-lg-none w-100 my-2" />
+
+        <div class="navbar-nav align-items-lg-center">
+          
+          <ul class="navbar-nav">
+            <!-- Technology dropdown -->
+            
+            
+              <li class="nav-item dropdown me-2">
+                <button class="btn dropdown-toggle py-2" type="button" id="livePreview" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon-base bx bx-target-lock me-2"></i> Live preview</button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="livePreview">
+                  <li>
+                    <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/html/vertical-menu-template/" target="_blank" class="dropdown-item"><i class="icon-base bx bx-target-lock me-2"></i>HTML preview</a>
+                  </li>
+                  
+                    <li>
+                      <a href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/" target="_blank" class="dropdown-item"><i class="icon-base bx bx-target-lock me-2"></i>Laravel preview</a>
+                    </li>
+                  
+                  
+                    <li>
+                      <a href="https://demos.themeselection.com/sneat-aspnet-core-admin-template/html/vertical-menu-template/" target="_blank" class="dropdown-item text-nowrap"><i class="icon-base bx bx-target-lock me-2"></i>.Net Core preview</a>
+                    </li>
+                  
+                  
+                    <li>
+                      <a href="https://demos.themeselection.com/sneat-aspnet-core-mvc-admin-template/html/vertical-menu-template/" target="_blank" class="dropdown-item text-nowrap"><i class="icon-base bx bx-target-lock me-2"></i>.Net MVC preview</a>
+                    </li>
+                  
+                  
+                    <li>
+                      <a href="https://demos.themeselection.com/sneat-html-django-admin-template/demo-1/" target="_blank" class="dropdown-item text-nowrap"><i class="icon-base bx bx-target-lock me-2"></i>Django preview</a>
+                    </li>
+                  
+                </ul>
+              </li>
+            
+            
+              <li class="nav-item me-2">
+                <a href="https://themeselection.com/support/" target="_blank" class="nav-link d-flex justify-content-center gap-2"><i class="icon-base bx bx-buoy"></i> Support</a>
+              </li>
+            
+            
+              <li class="nav-item">
+                <a href="https://themeselection.com/" target="_blank" class="nav-link d-flex justify-content-center gap-2"><i class="icon-base bx bx-gift"></i> More Themes</a>
+              </li>
+            
+            
+              <li class="nav-item">
+                <a href="https://themeselection.com/hire-us/" target="_blank" class="nav-link d-flex justify-content-center gap-2"><i class="icon-base bx bx-briefcase"></i> Hire Us</a>
+              </li>
+            
+          </ul>
+
+          <!-- Divider -->
+          <div class="nav-item d-none d-lg-block text-white text-big fw-light lh-1 me-4 ms-1">|</div>
+
+          
+            <div class="dropdown">
+              <button class="btn btn-light dropdown-toggle" type="button" id="buyNowBtn" data-bs-toggle="dropdown" aria-expanded="false"><i class="icon-base bx bx-cart-alt me-1"></i> Buy Now</button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="buyNowBtn">
+                <li>
+                  <a href="https://themeselection.com/item/sneat-dashboard-pro-bootstrap/" target="_blank" class="dropdown-item"><i class="icon-base bx bx-cart-alt me-2"></i>HTML Version</a>
+                </li>
+                
+                  <li>
+                    <a href="https://themeselection.com/item/sneat-dashboard-pro-laravel/" target="_blank" class="dropdown-item"><i class="icon-base bx bx-cart-alt me-2"></i>Laravel Version</a>
+                  </li>
+                
+                
+                  <li>
+                    <a href="https://demos.themeselection.com/sneat-aspnet-core-admin-template/html/vertical-menu-template/" target="_blank" class="dropdown-item"><i class="icon-base bx bx-cart-alt me-2"></i>.Net Razor Pages</a>
+                  </li>
+                
+                
+                  <li>
+                    <a href="https://demos.themeselection.com/sneat-aspnet-core-mvc-admin-template/html/vertical-menu-template/" target="_blank" class="dropdown-item"><i class="icon-base bx bx-cart-alt me-2"></i>.Net MVC</a>
+                  </li>
+                
+                
+                  <li>
+                    <a href="https://themeselection.com/item/sneat-dashboard-pro-django/" target="_blank" class="dropdown-item"><i class="icon-base bx bx-cart-alt me-2"></i>Django Version</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<!-- / Navbar main -->
+
+    
+
+    <!-- Layout page -->
+    <div class="layout-page">
+      
+      
+
+
+
+
+<!-- Menu -->
+<aside id="layout-menu" class="layout-menu menu-doc menu menu-vertical bg-menu-theme">
+  
+  <div class="menu-divider mt-0   d-xl-none "></div>
+
+  <!-- Links -->
+  <ul class="menu-inner py-1">
+    <li class="menu-header small fw-medium">Getting Started</li>
+    <li class="menu-item">
+      <a href="index.html" class="menu-link">
+        <div>Introduction</div>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="licenses.html" class="menu-link">
+        <div>Licenses</div>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="folder-structure.html" class="menu-link">
+        <div>Folder Structure</div>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="quick-start.html" class="menu-link">
+        <div>Quick Start</div>
+        
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="config.html" class="menu-link">
+        <div>Config 🤩</div>
+        
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="installation-build.html" class="menu-link">
+        <div>Installation & Build</div>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="template-customizer.html" class="menu-link">
+        <div>Template Customizer</div>
+        
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        
+      </a>
+    </li>
+    <li class="menu-item
+  ">
+      <a href="javascript:void(0)" class="menu-link menu-toggle">
+        <div>Customization</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a href="customization-sass.html" class="menu-link">
+            <div>SASS</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="customization-js.html" class="menu-link">
+            <div>JavaScript</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="customization-third-party-plugins.html" class="menu-link">
+            <div>Third Party Plugins</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="menu-item">
+      <a href="layouts.html" class="menu-link">
+        <div>Layouts</div>
+        
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="dependencies.html" class="menu-link">
+        <div>Dependencies</div>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="faq.html" class="menu-link">
+        <div>FAQs</div>
+      </a>
+    </li>
+    
+      <!-- Laravel Documentation -->
+      <li class="menu-header small fw-medium d-flex flex-row">
+        <span class="me-1">Laravel</span>
+        <span class="badge badge-demo bg-label-danger ms-auto">HTML + Laravel Only</span>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-introduction.html" class="menu-link">
+          <div>Laravel Introduction</div>
+        </a>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>Laravel Overview</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="laravel-init-getting-started.html" class="menu-link">
+              <div>Laravel Getting Started</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="laravel-init-folder-structure.html" class="menu-link">
+              <div>Laravel Folder Structure (Mix)</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="laravel-init-vite-folder-structure.html" class="menu-link">
+              <div>Laravel Folder Structure (Vite)</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-init-installation.html" class="menu-link">
+              <div>Laravel Installation</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-init-layout.html" class="menu-link">
+              <div>Laravel Layout</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-init-configurations.html" class="menu-link">
+              <div>Laravel Configurations</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-init-dependencies.html" class="menu-link">
+              <div>Laravel Dependencies</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-init-starter-kit-vs-full-version.html" class="menu-link">
+              <div>Laravel Starter-kit Vs Full-version</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-init-demo-config.html" class="menu-link">
+              <div>Laravel Demo Configs</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>Laravel Auth & ACL</div>
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="laravel-auth-jetstream.html" class="menu-link">
+              <div>Laravel JetStream (Vite)</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="laravel-auth-jetstream-mix.html" class="menu-link">
+              <div>Laravel JetStream (Mix)</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-auth-passport.html" class="menu-link">
+              <div>Laravel Passport</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-auth-sanctum.html" class="menu-link">
+              <div>Laravel Sanctum</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-auth-acl.html" class="menu-link">
+              <div>Laravel ACL</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>Laravel Articles</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="laravel-articles-database-connections.html" class="menu-link">
+              <div>Database Connections</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-articles-existing-project.html" class="menu-link">
+              <div>Exiting Project Migration</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-articles-create-new-page.html" class="menu-link">
+              <div>Create New Page</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="laravel-articles-form-validation-integration.html" class="menu-link">
+              <div>Form Validation Package Integration</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-localization.html" class="menu-link">
+          <div>Laravel Localization</div>
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-menu.html" class="menu-link">
+          <div>Laravel Menu</div>
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-search.html" class="menu-link">
+          <div>Laravel Search</div>
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-crud.html" class="menu-link">
+          <div>Laravel CRUD</div>
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-sail-docker.html" class="menu-link">
+          <div>Laravel Sail & Docker</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-deployment.html" class="menu-link">
+          <div>Laravel Deployment</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="laravel-faqs.html" class="menu-link">
+          <div>Laravel FAQs</div>
+        </a>
+      </li>
+    
+
+    
+      <!-- Dotnet Documentation -->
+      <li class="menu-header small fw-medium d-flex flex-row"><span>ASP.NET CORE</span> <span class="badge badge-demo bg-label-danger ms-auto">Razor Pages</span></li>
+
+      <li class="menu-item">
+        <a href="net-core-introduction.html" class="menu-link">
+          <div>.Net Core Introduction</div>
+        </a>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>.Net Core Overview</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="net-core-init-getting-started.html" class="menu-link">
+              <div>.Net Core Getting Started</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-folder-structure.html" class="menu-link">
+              <div>.Net Core Folder Structure</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-assets-compilation.html" class="menu-link">
+              <div>.Net Core Assets Compilation</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-installation.html" class="menu-link">
+              <div>.Net Core Installation</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-start-with-doker.html" class="menu-link">
+              <div>.Net Core Start with Docker</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-layout.html" class="menu-link">
+              <div>.Net Core Layout</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-dependencies.html" class="menu-link">
+              <div>.Net Core Dependencies</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-configurations.html" class="menu-link">
+              <div>.Net Core Configurations</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-init-starter-vs-full-version.html" class="menu-link">
+              <div>.Net Core Starter Vs Full Version</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="net-core-third-party-libraries.html" class="menu-link">
+          <div>.Net Core Third-party Libraries</div>
+        </a>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>.Net Core Articles</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="net-core-articles-create-new-page.html" class="menu-link">
+              <div>Create New Page</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item">
+        <a href="net-core-menu.html" class="menu-link">
+          <div>.Net Core Menu</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="net-core-crud.html" class="menu-link">
+          <div>.Net Core CRUD</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="net-core-faqs.html" class="menu-link">
+          <div>.Net Core FAQs</div>
+        </a>
+      </li>
+    
+
+    
+      <!-- Dotnet Documentation -->
+      <li class="menu-header small fw-medium d-flex flex-row"><span>ASP.NET CORE MVC</span> <span class="badge badge-demo bg-label-danger ms-auto">MVC</span></li>
+
+      <li class="menu-item">
+        <a href="net-core-mvc-introduction.html" class="menu-link">
+          <div>.Net Core MVC Introduction</div>
+        </a>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>.Net Core MVC Overview</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="net-core-mvc-init-getting-started.html" class="menu-link">
+              <div>.Net Core MVC Getting Started</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-folder-structure.html" class="menu-link">
+              <div>.Net Core MVC Folder Structure</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-assets-compilation.html" class="menu-link">
+              <div>.Net Core MVC Assets Compilation</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-installation.html" class="menu-link">
+              <div>.Net Core MVC Installation</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-start-with-docker.html" class="menu-link">
+              <div>.Net Core MVC Start with Docker</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-layout.html" class="menu-link">
+              <div>.Net Core MVC Layout</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-dependencies.html" class="menu-link">
+              <div>.Net Core MVC Dependencies</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-configurations.html" class="menu-link">
+              <div>.Net Core MVC Configurations</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="net-core-mvc-init-starter-vs-full-version.html" class="menu-link">
+              <div>.Net Core MVC Starter Vs Full Version</div>
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="net-core-mvc-third-party-libraries.html" class="menu-link">
+          <div>.Net Core MVC Third-party Libraries</div>
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        </a>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>.Net Core MVC Articles</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="net-core-mvc-articles-create-new-page.html" class="menu-link">
+              <div>Create New Page</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item">
+        <a href="net-core-mvc-menu.html" class="menu-link">
+          <div>.Net Core MVC Menu</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="net-core-mvc-crud.html" class="menu-link">
+          <div>.Net Core MVC CRUD</div>
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="net-core-mvc-faqs.html" class="menu-link">
+          <div>.Net Core MVC FAQs</div>
+        </a>
+      </li>
+    
+
+    
+      <!-- Django Documentation -->
+      <li class="menu-header small fw-medium d-flex flex-row"><span>Django</span> <span class="badge badge-demo bg-label-danger ms-auto">Django Only</span></li>
+
+      <li class="menu-item">
+        <a href="django-introduction.html" class="menu-link">
+          <div>Django Introduction</div>
+        </a>
+      </li>
+
+      <li class="menu-item
+  ">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>Django Overview</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="django-init-getting-started.html" class="menu-link">
+              <div>Django Getting Started</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-folder-structure.html" class="menu-link">
+              <div>Django Folder Structure</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-installation.html" class="menu-link">
+              <div>Django Installation</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-start-with-doker.html" class="menu-link">
+              <div>Django Start with Docker</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-layout.html" class="menu-link">
+              <div>Django Layout</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-configurations.html" class="menu-link">
+              <div>Django Configurations</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-demo-config.html" class="menu-link">
+              <div>Django Demo Config</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-starter-kit-vs-full-version.html" class="menu-link">
+              <div>Django Starter Vs Full Version</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-init-dependencies.html" class="menu-link">
+              <div>Django Dependencies</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="django-third-party-libraries.html" class="menu-link">
+          <div>Django Third-party Libraries</div>
+        </a>
+      </li>
+
+      <li class="menu-item
+   active open">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+          <div>Django Articles</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="django-articles-create-new-page.html" class="menu-link">
+              <div>Create New Apps & Pages</div>
+            </a>
+          </li>
+          <!-- <li class="menu-item">
+          <a href="django-articles-existing-project.html" class="menu-link">
+            <div>Exiting Project Migration</div>
+          </a>
+        </li> -->
+          <li class="menu-item">
+            <a href="django-articles-admin-superuser.html" class="menu-link">
+              <div>Django Admin and Create User</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-articles-authentication.html" class="menu-link">
+              <div>Django Authentication</div>
+            </a>
+          </li>
+          <li class="menu-item active">
+            <a href="django-articles-permissions-authorization.html" class="menu-link">
+              <div>Django Permissions & Authorization</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-articles-crud.html" class="menu-link">
+              <div>Django CRUD Example</div>
+            </a>
+          </li>
+
+          <li class="menu-item">
+            <a href="django-articles-admin-db.html" class="menu-link">
+              <div>Django Admin and Database</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item">
+        <a href="django-localization.html" class="menu-link">
+          <div>Django Localization</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="django-menu.html" class="menu-link">
+          <div>Django Menu</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="django-search.html" class="menu-link">
+          <div>Django Search</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="django-theme-api.html" class="menu-link">
+          <div>Django Theme API</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="django-faqs.html" class="menu-link">
+          <div>Django FAQs</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="django-deployment.html" class="menu-link">
+          <div>Django Deployment</div>
+        </a>
+      </li>
+    
+    <!-- Apps & Pages -->
+    <li class="menu-header small fw-medium">Design System</li>
+
+    <li class="menu-item">
+      <a href="typography.html" class="menu-link">
+        <div>Typography</div>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="colors.html" class="menu-link">
+        <div>Colors</div>
+      </a>
+    </li>
+
+    <li class="menu-item">
+      <a href="Icons.html" class="menu-link">
+        <div>Icons</div>
+      </a>
+    </li>
+
+    <!-- Components -->
+    <li class="menu-header small fw-medium">Components</li>
+
+    <!-- UI Elements -->
+    <li class="menu-item
+  ">
+      <a href="javascript:void(0)" class="menu-link menu-toggle">
+        <div>UI Elements</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a href="ui-accordion.html" class="menu-link">
+            <div>Accordion</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-alerts.html" class="menu-link">
+            <div>Alerts</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-app-brand.html" class="menu-link">
+            <div>App Brand</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-badges.html" class="menu-link">
+            <div>Badges</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-buttons.html" class="menu-link">
+            <div>Buttons</div>
+          </a>
+        </li>
+        <li class="menu-item
+  ">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <div>Cards</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a href="ui-cards-basic.html" class="menu-link">
+                <div>Basic</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="ui-cards-actions.html" class="menu-link">
+                <div>Actions</div>
+                
+                  <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+                
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="menu-item">
+          <a href="ui-carousel.html" class="menu-link">
+            <div>Carousel</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-collapse.html" class="menu-link">
+            <div>Collapse</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-dropdowns.html" class="menu-link">
+            <div>Dropdowns</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-footer.html" class="menu-link">
+            <div>Footer</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-list-groups.html" class="menu-link">
+            <div>List groups</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-modals.html" class="menu-link">
+            <div>Modals</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-menu.html" class="menu-link">
+            <div>Menu</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-navbar.html" class="menu-link">
+            <div>Navbar</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-offcanvas.html" class="menu-link">
+            <div>Offcanvas</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-pagination-breadcrumbs.html" class="menu-link">
+            <div>Pagination &amp; Breadcrumbs</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-popovers.html" class="menu-link">
+            <div>Popovers</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-progress.html" class="menu-link">
+            <div>Progress</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-spinners.html" class="menu-link">
+            <div>Spinners</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-navs.html" class="menu-link">
+            <div>Navs</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-tabs-pills.html" class="menu-link">
+            <div>Tabs &amp; Pills</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-toasts.html" class="menu-link">
+            <div>Toasts</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="ui-tooltips.html" class="menu-link">
+            <div>Tooltips</div>
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Extended components -->
+    <li class="menu-item
+  ">
+      <a href="javascript:void(0)" class="menu-link menu-toggle">
+        <div>Extended UI</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a href="extended-ui-avatar.html" class="menu-link">
+            <div>Avatar</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-blockui.html" class="menu-link">
+            <div>BlockUI</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-drag-and-drop.html" class="menu-link">
+            <div>Drag &amp; Drop</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-media-player.html" class="menu-link">
+            <div>Media Player</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-perfect-scrollbar.html" class="menu-link">
+            <div>Perfect scrollbar</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-star-ratings.html" class="menu-link">
+            <div>Star Ratings</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-sweetalert2.html" class="menu-link">
+            <div>SweetAlert2</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-text-divider.html" class="menu-link">
+            <div>Text Divider</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-timeline.html" class="menu-link">
+            <div>Timeline</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-tour.html" class="menu-link">
+            <div>Tour</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-treeview.html" class="menu-link">
+            <div>Treeview</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="extended-ui-misc.html" class="menu-link">
+            <div>Miscellaneous</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Forms -->
+    <li class="menu-item
+  ">
+      <a href="javascript:void(0)" class="menu-link menu-toggle">
+        <div>Forms</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a href="forms-basic-inputs.html" class="menu-link">
+            <div>Basic Inputs</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-input-groups.html" class="menu-link">
+            <div>Input groups</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-custom-options.html" class="menu-link">
+            <div>Custom Options</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-editors.html" class="menu-link">
+            <div>Editors</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-file-upload.html" class="menu-link">
+            <div>File Upload</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-pickers.html" class="menu-link">
+            <div>Pickers</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-selects.html" class="menu-link">
+            <div>Select &amp; Tags</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-sliders.html" class="menu-link">
+            <div>Sliders</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-switches.html" class="menu-link">
+            <div>Switches</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-extras.html" class="menu-link">
+            <div>Extras</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-validation.html" class="menu-link">
+            <div>Validation</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-wizard.html" class="menu-link">
+            <div>Wizard</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="forms-layouts-sticky.html" class="menu-link">
+            <div>Sticky Actions</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+      </ul>
+    </li>
+    <!-- Tables -->
+    <li class="menu-item">
+      <a href="tables-basic.html" class="menu-link">
+        <div>Tables</div>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="tables-datatables.html" class="menu-link">
+        <div>Datatables</div>
+        
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="utilities.html" class="menu-link">
+        <div>Utilities</div>
+      </a>
+    </li>
+
+    <!-- Charts & Maps -->
+    <li class="menu-header small fw-medium">Charts &amp; Maps</li>
+
+    <li class="menu-item
+  ">
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <div data-i18n="Charts">Charts</div>
+      </a>
+      <ul class="menu-sub">
+        <li class="menu-item">
+          <a href="charts-apex.html" class="menu-link">
+            <div>Apex Charts</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="charts-chartjs.html" class="menu-link">
+            <div>ChartJS</div>
+            
+              <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+            
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="menu-item">
+      <a href="maps-leaflet.html" class="menu-link">
+        <div>Leaflet</div>
+        
+          <span class="badge badge-demo bg-label-primary ms-auto">PRO</span>
+        
+      </a>
+    </li>
+
+    <!-- Charts & Maps -->
+    <li class="menu-header small fw-medium">Others</li>
+    <li class="menu-item">
+      <a href="credits.html" class="menu-link">
+        <div>Credits</div>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a href="https://themeselection.com/support/" target="_blank" class="menu-link">
+        <div>Support</div>
+      </a>
+    </li>
+  </ul>
+</aside>
+<!-- / Menu -->
+
+      
+
+      <!-- Content wrapper -->
+      <div class="content-wrapper">
+        <!-- Content -->
+        <div class="container-xxl flex-grow-1 container-p-y">
+          
+<div class="row flex-xl-nowrap">
+  <div class="DocSearch-content col-12 col-xl-10 container-p-y">
+    <h2 class="mb-6 doc-page-title">Permissions and Authorization</h2>
+    <p class="lead">
+      In Django, "permissions" and "authorization" are two closely related concepts that play a crucial role in
+      controlling access to resources and actions within a web application.
+    </p>
+    <hr class="my-12" />
+
+    <div class="alert alert-warning mt-6" role="alert">
+      <strong>Heads-up:</strong> Before you start working with the authentication system, make sure you have
+      <a href="django-articles-admin-superuser.html" class="fw-medium alert-link text-decoration-underline">created superuser account.</a>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h4 id="permission-explain" class="anchor-heading mb-6 fw-bold">Permission</h4>
+        <div class="alert alert-primary mt-6" role="alert">
+          <strong>Tip:</strong> Sneat provides Permissions and Authorization example only in
+          <code>full-version/</code>, if you wish to integrate it in <code>starter-kit/</code> you can follow this
+          documents and integrate it.
+        </div>
+        <ul>
+          <li>
+            Permissions are tied to specific models in Django, and they define actions such as viewing, adding,
+            changing, or deleting objects of that model. For ex:
+          </li>
+          <ul>
+            <li><code>view</code>: Allows users to view objects of a model.</li>
+            <li><code>add</code>: Allows users to create (add) objects of a model.</li>
+            <li><code>change</code>: Allows users to modify (change) existing objects of a model.</li>
+            <li><code>delete</code>: Allows users to delete objects of a model.</li>
+          </ul>
+          <li>Permissions can be assigned to user groups or individual users.</li>
+        </ul>
+
+        <h5 id="default-permissions" class="anchor-heading mb-6 fw-bold">Default permissions</h5>
+        <p>
+          The default permissions will be created for all previously-installed models, as well as for any new models
+          being installed at that time. Afterward, it will create default permissions for new models each time you run
+          <code>manage.py migrate</code>. For more details refer
+          <a href="https://docs.djangoproject.com/en/5.0/topics/auth/default/#default-permissions" target="_blank">Default Permission</a>
+        </p>
+        <p>
+          Our application <code>web_project</code> has <span class="fw-bold">Transaction App</span>, and a model name
+          is Transaction. So when we run <code>manage.py migrate</code> it will create default permissions for
+          Transaction model.
+        </p>
+        <p>
+          Login in to Django admin using
+          <a href="django-articles-admin-superuser.html" target="_blank">super user</a>
+          credentials to verify. It will add the as shown in below image.
+        </p>
+        <img src="assets/img/docs/verify-permissions.png" alt="verify-permissions" class="img-fluid w-50 mb-6" />
+
+        <h5 id="groups-permissions" class="anchor-heading mb-6 fw-bold">Groups</h5>
+        <p>
+          <code>django.contrib.auth.models.Group</code> models are a generic way of categorizing users so you can
+          apply permissions, or some other label, to those users. A user can belong to any number of groups. For more
+          details refer
+          <a href="https://docs.djangoproject.com/en/5.0/topics/auth/default/#groups" target="_blank">Group</a>
+        </p>
+        <p>
+          A user in a group automatically has the permissions granted to that group. For example, if the group Client
+          has the permission view_transaction, any user in that group will have that permission.
+        </p>
+        <p class="fw-bold">Sneat provides two groups Admin and Client with different permission:</p>
+        <ul>
+          <li>
+            <span class="fw-bold">Admin group:</span>
+            <ul>
+              <li>Can have access to all the pages (including users, roles and permission pages)</li>
+              <li>Can have access to transaction app with add, change, delete and view permissions.</li>
+            </ul>
+          </li>
+          <img src="assets/img/docs/admin-group.png" alt="admin-group" class="img-fluid w-75 my-2" />
+          <li>
+            <span class="fw-bold">Client group:</span>
+            <ul>
+              <li>Can have access to most of the pages (excluding users, roles and permission pages)</li>
+              <li>Can have access to transaction app with view permission only.</li>
+            </ul>
+          </li>
+          <img src="assets/img/docs/client-group.png" alt="client-group" class="img-fluid w-75 my-2" />
+        </ul>
+
+        <div class="alert alert-info mt-6" role="alert">
+          <strong>Info:</strong> Sneat provides two <strong>users</strong> Admin and Client. Admin user
+          belong to Admin group and Client user belong to Client group.
+          <ul class="mt-2">
+            <li>
+              <span class="fw-bold">Admin user:</span>
+              <ul>
+                <li>Can have access to all the pages (including users, roles and permission pages)</li>
+                <li>Can have access to transaction app with add, change, delete and view permissions.</li>
+              </ul>
+            </li>
+            <li>
+              <span class="fw-bold">Client user:</span>
+              <ul>
+                <li>Can have access to most of the pages (excluding users, roles and permission pages)</li>
+                <li>Can have access to transaction app with view permission only.</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="alert alert-primary mt-6" role="alert">
+          <strong>Tip:</strong> You can create custom permissions programmatically. For more details refer
+          <a href="https://docs.djangoproject.com/en/5.0/topics/auth/default/#programmatically-creating-permissions" target="_blank" class="alert-link fw-medium text-decoration-underline">Programmatically creating permissions.</a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-12" />
+
+    <div class="row">
+      <div class="col-12">
+        <h4 id="auth-explain" class="anchor-heading mb-6 fw-bold">Authorization</h4>
+        <p>
+          Authorization, in the context of Django, is the process of determining whether a user is allowed to perform
+          a specific action based on the permissions they have.
+        </p>
+        <ul>
+          <li>
+            It is the enforcement of the defined permissions, allowing or denying access to resources and actions
+            based on user credentials and the permissions assigned to them.
+          </li>
+          <li>
+            For example, you can use the <code>@permission_required</code> decorator to protect a view and allow only
+            users with specific permissions to access it.
+          </li>
+          <li>
+            In the context of view classes or viewsets, you can use methods like <code>has_permission</code> to
+            determine if a user is authorized to perform an action.
+          </li>
+        </ul>
+        <h5 id="auth-permissionrequiredmixin" class="anchor-heading mb-6 fw-bold">
+          The <code>PermissionRequiredMixin</code> mixin
+        </h5>
+        <p>
+          <code>PermissionRequiredMixin</code> is a mixin for <strong>class-based views</strong> in Django that allows
+          you to restrict access to views based on specific permissions. It can be used to require users to have
+          certain permissions before accessing a particular view.
+        </p>
+
+        <p>Here's how you can use the PermissionRequiredMixin in your Django project:</p>
+
+        <ol>
+          <li>Import the necessary modules:</li>
+          <div class="doc-example my-6">
+            <div class="doc-example-content" data-label="code">
+              <div class="doc-clipboard">
+                <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                  Copy
+                </button>
+              </div>
+              <pre class="docs-code"><code class="python">from django.views.generic import TemplateView
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from web_project import TemplateLayout
+                </code></pre>
+            </div>
+          </div>
+          <li>Create a class-based view and inherit from <code>PermissionRequiredMixin</code>:</li>
+          <div class="doc-example my-6">
+            <div class="doc-example-content" data-label="code">
+              <div class="doc-clipboard">
+                <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                  Copy
+                </button>
+              </div>
+              <pre class="docs-code"><code class="python">class AccessView(PermissionRequiredMixin, TemplateView):</code></pre>
+            </div>
+          </div>
+          <li>
+            Define the <code>permission_required</code> attribute as a tuple of permission strings that the user must
+            have:
+          </li>
+          <div class="doc-example my-6">
+            <div class="doc-example-content" data-label="Terminal/Command">
+              <div class="doc-clipboard">
+                <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                  Copy
+                </button>
+              </div>
+              <pre class="docs-code"><code class="properties">    permission_required = (
+    "permission.view_permission",
+    "permission.delete_permission",
+    "permission.change_permission",
+    "permission.add_permission",
+)
+</code></pre>
+            </div>
+          </div>
+          <p>
+            In this example, the view requires the user to have the following permissions:
+            <code>view_permission, delete_permission, change_permission, and add_permission</code>. Users must have
+            all of these permissions to access the view.
+          </p>
+        </ol>
+        <p>
+          By using the <code>PermissionRequiredMixin</code> with the permission_required attribute, you can restrict
+          access to the <code>AccessView</code> based on the specified permissions. Users must have all the required
+          permissions to access this view.
+        </p>
+        <p class="fw-bold">Example usage:</p>
+        <div class="doc-example my-6">
+          <div class="doc-example-content" data-label="access/view.py">
+            <div class="doc-clipboard">
+              <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                Copy
+              </button>
+            </div>
+            <pre class="docs-code"><code class="python">from django.views.generic import TemplateView
+from web_project import TemplateLayout
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
+
+"""
+This file is a view controller for multiple pages as a module.
+Here you can override the page view layout.
+Refer to access/urls.py file for more pages."""
+
+
+class AccessView(PermissionRequiredMixin, TemplateView):
+    permission_required = ("permission.view_permission", "permission.delete_permission", "permission.change_permission", "permission.add_permission")
+    # Predefined function
+    def get_context_data(self, **kwargs):
+        # A function to init the global layout. It is defined in web_project/__init__.py file
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+
+        return context
+</code></pre>
+          </div>
+        </div>
+
+        <h5 id="auth-permission-required" class="anchor-heading mb-6 fw-bold">
+          The <code>permission_required</code> decorator
+        </h5>
+        <div class="alert alert-warning mt-6" role="alert">
+          <strong>Warning:</strong> To apply permission checks to <strong>function-based views</strong>, you can use
+          the <code>permission_required</code>. We're using <strong>class-based views</strong> in Sneat,
+          so we will be using <code>PermissionRequiredMixin</code>.
+        </div>
+        <p>
+          The <code>@permission_required</code> decorator in Django is a powerful tool for restricting access to views
+          based on user permissions. It ensures that only users with specific permissions are allowed to access a
+          particular view. This guide will walk you through the usage of the
+          <code>@permission_required</code> decorator with example code.
+        </p>
+        <p class="fw-bold">Prerequisites:</p>
+        <ul>
+          <li>
+            You have defined the necessary permissions in your Django application. Permissions are typically defined
+            in the <code>models.py</code> file using the Permission model.
+          </li>
+          <li>
+            You have assigned these permissions to user groups or individual users (For ex: Admin and Client as we did
+            in permissions section). Permissions can be assigned via the Django admin interface or programmatically.
+          </li>
+        </ul>
+        <p class="fw-bold">Decorator Usage</p>
+        <p>To use the <code>@permission_required</code> decorator, follow these steps:</p>
+
+        <ol>
+          <li>Import the decorator at the beginning of your Python file:</li>
+          <pre class="highlight"><code class="language-python">from django.contrib.auth.decorators import permission_required</code></pre>
+          <li>Apply the decorator to your view function or class-based view:</li>
+          <pre class="highlight"><code class="language-python">@permission_required('app_label.codename', login_url=None, raise_exception=False)</code></pre>
+          <ul>
+            <li><code>app_label</code> is the label of the application where the permission is defined.</li>
+            <li><code>codename</code> is the codename of the permission you want to check.</li>
+            <li>
+              <code>login_url</code> (optional, we're using LOGIN_URL option in <code>setting.py</code> to set it.) is
+              the URL to redirect to if the user doesn't have the required permission. If set to None, the user will
+              see a "Permission Denied" message.
+            </li>
+            <li>
+              <code>raise_exception</code> (optional) is a boolean that determines whether a PermissionDenied
+              exception should be raised if the user lacks the required permission. If set to True, an exception will
+              be raised; if set to False, the user will be redirected to the login URL.
+            </li>
+          </ul>
+        </ol>
+        <p class="fw-bold">example usage</p>
+        <div class="doc-example my-6">
+          <div class="doc-example-content" data-label="view.py">
+            <div class="doc-clipboard">
+              <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                Copy
+              </button>
+            </div>
+            <pre class="docs-code"><code class="properties">from django.views.generic import TemplateView
+from web_project import TemplateLayout
+from django.contrib.auth.decorators import permission_required
+
+class MyRestrictedView(TemplateView):
+    """
+    A view that requires specific permissions to access.
+    """
+
+    # Apply the @permission_required decorator with the required permissions.
+    @permission_required("myapp.can_access_view", login_url='/login/', raise_exception=False)
+    def get(self, request, *args, **kwargs):
+        # Your view logic here
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        return context
+
+            </code></pre>
+          </div>
+        </div>
+        <p>
+          In this example, the <code>MyRestrictedView</code> class uses the
+          <code>@permission_required</code> decorator to require the <code>can_access_view</code> permission from our
+          application. If a user doesn't have this permission, they will be redirected to the
+          <code>/login/</code> URL. You can customize the behavior by adjusting the <code>login_url</code> and
+          <code>raise_exception</code> parameters.
+        </p>
+        <p>
+          By following these steps, you can easily control access to views based on user permissions in your Django
+          project. For more details refer:
+          <a href="https://docs.djangoproject.com/en/5.0/topics/auth/default/#the-permission-required-decorator" target="_blank">The permission_required decorator</a>
+        </p>
+
+        <h4 id="auth-perms-permission" class="anchor-heading mb-6 fw-bold">
+          <code>{{ perms }}</code> Permissions
+        </h4>
+        <p>
+          The currently logged-in user’s permissions are stored in the template variable <code></code>.This
+          is an instance of <code>django.contrib.auth.context_processors.PermWrapper</code>, which is a
+          template-friendly proxy of permissions. For more details refer
+          <a href="https://docs.djangoproject.com/en/5.0/topics/auth/default/#permissions" target="_blank">Permission</a>
+        </p>
+
+        <ol>
+          <li>Evaluating a single-attribute lookup of  as a boolean:</li>
+          <div class="doc-example my-6">
+            <div class="doc-example-content" data-label="code">
+              <div class="doc-clipboard">
+                <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                  Copy
+                </button>
+              </div>
+              <pre class="docs-code"><code class="properties">{% if perms.foo %}</code></pre>
+            </div>
+          </div>
+          <li>Evaluating a two-attribute lookup of  as a boolean:</li>
+          <div class="doc-example my-6">
+            <div class="doc-example-content" data-label="code">
+              <div class="doc-clipboard">
+                <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                  Copy
+                </button>
+              </div>
+              <pre class="docs-code"><code class="properties">{% if perms.foo.add_vote %}</code></pre>
+            </div>
+          </div>
+        </ol>
+
+        <p class="fw-bold">Example usage:</p>
+        <p>
+          In Sneat's Transaction app, you can secure the <code>transactions_list.html</code> view using
+          Django's built-in permissions and roles. This ensures that only users with the appropriate permissions can
+          access this view.
+        </p>
+        <ul>
+          <li>
+            Admin can have <code>add_transaction, view_transaction, edit_transaction and update_transaction</code>.
+          </li>
+          <li>Client can have <code>view_transaction</code>.</li>
+        </ul>
+        <div class="doc-example my-6">
+          <div class="doc-example-content" data-label="transactions_list.html">
+            <div class="doc-clipboard">
+              <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                Copy
+              </button>
+            </div>
+            <pre class="docs-code"><code class="django">&#10;{% if perms.transactions.view_transaction %}
+                &#10;&lt;div class=&quot;row g-4 mb-6&quot;&gt;&#10; &lt;div class=&quot;col-sm-6
+                col-xl-3&quot;&gt;&#10; &lt;div class=&quot;card&quot;&gt;&#10; &lt;div
+                class=&quot;card-body&quot;&gt;&#10; &lt;div class=&quot;d-flex align-items-start
+                justify-content-between&quot;&gt;&#10; &lt;div class=&quot;content-left&quot;&gt;&#10; &lt;div
+                class=&quot;d-flex align-items-end&quot;&gt;&#10; &lt;h3 class=&quot;mb-0
+                me-2&quot;&gt;{{ transactions_count }}&lt;/h3&gt;&#10; &lt;small
+                class=&quot;text-primary&quot;&gt;&lt;/small&gt;&#10; &lt;/div&gt;&#10; &lt;small&gt;Total
+                Transactions&lt;/small&gt;&#10; &lt;/div&gt;&#10; &lt;span class=&quot;badge bg-label-primary rounded
+                p-2&quot;&gt;&#10; &lt;i class=&quot;bx bx-transfer-alt icon-sm&quot;&gt;&lt;/i&gt;&#10;
+                &lt;/span&gt;&#10; &lt;/div&gt;&#10; &lt;/div&gt;&#10; &lt;/div&gt;&#10; &lt;/div&gt;&#10; &lt;div
+                class=&quot;col-sm-6 col-xl-3&quot;&gt;&#10; &lt;div class=&quot;card&quot;&gt;&#10; &lt;div
+                class=&quot;card-body&quot;&gt;&#10; &lt;div class=&quot;d-flex align-items-start
+                justify-content-between&quot;&gt;&#10; &lt;div class=&quot;content-left&quot;&gt;&#10; &lt;div
+                class=&quot;d-flex align-items-end&quot;&gt;&#10; &lt;h3 class=&quot;mb-0 me-2&quot;&gt;$
+                {{ paid_count }}&lt;/h3&gt;&#10; &lt;small class=&quot;text-primary&quot;&gt;&lt;/small&gt;&#10;
+                &lt;/div&gt;&#10; &lt;small&gt;Total Paid&lt;/small&gt;&#10; &lt;/div&gt;&#10; &lt;span
+                class=&quot;badge bg-label-success rounded p-2&quot;&gt;&#10; &lt;i class=&quot;bx bx-check
+                icon-sm&quot;&gt;&lt;/i&gt;&#10; &lt;/span&gt;&#10; &lt;/div&gt;&#10; &lt;/div&gt;&#10;
+                &lt;/div&gt;&#10; &lt;/div&gt;&#10; &lt;div class=&quot;col-sm-6 col-xl-3&quot;&gt;&#10; &lt;div
+                class=&quot;card&quot;&gt;&#10; &lt;div class=&quot;card-body&quot;&gt;&#10; &lt;div class=&quot;d-flex
+                align-items-start justify-content-between&quot;&gt;&#10; &lt;div class=&quot;content-left&quot;&gt;&#10;
+                &lt;div class=&quot;d-flex align-items-end&quot;&gt;&#10; &lt;h3 class=&quot;mb-0 me-2&quot;&gt;$
+                {{ due_count }}&lt;/h3&gt;&#10; &lt;small class=&quot;text-primary&quot;&gt;&lt;/small&gt;&#10;
+                &lt;/div&gt;&#10; &lt;small&gt;Total Due&lt;/small&gt;&#10; &lt;/div&gt;&#10; &lt;span class=&quot;badge
+                bg-label-warning rounded p-2&quot;&gt;&#10; &lt;i class=&quot;bx bx-stopwatch
+                icon-sm&quot;&gt;&lt;/i&gt;&#10; &lt;/span&gt;&#10; &lt;/div&gt;&#10; &lt;/div&gt;&#10;
+                &lt;/div&gt;&#10; &lt;/div&gt;&#10; &lt;div class=&quot;col-sm-6 col-xl-3&quot;&gt;&#10; &lt;div
+                class=&quot;card&quot;&gt;&#10; &lt;div class=&quot;card-body&quot;&gt;&#10; &lt;div class=&quot;d-flex
+                align-items-start justify-content-between&quot;&gt;&#10; &lt;div class=&quot;content-left&quot;&gt;&#10;
+                &lt;div class=&quot;d-flex align-items-end&quot;&gt;&#10; &lt;h3 class=&quot;mb-0 me-2&quot;&gt;$
+                {{ canceled_count }}&lt;/h3&gt;&#10; &lt;small class=&quot;text-primary&quot;&gt;&lt;/small&gt;&#10;
+                &lt;/div&gt;&#10; &lt;small&gt;Total Canceled&lt;/small&gt;&#10; &lt;/div&gt;&#10; &lt;span
+                class=&quot;badge bg-label-danger rounded p-2&quot;&gt;&#10; &lt;i class=&quot;bx bx-x
+                icon-sm&quot;&gt;&lt;/i&gt;&#10; &lt;/span&gt;&#10; &lt;/div&gt;&#10; &lt;/div&gt;&#10;
+                &lt;/div&gt;&#10; &lt;/div&gt;&#10;&lt;/div&gt;&#10;&#10;&#10;&lt;div class=&quot;card&quot;&gt;&#10;
+                &lt;div class=&quot;card-datatable table-responsive&quot;&gt;&#10; &lt;table
+                class=&quot;datatables-transaction table&quot;&gt;&#10; &lt;thead class=&quot;table-light&quot;&gt;&#10;
+                &lt;tr class=&quot;text-nowrap&quot;&gt;&#10; &lt;th&gt;&lt;/th&gt;&#10; &lt;th&gt;Id&lt;/th&gt;&#10;
+                &lt;th&gt;Customer&lt;/th&gt;&#10; &lt;th&gt;Transaction Date&lt;/th&gt;&#10; &lt;th&gt;Due
+                Date&lt;/th&gt;&#10; &lt;th&gt;Total&lt;/th&gt;&#10; &lt;th&gt;Status&lt;/th&gt;&#10;
+                &lt;th&gt;Actions&lt;/th&gt;&#10; &lt;/tr&gt;&#10; &lt;/thead&gt;&#10; &lt;tbody&gt;&#10;
+                {% for transaction in transactions %}
+                  &#10; &lt;tr&gt;&#10; &lt;td&gt;&lt;/td&gt;&#10; &lt;td&gt;{{ transaction.id }}&lt;/td&gt;&#10; &lt;td
+                  class=&quot;text-nowrap fw-medium
+                  text-heading&quot;&gt;{{ transaction.customer|capfirst }}&lt;/td&gt;&#10; &lt;td
+                  class=&quot;text-nowrap&quot;&gt;{{ transaction.transaction_date }}&lt;/td&gt;&#10; &lt;td
+                  class=&quot;text-nowrap&quot;&gt;{{ transaction.due_date }}&lt;/td&gt;&#10; &lt;td
+                  class=&quot;text-nowrap&quot;&gt;$ {{ transaction.total }}&lt;/td&gt;&#10; &lt;td&gt;&#10; &lt;div
+                  class=&quot;badge
+                  bg-{% if transaction.status == &apos;Paid&apos; %}success{% elif transaction.status == &apos;Due&apos; %}warning{% elif transaction.status == &apos;Canceled&apos; %}danger{% endif %}
+                  rounded-pill&quot;&gt;&#10; {{ transaction.status }}&#10; &lt;/div&gt;&#10; &lt;/td&gt;&#10;
+                  &lt;td&gt;&#10; &lt;div class=&quot;d-inline-block text-nowrap&quot;&gt;&#10; &lt;!-- permission
+                  required: edit_transaction --&gt;&#10;
+                  {% if perms.transactions.edit_transaction %}
+                    &#10; &lt;a href=&quot;{% url &apos;transactions-update&apos; transaction.id %}&quot;
+                    class=&quot;btn btn-sm btn-icon&quot;&gt;&lt;i class=&apos;bx
+                    bx-edit&apos;&gt;&lt;/i&gt;&lt;/a&gt;&#10;
+                  {% endif %}&#10;
+                  &lt;!-- permission required: delete_transaction --&gt;&#10;
+                  {% if perms.transactions.delete_transaction %}
+                    &#10; &lt;a href=&quot;{% url &apos;transactions-delete&apos; transaction.id %}&quot;
+                    class=&quot;btn btn-sm btn-icon delete-transaction&quot;
+                    data-transaction-username=&quot;{{ transaction.customer|capfirst }}&quot;&gt;&lt;i class=&quot;bx
+                    bx-trash&quot;&gt;&lt;/i&gt;&lt;/a&gt;&#10;
+                  {% endif %}&#10;
+                  &lt;/div&gt;&#10; &lt;/td&gt;&#10; &lt;/tr&gt;&#10;
+                {% endfor %}&#10;
+                &lt;/tbody&gt;&#10; &lt;/table&gt;&#10; &lt;/div&gt;&#10;&lt;/div&gt;&#10;
+              {% endif %}</code></pre>
+          </div>
+        </div>
+
+        <h4 id="auth-navigation-permission" class="anchor-heading mb-6 fw-bold">Navigation(Menu) Item Permission</h4>
+        <p>
+          Sneat provides built-in functionality to display menu-header, menu-tem and menu-group according
+          to user/group permission.
+        </p>
+        <div class="alert alert-info mt-6" role="alert">
+          <strong>Info:</strong> Sneat's full-version uses the Navigation(Menu) Item Permission. You can
+          find it in <code>vertical_menu.json</code> and <code>horizontal_menu.json</code> file.
+          <ul>
+            <li>Admin User: Can view Transaction, Roles & Permission and Users Apps in menu.</li>
+            <li>Client User: Can view only Transaction App in menu.</li>
+          </ul>
+        </div>
+        <div class="alert alert-warning mt-6" role="alert">
+          <strong>Warning:</strong> You can use the <code>permission</code> attribute in a menu JSON to show menu
+          headers, items, and groups based on user or group permissions. However, it won't provide protection for
+          viewing or accessing URLs. If you want to control access to views based on permissions, you should use
+          <a href="#auth-permissionrequiredmixin" class="alert-link text-decoration-underline">The <code>PermissionRequiredMixin</code> mixin</a>.
+        </div>
+        <ol>
+          <li>
+            To display menu-header (For vertical menu only) according to permission:
+            <p>Result: User with <code>view_transaction</code>permission can view this menu-header.</p>
+            <div class="doc-example my-6">
+              <div class="doc-example-content" data-label="vertical_menu.json">
+                <div class="doc-clipboard">
+                  <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                    Copy
+                  </button>
+                </div>
+                <pre class="docs-code"><code class="json">...
+{
+  "menu_header": "Apps & Pages"
+  "permission": "transactions.view_transaction",
+},
+...
+                </code></pre>
+              </div>
+            </div>
+          </li>
+          <li>
+            To display menu-item according to permission:
+            <p>
+              Result: Admin and Client user has permission <code>view_transaction</code>, so they can view this
+              menu-item.
+            </p>
+            <div class="doc-example my-6">
+              <div class="doc-example-content" data-label="vertical_menu.json">
+                <div class="doc-clipboard">
+                  <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                    Copy
+                  </button>
+                </div>
+                <pre class="docs-code"><code class="json">...
+{
+  "url": "transactions",
+  "name": "Transactions (CRUD)",
+  "permission": "transactions.view_transaction",
+  "icon": "menu-icon tf-icons bx bx-data",
+  "slug": "transactions"
+},
+...
+                </code></pre>
+              </div>
+            </div>
+          </li>
+          <li>
+            To display menu-group according to permission:
+            <p>Result: Admin user has permission <code>view_permission</code>, so they can view this menu-group.</p>
+            <div class="doc-example my-6">
+              <div class="doc-example-content" data-label="vertical_menu.json">
+                <div class="doc-clipboard">
+                  <button type="button" class="btn-clipboard" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+                    Copy
+                  </button>
+                </div>
+                <pre class="docs-code"><code class="json">...
+{
+  "name": "Roles & Permissions",
+  "icon": "menu-icon tf-icons bx bx-check-shield",
+  "permission": "permission.view_permission",
+  "slug": "app-access",
+  "submenu": [
+    {
+      "url": "app-access-roles",
+      "name": "Roles",
+      "slug": "app-access-roles"
+    },
+    {
+      "url": "app-access-permission",
+      "name": "Permissions",
+      "slug": "app-access-permission"
+    }
+  ]
+},
+...
+              </code></pre>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-none d-xl-block col-xl-2 doc-sidebar container-p-y">
+    <nav id="vertical-nav" class="navbar p-0">
+      <ul class="doc-sidebar-nav">
+        <li class="doc-entry doc-h2"><a class="nav-link" href="#permissions-authorization-overivew">Overview</a></li>
+        <li class="doc-entry doc-h2"><a class="nav-link" href="#permission-explain">Permission</a></li>
+        <ul>
+          <li class="doc-entry doc-h2"><a class="nav-link" href="#default-permissions">Default Permissions</a></li>
+          <li class="doc-entry doc-h2"><a class="nav-link" href="#groups-permissions">Group Permissions</a></li>
+        </ul>
+        <li class="doc-entry doc-h2"><a class="nav-link" href="#auth-explain">Authorization</a></li>
+        <ul>
+          <li class="doc-entry doc-h2">
+            <a class="nav-link" href="#auth-permissionrequiredmixin">PermissionRequiredMixin</a>
+          </li>
+          <li class="doc-entry doc-h2">
+            <a class="nav-link" href="#auth-permission-required">permission_required</a>
+          </li>
+          <li class="doc-entry doc-h2">
+            <a class="nav-link" href="#auth-perms-permission"><code>{{ perms }}</code>(Permissions)</a>
+          </li>
+          <li class="doc-entry doc-h2">
+            <a class="nav-link" href="#auth-navigation-permission">Navigation(Menu) Item Permission</a>
+          </li>
+        </ul>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+        </div>
+        <!-- / Content -->
+
+        
+        <footer class="content-footer footer">
+  <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center text-center py-4">
+    <div>
+      © 2017-
+      <script>
+        document.write(new Date().getFullYear());
+      </script>
+      
+      <a href="https://themeselection.com" class="footer-text fw-medium" target="_blank">ThemeSelection</a>, Hand-crafted &
+      Made with ❤️
+      
+    </div>
+    <div>
+      
+      <a href="https://www.facebook.com/ThemeSelections/" class="footer-link me-4" target="_blank"><i class="icon-base bx bxl-facebook"></i></a>
+      
+      
+      <a href="https://x.com/Theme_Selection" class="footer-link me-4" target="_blank"><i class="icon-base bx bxl-twitter"></i></a>
+      
+      
+      <a href="https://github.com/themeselection" class="footer-link me-4" target="_blank"><i class="icon-base bx bxl-github"></i></a>
+      
+      
+      <a href="https://dribbble.com/themeselection" class="footer-link me-4" target="_blank"><i class="icon-base bx bxl-dribbble"></i></a>
+      
+      
+      <a href="https://www.instagram.com/themeselection/" class="footer-link me-4" target="_blank"><i class="icon-base bx bxl-instagram"></i></a>
+      
+    </div>
+  </div>
+</footer>
+        
+      </div>
+      <!-- Content wrapper -->
+    </div>
+    <!-- / Layout page -->
+  </div>
+
+  
+  
+  <!-- Overlay -->
+  <div class="layout-overlay layout-menu-toggle"></div>
+  
+  <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+  <div class="drag-target"></div>
+</div>
+<!-- / Layout wrapper -->
+    <script src="assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="assets/vendor/libs/highlight/highlight.js"></script>
+    <script src="assets/vendor/libs/clipboard/clipboard.js"></script>
+    
+    <script src="assets/vendor/libs/popper/popper.js"></script>
+    <script src="assets/vendor/js/bootstrap.js"></script>
+    <script src="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="assets/vendor/libs/@algolia/autocomplete-js.js"></script>
+    <script src="assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="assets/vendor/js/menu.js"></script>
+    <!-- Vendors JS -->
+    
+
+    <!-- Page JS -->
+    <script src="assets/js/docs.js"></script>
+    
+  </body>
+</html>
+
+  <!-- beautify ignore:end -->
+
