@@ -34,7 +34,7 @@ class Controlador
      *              formateada (statemen)
      * @author Luis Duran UPTOS 
      */
-    private function ejecutarConsultaBdds($sql){
+    public function ejecutarConsultaBdds($sql){
         $respuestaData = array();
         for ($i=0, $aux=0; $i < count(ARRAY_CONEXION_BDDS); $i++) { 
             

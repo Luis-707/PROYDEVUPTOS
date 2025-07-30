@@ -17,7 +17,7 @@
     <title>Demo: Dashboard</title>
     <!-- Favicon -->
     <!-- <link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico" /> -->
-    <link rel="shortcut icon" type="image/png" href="assets/img/favicon/icon.png"/>
+    <link rel="shortcut icon" type="image/png" href="img/logo/logo.png"/>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -70,7 +70,7 @@
                 <a href="index.html" class="app-brand-link"> 
                     <span class="app-brand-logo demo">
                         <span class="text-primary"> 
-                            <img src="assets/img/favicon/icon.png" alt="logo" style="width: 50px; max-height: 100%;"> 
+                            <img src="img/logo/logo.png" alt="logo" style="width: 50px; max-height: 100%;"> 
                         </span>
                     </span>
                     <span class="app-brand-text menu-text fw-bold ms-2"><?php echo SISTEMA; ?></span>

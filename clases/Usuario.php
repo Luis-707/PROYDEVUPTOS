@@ -2,6 +2,8 @@
 
 class Usuario {
     // Propiedades privadas en minúsculas
+        private $conexion;
+
         private $usuario = "";
         private $clave = "";
         private $cedula_usu = "";
@@ -22,7 +24,7 @@ class Usuario {
             [estatus] => ACTIVO
             [otros_datos] =>  */
     
-        public function __construct($dataCliente = array('')) {
+        public function __construct($dataCliente = array(''),$conexion = NULL) {
 
             if (isset($dataCliente['login'])) {
                 //asdie(print_r($dataCliente));
@@ -39,6 +41,11 @@ class Usuario {
             }else{
                 //echo 'No Existe';
             }
+
+            if($conexion != NULL){
+                $this->conexion = $conexion;
+            }
+
            // die(print_r($dataCliente));
         }
     
@@ -71,6 +78,15 @@ class Usuario {
     // Método para listar todos (SELECT)
     public static function Sql_listar() {
         return sprintf("SELECT * from usuario");
+    }
+
+    // Método para listar todos (SELECT)
+    public function listar() {
+        //if($this->conexion != NULL){
+            //echo $this->Sql_listar(); 
+            return $this->conexion->ejecutarConsultaBdds($this->Sql_listar());
+        //}
+        return "No se ha definido la conexion ";
     }
 
     // Método para buscar por clave primaria

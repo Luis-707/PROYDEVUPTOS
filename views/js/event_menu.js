@@ -12,11 +12,6 @@
         mostrarVista('vistaDemo');
     })
     
-    // evento click a menu persona
-    $("#menuPersons").click(function(){
-        //mostrarVista('persona');
-        $("#cuerpo").empty().load("views/vpersona.php");
-    })
 
     //click menu seguridad usuario
     $("#formularioUsuario").click(function(){
