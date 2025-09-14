@@ -17,6 +17,18 @@
                         <div data-i18n="Formulario demo2" >Formulario demo2</div>
                     </a>
                 </li>
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioUsuarios">
+                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <div data-i18n="Gestion de Usuarios" >Gestion de Usuarios</div>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioEvaluadores">
+                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <div data-i18n="Gestión de evaluadores" >Gestión de evaluadores</div>
+                    </a>
+                </li>
 
 
                 <!--  Menu Seguridad-->

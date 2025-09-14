@@ -19,6 +19,8 @@ if (isset($_POST['file']) && isset($_POST['idElemento'])) {
         'vistaDemo' => $DIR. 'form-demo.php',
         'persona' => $DIR. 'vpersona.php',
         'usuario' => $DIR. 'vusuario.php',
+        'usuarios' => $DIR. 'form.php',
+        'evaluadores' => $DIR. 'Gestion_Evaluador.php',
         'empleado' => $DIR. 'vempleado.php'
 
     ];/*

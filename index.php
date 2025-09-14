@@ -312,7 +312,10 @@
     <script src="views/js/event_menu.js"></script>
     <script src="js/siglab.js"></script>
     <script src="views/js/usuario.js"></script>
+    <script src="views/js/form_user.js"></script>
+    <script src="views/js/evaluadores.js"></script>
     
+   
   </body>
 </html>
 
