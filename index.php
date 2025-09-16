@@ -294,6 +294,7 @@
       
     <script src="assets/vendor/js/menu.js"></script>
     
+    
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -314,6 +315,7 @@
     <script src="views/js/usuario.js"></script>
     <script src="views/js/form_user.js"></script>
     <script src="views/js/evaluadores.js"></script>
+    <script src="views/js/supervisores.js"></script>
     
    
   </body>

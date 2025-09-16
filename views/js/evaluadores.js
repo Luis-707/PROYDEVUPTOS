@@ -92,31 +92,34 @@ function validar_formEvaluador(opc) {
           
   }
 }
-async function guardarEvaluador(){
+async function guardarEvaluador() {
+  // Capturar valores del formulario
+  let datosPersona = capturarValoresFormulario('formulario_evaluador');
 
-          // antes de capturar los valores del formulario debes validarlos
-      let datosPersona = capturarValoresFormulario('formulario_evaluador');
+  // Agregar id_cargo_evaluador
+  let idCargoEval = document.getElementById('id_cargo_evaluador').value;
+  datosPersona.append('id_cargo_evaluador', idCargoEval);
 
-       // Obtener el valor del select 'id_cargo_evaluador'
-       let idCargoEval = document.getElementById('id_cargo_evaluador').value;
-       // Agregarlo a los datos que se enviarán
-       datosPersona.append('id_cargo_evaluador', idCargoEval);
-        // Obtener el valor del select 'id_usuario' 
-        let idUsuarioEval = document.getElementById('id_usuario').value;
-        // Agregarlo a los datos que se enviarán
-        datosPersona.append('id_usuario', idUsuarioEval);
-       
-      
-      var resp = await microApi('controlador/?g_cargoevaluador',datosPersona);
-           // limpia formulario
-          if (resp.includes(' Ya Exite')) {
-              alert(resp);
-          }else{
-              valorFormEval();
-              listarEvaluadores();
-              alert('El Cargo se Asigno con Exito');
-          }
+  // Agregar id_usuario
+  let idUsuarioEval = document.getElementById('id_usuario').value;
+  datosPersona.append('id_usuario', idUsuarioEval);
 
+  try {
+      // Llamada al servicio
+      const resp = await microApi('controlador/?g_cargoevaluador', datosPersona);
+
+      // Validar respuesta JSON
+      if (!resp.success) {
+          alert(resp.message);
+      } else {
+          valorFormEval();      // Limpia formulario
+          listarEvaluadores();   // Refresca tabla
+          alert(resp.message);
+      }
+  } catch (err) {
+      console.error("Error en guardarEvaluador:", err);
+      alert("Ocurrió un error al guardar el cargo");
+  }
 }
 
 /*async function listarCargosEval(){

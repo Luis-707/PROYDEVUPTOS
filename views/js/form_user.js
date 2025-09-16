@@ -92,26 +92,29 @@ function validarCadena(cadena){
             
     }
 }
-async function guardarUsuario(){
+async function guardarUsuario() {
+  // Capturar valores del formulario
+  let datosPersona = capturarValoresFormulario('formulario_usuario');
 
-            // antes de capturar los valores del formulario debes validarlos
-        let datosPersona = capturarValoresFormulario('formulario_usuario');
+  let idRol = document.getElementById('id_rol_sistema').value;
+  datosPersona.append('rol_id', idRol); // Agregar rol_id al FormData 
 
-         // Obtener el valor del select 'id_rol_sistema'
-         let idRol = document.getElementById('id_rol_sistema').value;
-         // Agregarlo a los datos que se enviarán
-         datosPersona.append('rol_id', idRol);
-        
-        var resp = await microApi('controlador/?g_user',datosPersona);
-             // limpia formulario
-            if (resp.includes(' Ya Exite')) {
-                alert(resp);
-            }else{
-                valorFormUsuario();
-                listarUsuario();
-                alert('El Usuario se Guardo con Exito');
-            }
-  
+  try {
+      // Llamada al servicio
+      const resp = await microApi('controlador/?g_user', datosPersona);
+
+      // Validar respuesta JSON
+      if (!resp.success) {
+          alert(resp.message);
+      } else {
+          valorFormUsuario();      // Limpia formulario
+          listarUsuario();   // Refresca tabla
+          alert(resp.message);
+      }
+  } catch (err) {
+      console.error("Error en guardarUsuario:", err);
+      alert("Ocurrió un error al guardar el usuario");
+  }
 }
 
 async function listarUsuario(){
@@ -264,7 +267,7 @@ function valorFormUsuario(cl='',ced='',RolSis=''){
    
     document.getElementById('id_clave').value = cl;
     document.getElementById('id_cedula_usuario').value = ced;
-    document.getElementById('id_RolSistema').value = RolSis;
+    document.getElementById('id_rol_sistema').value = RolSis;
     
 
     

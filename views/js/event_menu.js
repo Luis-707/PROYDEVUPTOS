@@ -31,6 +31,16 @@
         /*listarUsuariosEvaluadorModal();*/
         /*listarCargosEvaluadoresModal();*/
     })
+    //click gestion de supervisores
+    $("#formularioSupervisores").click(function(){
+        mostrarVista('supervisores');
+        listarUsuariosSupervisor();
+        listarCargosSupervisores();
+        /*listarCargosEval();*/
+        listarSupervisores();
+        /*listarUsuariosEvaluadorModal();*/
+        /*listarCargosEvaluadoresModal();*/
+    })
     
 
     //click menu seguridad usuario

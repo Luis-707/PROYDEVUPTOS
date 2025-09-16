@@ -5,18 +5,18 @@ ini_set('display_startup_errors', '0');
 
 header('Content-Type: application/json; charset=utf-8');
 
-include_once "../clases/Usuario3.php";
+include_once "../clases/CargosSupervisor.php";
 
 try {
-    $cargo = new Usuario($dataCliente['_post'], $this->conexion);
+    $cargo = new CargosSupervisor($dataCliente['_post'], $this->conexion);
 
     // Buscar si ya existe
-    $sql = $cargo->sql_buscar();
+    $sql = $cargo->sql_buscar_supervisores();
     $respuesta = $this->ejecutarConsultaBdds($sql);
 
     if (count($respuesta) == 0) {
         // No existe, insertar nuevo
-        $sql = $cargo->sql_guardar();
+        $sql = $cargo->sql_guardar_cargo_supervisor();
         $this->ejecutarConsultaBdds($sql);
 
         echo json_encode([
