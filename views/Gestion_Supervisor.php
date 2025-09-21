@@ -44,3 +44,21 @@
     </thead>
     <tbody></tbody>
 </table>
+
+
+<form id="form_asignar_supervisores" onsubmit="event.preventDefault(); validar_form_asignar(1);">
+  
+  <label for="id_supervisor">Supervisores:</label>
+  <select id="id_supervisor" name="id_supervisor" required>
+      <option value="">Seleccione a un supervisor</option>
+  </select>
+
+  <h4>Evaluadores:</h4>
+  <div id="listaEvaluadores" name="evaluadores[]">
+      <!-- Aquí se agregan dinámicamente los checkboxes -->
+  </div>
+
+ 
+</form>
+
+<button type="submit" form="form_asignar_supervisores">Guardar Asignación</button>

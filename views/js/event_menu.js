@@ -38,6 +38,8 @@
         listarCargosSupervisores();
         /*listarCargosEval();*/
         listarSupervisores();
+        listarSupervisor();
+        listarCheckEvaluadores();
         /*listarUsuariosEvaluadorModal();*/
         /*listarCargosEvaluadoresModal();*/
     })

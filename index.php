@@ -1,5 +1,7 @@
 <?php
    include_once "controlador/config/configuracion.php";
+
+include_once "middleware/auth.php";
 ?>
 <!doctype html>
 
@@ -316,6 +318,8 @@
     <script src="views/js/form_user.js"></script>
     <script src="views/js/evaluadores.js"></script>
     <script src="views/js/supervisores.js"></script>
+    <script src="views/js/asignar_evaluador.js"></script>
+   
     
    
   </body>
