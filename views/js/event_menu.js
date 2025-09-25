@@ -39,14 +39,48 @@
         /*listarCargosEval();*/
         listarSupervisores();
         listarSupervisor();
-        listarCheckEvaluadores();
+        /*listarCheckEvaluadores();*/
         /*listarUsuariosEvaluadorModal();*/
         /*listarCargosEvaluadoresModal();*/
     })
     
+
+    //click menu evaluacion
+    $("#formularioEvaluacion").click(function(){
+        mostrarVista('evaluacion');
+        listarEvaluados();
+        /*listarEvaluaciones();*/
+
+    })
+
+    function abrirPlanilla(cedula){ 
+        // Guardamos la cédula seleccionada 
+        console.log("👉 abrirPlanilla() recibió:", cedula);
+        sessionStorage.setItem("cedula_planilla", cedula); 
+        // Cargamos la vista de la planilla en el cuerpo 
+        mostrarVista('planilla'); 
+        // Una vez cargada la vista, ejecutamos la carga de datos 
+        setTimeout(() => { cargarPlanilla();
+
+         }, 300); 
+    }
+
+    // Evento del botón
+/*document.querySelectorAll('.btn-detalles').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const cedula = e.target.getAttribute('data-cedula');
+      sessionStorage.setItem("cedula_planilla", cedula);
+      mostrarVista('planilla'); // tu función que cambia de vista
+      setTimeout(() => {
+        cargarPlanilla(); // se ejecuta en planilla.js
+      }, 300);
+    });
+  });*/
 
     //click menu seguridad usuario
     $("#formularioUsuario").click(function(){
         mostrarVista('usuario');
         listarUsuario();
     })
+
+

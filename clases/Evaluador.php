@@ -1,6 +1,6 @@
 <?php
 
-class CargosEvaluador {
+class Evaluador {
     private $conexion;
     private $cargo_evaluador = "";
     private $id_usuario = "";

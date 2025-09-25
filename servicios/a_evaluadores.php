@@ -1,11 +1,11 @@
 <?php
-include_once "../clases/CargosEvaluador.php";
+include_once "../clases/Evaluador.php";
 
 //$dataCliente['_post']['login'] = $dataCliente['_post']['otros_datos'];
  $data=$dataCliente['_post'];
 // var_dump($data['nombres']);
 
-$cargo = new CargosEvaluador( $dataCliente['_post']);
+$cargo = new Evaluador( $dataCliente['_post']);
 $sql = $cargo->sql_buscar_evaluadores();
 $respuesta = $this->ejecutarConsultaBdds($sql);
 /*  echo "---".count($respuesta)."---";

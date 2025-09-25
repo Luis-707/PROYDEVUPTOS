@@ -1,6 +1,6 @@
 <?php
 
-class CargosSupervisor {
+class Supervisor {
     private $conexion;
     /*private $cargo_supervisor = "";*/
     private $id_usuario = "";

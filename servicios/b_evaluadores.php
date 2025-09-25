@@ -1,10 +1,10 @@
 <?php
-include_once "../clases/CargosEvaluador.php";
+include_once "../clases/Evaluador.php";
 
 $dataCliente['_post']['id_evaluador'] = $dataCliente['_post']['otros_datos'];
 
 
-$evaluador = new CargosEvaluador($dataCliente['_post']['id_evaluador'] );
+$evaluador = new Evaluador($dataCliente['_post']['id_evaluador'] );
 
   $sql=$evaluador->sql_buscar_evaluadores();
 

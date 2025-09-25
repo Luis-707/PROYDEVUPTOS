@@ -1,5 +1,5 @@
 <?php
-include_once "../clases/CargosSupervisor.php";
+include_once "../clases/Supervisor.php";
 
 // Asegúrate de que id_usuario viene correcto desde el frontend
 // Si viene como otros_datos, conviértelo explícitamente
@@ -7,7 +7,7 @@ if (isset($dataCliente['_post']['otros_datos'])) {
     $dataCliente['_post']['id_usuario'] = $dataCliente['_post']['otros_datos'];
 }
 
-$cargo = new CargosSupervisor($dataCliente['_post']);
+$cargo = new Supervisor($dataCliente['_post']);
 
 $sql = $cargo->sql_buscar_supervisores();
 $respuesta = $this->ejecutarConsultaBdds($sql);

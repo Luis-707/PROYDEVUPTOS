@@ -1,6 +1,6 @@
 <?php
 
-include_once '../clases/CargosSupervisor.php';
+include_once '../clases/Supervisor.php';
 
 /*$cargoSupervisor = new CargoSupervisor($conexion);
 $cargos = $cargoSupervisor->listarCargos();
@@ -19,7 +19,7 @@ if (is_string($cargos)) {
 }*/
 
 // Instanciar la clase con la conexión
-$cargoSupervisor = new CargoSupervisor([],$this);
+$cargoSupervisor = new Supervisor([],$this);
 
 // Obtener las opciones HTML para el select
 $respuesta = $cargoSupervisor->listarCargos();

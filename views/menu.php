@@ -35,6 +35,12 @@
                         <div data-i18n="Gestión de supervisores" >Gestión de Supervisores</div>
                     </a>
                 </li>
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacion">
+                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <div data-i18n="Evaluaciones" >Evaluaciones</div>
+                    </a>
+                </li>
 
 
                 <!--  Menu Seguridad-->

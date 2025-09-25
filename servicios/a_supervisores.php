@@ -1,17 +1,17 @@
 <?php
-include_once "../clases/CargosSupervisor.php";
+include_once "../clases/Supervisor.php";
 
 //$dataCliente['_post']['login'] = $dataCliente['_post']['otros_datos'];
  $data=$dataCliente['_post'];
 // var_dump($data['nombres']);
 
-$cargo = new CargosSupervisor( $dataCliente['_post']);
+$cargo = new Supervisor( $dataCliente['_post']);
 $sql = $cargo->sql_buscar_supervisores();
 $respuesta = $this->ejecutarConsultaBdds($sql);
 /*  echo "---".count($respuesta)."---";
 die(print_r($respuesta));
 */
-$cargo = new CargosSupervisor($dataCliente['_post']);
+$cargo = new Supervisor($dataCliente['_post']);
 
 $sql = $cargo->sql_buscar_supervisores();
 $respuesta = $this->ejecutarConsultaBdds($sql);

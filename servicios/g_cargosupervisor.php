@@ -5,10 +5,10 @@ ini_set('display_startup_errors', '0');
 
 header('Content-Type: application/json; charset=utf-8');
 
-include_once "../clases/CargosSupervisor.php";
+include_once "../clases/Supervisor.php";
 
 try {
-    $cargo = new CargosSupervisor($dataCliente['_post'], $this->conexion);
+    $cargo = new Supervisor($dataCliente['_post'], $this->conexion);
 
     // Buscar si ya existe
     $sql = $cargo->sql_buscar_supervisores();

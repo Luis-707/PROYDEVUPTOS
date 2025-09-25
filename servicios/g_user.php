@@ -21,13 +21,13 @@ try {
 
         echo json_encode([
             'success' => true,
-            'message' => 'Cargo asignado con éxito'
+            'message' => 'Usuario creado con éxito'
         ]);
     } else {
         // Ya existe
         echo json_encode([
             'success' => false,
-            'message' => 'Ya existe un cargo para este supervisor'
+            'message' => 'Ya existe un usuario para este empleado'
         ]);
     }
 } catch (Throwable $e) {
