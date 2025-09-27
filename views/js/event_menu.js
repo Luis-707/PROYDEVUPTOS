@@ -62,6 +62,9 @@
         // Una vez cargada la vista, ejecutamos la carga de datos 
         setTimeout(() => { cargarPlanilla();
 
+            // Crea las tablas para objetivos y competencias
+            cargarTablasPlanilla();
+
          }, 300); 
     }
 

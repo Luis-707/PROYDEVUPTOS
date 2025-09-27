@@ -30,6 +30,56 @@
   </div>
 </div>
 
+
+<div class="row mt-4">
+  <div class="col-md-6">
+    <h5>Objetivos de Desempeño Individual</h5>
+    <table class="table table-bordered" id="tabla-objetivos">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Peso</th>
+          <th>Rango</th>
+          <th>Peso x Rango</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td id="total-objetivos">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="col-md-6">
+    <h5>Competencias</h5>
+    <table class="table table-bordered" id="tabla-competencias">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Peso</th>
+          <th>Rango</th>
+          <th>Peso x Rango</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td id="total-competencias">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-12 text-end">
+    <h5>Total General: <span id="total-general">0</span></h5>
+  </div>
+</div>
+
 <!-- <script src="views/js/planilla.js"></script>
 
 <script src="views/js/planilla.js"></script> -->
