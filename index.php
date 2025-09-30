@@ -319,7 +319,7 @@ include_once "middleware/auth.php";
     <script src="views/js/evaluadores.js"></script>
     <script src="views/js/supervisores.js"></script>
     <script src="views/js/asignar_evaluador.js"></script>
-    <script src="views/js/planilla.js"></script>
+    
     <script src="views/js/evaluados.js"></script>
    
     

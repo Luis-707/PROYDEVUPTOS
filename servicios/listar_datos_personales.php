@@ -5,7 +5,7 @@
 include_once '../clases/PlanillaAdministrativos.php';
 
 // Instanciar la clase con la conexión
-$PlanillaAdmin = new PlanillaAdministrativos($this);
+$PlanillaAdmin = new PlanillaAdministrativos([],$this);
 
 // Obtener los evaluados administrativos
 $respuesta = $PlanillaAdmin->listarRelaciones();
