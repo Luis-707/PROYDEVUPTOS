@@ -11,16 +11,16 @@
         
         <div class="form-group mb-3">
           <label for="fecha-inicio">Fecha Inicio</label>
-          <input type="date" id="fecha-inicio" name="fecha_inicio" class="form-control" required>
+          <input type="text" id="fecha-inicio" name="fecha_inicio" class="form-control" required readonly>
         </div>
         <div class="form-group mb-3">
           <label for="fecha-cierre">Fecha Cierre</label>
-          <input type="date" id="fecha-cierre" name="fecha_cierre" class="form-control" required>
+          <input type="text" id="fecha-cierre" name="fecha_cierre" class="form-control" required readonly>
         </div>
-        <div class="form-group mb-3" id="periodo-container" style="display:none;">
-          <label for="periodo-evaluacion">Periodo de Evaluación</label>
-          <select id="periodo-evaluacion" name="periodo_evaluado" class="form-control"></select>
-        </div>
+        <div class="form-group mb-3">
+  <label for="periodo-evaluacion">Periodo de Evaluación</label>
+  <input type="text" id="periodo-evaluacion" name="periodo_evaluado" class="form-control" readonly>
+</div>
       </div>
     </div>
 

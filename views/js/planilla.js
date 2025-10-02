@@ -105,7 +105,7 @@ async function guardarEvaluacion() {
     } else {
       alert("✅ Evaluación guardada con éxito");
       valorFormEvaluacion();
-      document.getElementById("periodo-container").style.display = "none";
+      
     }
   } catch (err) {
     console.error("Error en guardarEvaluacion:", err);
@@ -177,6 +177,11 @@ async function cargarPlanilla() {
   document.getElementById("supervisor_cargo").textContent = registro.cargo_supervisor || "Sin cargo";
 }
 
+// =============================
+// Periodo de Evaluación
+// =============================
+
+
 function setPeriodoAutomatico() {
   const hoy = new Date();
   const year = hoy.getFullYear();
@@ -199,8 +204,8 @@ function setPeriodoAutomatico() {
   // Setear en inputs
   document.getElementById("fecha-inicio").value = fechaInicio;
   document.getElementById("fecha-cierre").value = fechaCierre;
-  const selectPeriodo = document.getElementById("periodo-evaluacion");
-  selectPeriodo.innerHTML = `<option value="${periodo}">${periodo}</option>`;
+  const periodoInput = document.getElementById("periodo-evaluacion");
+periodoInput.value = periodo;
 
   // 👇 Capturar id_evaluado oculto
   const idEvaluado = document.getElementById("id_evaluado").value;
@@ -365,6 +370,3 @@ async function cargarTablasPlanilla() {
   await cargarRangosActuacion();
   actualizarTotalGeneral();
 }
-// =============================
-// Periodo de Evaluación
-// =============================
