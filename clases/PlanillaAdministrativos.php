@@ -74,18 +74,22 @@ JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_superviso
     return !empty($res[0]['id_rango']) ? (int)$res[0]['id_rango'] : null;
 }
 
-public function sql_guardar_evaluacion() : string {
+public function sql_guardar_evaluacion(): string {
     return sprintf(
-        "INSERT INTO evaluacion_administrativos
-         (id_usuario, id_evaluado, id_rango, puntaje_final, fecha_inicio, fecha_cierre, periodo_evaluado) 
-         VALUES (%d, %d, %d, %d, '%s', '%s', '%s');",
-        $this->id_usuario,
-        $this->id_evaluado,
+        "UPDATE evaluacion_administrativos
+         SET id_rango = %d,
+             puntaje_final = %d,
+             fecha_inicio = '%s',
+             fecha_cierre = '%s',
+             periodo_evaluado = '%s'
+         WHERE id_usuario = %d
+         RETURNING id_eval_admin;",
         $this->id_rango,
         $this->puntaje_final,
         $this->fecha_inicio,
         $this->fecha_cierre,
-        $this->periodo_evaluado
+        $this->periodo_evaluado,
+        $this->id_usuario
     );
 }
 

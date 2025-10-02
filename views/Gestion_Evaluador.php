@@ -1,3 +1,20 @@
+<!--<label for="id_evaluador">Seleccionar usuario:</label>
+    <select id="id_evaluador" name="id_evaluador">
+    <option value="">Seleccione a un usuario</option>
+</select>
+
+<label for="id_cargo_evaluador">Seleccionar cargo:</label>
+    <select id="id_cargo_evaluador" name="id_cargo_evaluador">
+    <option value="">Seleccione a un cargo</option>
+</select>
+
+<table class="table table-bordered align-middle" id="tabla-evaluadores">
+    <thead class="table-dark">
+        <tr><th>Apellidos y nombres</th><th>Cédula Usuario</th><th>Cargo</th><th>Acciones</th></tr>
+    </thead>
+    <tbody></tbody>
+</table>-->
+
 <form id="formulario_evaluador" onsubmit="event.preventDefault(); validar_formEvaluador(1);">
 
 <label for="id_usuario">Usuario:</label>
@@ -9,6 +26,12 @@
     <select id="id_cargo_evaluador" name="id_cargo_evaluador">
     <option value="">Seleccione a un cargo</option>
 </select>
+
+<label for="id_supervisor">Seleccionar supervisor:</label>
+    <select id="id_supervisor" name="id_supervisor">
+    <option value="">Seleccione a un supervisor</option>
+</select>
+
 
 <button type="submit">Guardar</button>
 

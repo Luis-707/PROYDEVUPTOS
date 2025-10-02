@@ -5,8 +5,10 @@ class Evaluador {
     private $cargo_evaluador = "";
     private $id_usuario = "";
     private $id_cargo_evaluador = "";
+    private $id_supervisor = "";
+    private $cargo_supervisor = "";
 
-    // Constructor que recibe la conexión a la base de datos
+
     public function __construct($dataCliente = array(''),$conexion = NULL) {
         if ($conexion != NULL) {
             $this->conexion = $conexion;
@@ -15,6 +17,9 @@ class Evaluador {
         $this->id_usuario = $dataCliente['id_usuario'];
         $this->id_cargo_evaluador = $dataCliente['id_cargo_evaluador'];
         $this->cargo_evaluador = $dataCliente['cargo_evaluador'];
+        $this->id_supervisor = $dataCliente['id_supervisor'];
+        $this->cargo_supervisor = $dataCliente['cargo_supervisor'];
+
 
     }
 
@@ -40,10 +45,10 @@ class Evaluador {
      // Método para guardar (INSERT)
      public function sql_guardar_cargo_evaluador(): string {
         return sprintf(
-            "INSERT INTO evaluadores (id_usuario, id_cargo_evaluador) VALUES (%d, %d);",
+            "INSERT INTO evaluadores (id_usuario, id_cargo_evaluador, id_supervisor) VALUES (%d, %d, %d);",
             $this->id_usuario,
-            $this->id_cargo_evaluador
-           
+            $this->id_cargo_evaluador,
+            $this->id_supervisor
         );
     }
 
@@ -86,6 +91,21 @@ class Evaluador {
             "SELECT * FROM evaluadores WHERE id_usuario = %d;",
             $this->id_usuario
         );
+    }
+
+    // Método estático que devuelve la consulta SQL para listar supervisores con sus cargos
+    public static function sql_listar_supervisores(): string {
+        return "SELECT s.id_supervisor, c.cargo_supervisor
+                FROM supervisores AS s
+                JOIN cargos_supervisores AS c ON s.id_cargo_supervisor = c.id_cargo_supervisor;";
+    }
+
+    // Método que ejecuta la consulta y devuelve el resultado
+    public function listarSupervisores() {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds(self::sql_listar_supervisores());
+        }
+        return "No se ha definido la conexión";
     }
 
 }

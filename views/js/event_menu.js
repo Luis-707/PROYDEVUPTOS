@@ -4,13 +4,13 @@
             $("#cuerpo").empty().load("views/form-demo.php");
         })*/
        //-------- evento menu llamado a Formulario demo -----------------
-       $("#formularioDemo").click(function(){
+       /*$("#formularioDemo").click(function(){
         $("#cuerpo").empty().load("views/form-demo.php");
     })
 
     $("#formularioDemo2").click(function(){
         mostrarVista('vistaDemo');
-    })
+    })*/
 
      //click menu Prueba de servicios
      $("#formularioUsuarios").click(function(){
@@ -26,6 +26,7 @@
         mostrarVista('evaluadores');
         listarUsuariosEvaluador();
         listarCargosEvaluadores();
+        listarSupervisoresCargos();
         /*listarCargosEval();*/
         listarEvaluadores();
         /*listarUsuariosEvaluadorModal();*/
@@ -95,5 +96,22 @@
         mostrarVista('usuario');
         listarUsuario();
     })
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Detectar recarga de la página
+        const navEntry = performance.getEntriesByType('navigation')[0];
+        const isReload = navEntry ? navEntry.type === 'reload' : (performance.navigation && performance.navigation.type === 1);
+      
+        if (isReload) {
+          try {
+            // Cerrar sesión en el servidor
+            await microApi('controlador/?logout');
+          } catch (e) {
+            console.error('Error cerrando sesión en reload:', e);
+          }
+          // Redirigir al login
+          window.location.href = 'login.html';
+        }
+      });
 
 

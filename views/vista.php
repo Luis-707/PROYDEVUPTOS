@@ -16,15 +16,15 @@ if (isset($_POST['file']) && isset($_POST['idElemento'])) {
     $DIR = '../views/';
     // Define un mapeo de nombres de archivos permitidos
     $allowedFiles = [
-        'vistaDemo' => $DIR. 'form-demo.php',
+        /*'vistaDemo' => $DIR. 'form-demo.php',
         'persona' => $DIR. 'vpersona.php',
-        'usuario' => $DIR. 'vusuario.php',
+        'usuario' => $DIR. 'vusuario.php',*/
         'usuarios' => $DIR. 'form.php',
         'evaluadores' => $DIR. 'Gestion_Evaluador.php',
         'supervisores' => $DIR. 'Gestion_Supervisor.php',
         'evaluacion' => $DIR. 'evaluacion.php',
-        'planilla' => $DIR. 'planilla.php',
-        'empleado' => $DIR. 'vempleado.php'
+        'planilla' => $DIR. 'planilla.php'
+        /*'empleado' => $DIR. 'vempleado.php'*/
 
     ];/*
     echo $file;

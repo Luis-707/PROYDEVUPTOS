@@ -286,18 +286,38 @@ function renderTablaDinamica(datos, idTabla, idTotal, campoPeso, campoNombre) {
 }
 
 async function cargarTablasPlanilla() {
-  const objResp = await microApi('controlador/?l_objetivos');
-  const objetivos = Array.isArray(objResp[0]) ? objResp[0] : objResp;
+  const cedula = sessionStorage.getItem("cedula_planilla");
+  if (!cedula) {
+    alert("No se seleccionó evaluado");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("cedula_usuario", cedula);
+
+  // 👉 Cargar objetivos
+  const objResp = await microApi('controlador/?l_objetivos', formData);
+  console.log("Respuesta objetivos:", objResp);
+
+  if (!objResp.success) {
+    alert(objResp.message || "Error cargando objetivos");
+    return;
+  }
+
+  const objetivos = Array.isArray(objResp.data[0]) ? objResp.data[0] : objResp.data;
   renderTablaDinamica(objetivos, "tabla-objetivos", "total-objetivos", "peso_objetivo", "nombre_objetivo");
 
+  // 👉 Cargar competencias
   const compResp = await microApi('controlador/?l_competencias');
+  console.log("Respuesta competencias:", compResp);
+
   const competencias = Array.isArray(compResp[0]) ? compResp[0] : compResp;
   renderTablaDinamica(competencias, "tabla-competencias", "total-competencias", "peso_competencia", "nombre_competencia");
 
+  // 👉 Cargar rangos y actualizar totales
   await cargarRangosActuacion();
   actualizarTotalGeneral();
 }
-
 // =============================
 // Periodo de Evaluación
 // =============================

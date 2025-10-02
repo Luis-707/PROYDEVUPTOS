@@ -1,13 +1,14 @@
 <div class="container mt-4">
-  <h4>Planilla de Evaluación</h4>
+  <h3>EVALUACION DEL DESEMPEÑO</h3>
+  <h5>NIVEL ADMINISTRATIVO</h5>
 
   <!-- Formulario -->
   <form id="formulario_planilla" onsubmit="event.preventDefault(); validar_form_evaluacion(1);">
 
     <!-- Periodo y Fechas -->
-    <div class="row mt-4">
+    <div class="row mt-5">
       <div class="col-md-12">
-        <h5>Información de Evaluación</h5>
+        
         <div class="form-group mb-3">
           <label for="fecha-inicio">Fecha Inicio</label>
           <input type="date" id="fecha-inicio" name="fecha_inicio" class="form-control" required>
@@ -24,9 +25,15 @@
     </div>
 
     <!-- Información del Evaluado, Evaluador y Supervisor -->
-    <div class="row">
+    <div class="row mt-5">
+      <div class="col-md-12">
+      <h6 class="text-muted d-flex justify-content-between">
+  <span>SECCIÓN "A":</span>
+  <span>DATOS DE IDENTIFICACIÓN</span>
+</h6>
+      </div>
       <!-- Evaluado -->
-      <div class="col-md-4">
+      <div class="col-md-4 mt-3">
         <h5>Evaluado</h5>
         <ul class="list-group">
           <li class="list-group-item"><strong>Nombre:</strong> <span id="evaluado_fullname"></span></li>
@@ -34,12 +41,11 @@
           <li class="list-group-item"><strong>Cargo:</strong> <span id="evaluado_cargo"></span></li>
           <li class="list-group-item"><strong>Ubicación:</strong> <span id="evaluado_ubicacion"></span></li>
         </ul>
-        <!-- Campo oculto para guardar -->
         <input type="hidden" id="id_evaluado" name="id_evaluado">
       </div>
 
       <!-- Evaluador -->
-      <div class="col-md-4">
+      <div class="col-md-4 mt-3">
         <h5>Evaluador</h5>
         <ul class="list-group">
           <li class="list-group-item"><strong>Nombre:</strong> <span id="evaluador_fullname"></span></li>
@@ -47,12 +53,11 @@
           <li class="list-group-item"><strong>Cargo:</strong> <span id="evaluador_cargo"></span></li>
           <li class="list-group-item"><strong>Ubicación:</strong> <span id="evaluador_ubicacion"></span></li>
         </ul>
-        <!-- Campo oculto para guardar -->
         <input type="hidden" id="id_usuario_evaluador" name="id_usuario">
       </div>
 
       <!-- Supervisor -->
-      <div class="col-md-4">
+      <div class="col-md-4 mt-3">
         <h5>Supervisor</h5>
         <ul class="list-group">
           <li class="list-group-item"><strong>Nombre:</strong> <span id="supervisor_fullname"></span></li>
@@ -63,9 +68,12 @@
     </div>
 
     <!-- Tablas dinámicas -->
-    <div class="row mt-4">
-      <div class="col-md-6">
-        <h5>Objetivos de Desempeño Individual</h5>
+    <div class="row mt-5 justify-content-center">
+      <div class="col-md-8">
+      <h6 class="text-muted d-flex justify-content-between">
+  <span>SECCIÓN "B":</span>
+  <span>ESTABLECIMIENTO Y EVALUACION DE OBJETIVOS DE DESEMPEÑO INDIVIDUAL</span>
+</h6>
         <table class="table table-bordered" id="tabla-objetivos">
           <thead>
             <tr>
@@ -85,8 +93,11 @@
         </table>
       </div>
 
-      <div class="col-md-6">
-        <h5>Competencias</h5>
+      <div class="col-md-8 mt-5">
+      <h6 class="text-muted d-flex justify-content-between">
+  <span>SECCIÓN "C":</span>
+  <span>EVALUACION DE LAS COMPETENCIAS</span>
+</h6>
         <table class="table table-bordered" id="tabla-competencias">
           <thead>
             <tr>
@@ -108,9 +119,12 @@
     </div>
 
     <!-- Resultado Final -->
-    <div class="row mt-4">
+    <div class="row mt-5">
       <div class="col-md-6 offset-md-3">
-        <h5>Resultado Final</h5>
+      <h6 class="text-muted d-flex justify-content-between">
+  <span>SECCIÓN "D":</span>
+  <span>RANGOS DE ACTUACION DEL EVALUADO</span>
+</h6>
         <table class="table table-bordered text-center">
           <thead>
             <tr>
@@ -125,14 +139,13 @@
             </tr>
           </tbody>
         </table>
-        <!-- Campos ocultos para guardar -->
         <input type="hidden" id="id_rango" name="id_rango">
         <input type="hidden" id="puntaje_final" name="puntaje_final">
       </div>
     </div>
 
     <!-- Botón Guardar -->
-    <div class="row mt-4">
+    <div class="row mt-5">
       <div class="col-md-12 text-center">
         <button type="submit" class="btn btn-primary">Guardar Evaluación</button>
       </div>

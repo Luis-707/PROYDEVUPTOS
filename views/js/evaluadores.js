@@ -104,6 +104,10 @@ async function guardarEvaluador() {
   let idUsuarioEval = document.getElementById('id_usuario').value;
   datosPersona.append('id_usuario', idUsuarioEval);
 
+  // Agregar id_supervisor
+  let idSupervisor = document.getElementById('id_supervisor').value;
+  datosPersona.append('id_supervisor', idSupervisor);
+
   try {
       // Llamada al servicio
       const resp = await microApi('controlador/?g_cargoevaluador', datosPersona);
@@ -230,10 +234,11 @@ async function actualizarEvaluador(){
 
 }
 
-function valorFormEval(usuarioevaluador='',cargoeval=''){
+function valorFormEval(usuarioevaluador='',cargoeval='',supervisoreval=''){
   // Asignar valores a los campos del formulario
   document.getElementById('id_usuario').value = usuarioevaluador;
   document.getElementById('id_cargo_evaluador').value = cargoeval;
+  document.getElementById('id_supervisor').value = supervisoreval;
   
 
   
@@ -398,4 +403,41 @@ function rellenarSelectCargos(datos, idSelect, idCargoActual = null) {
 function listarCargosEvaluadoresModal(idCargoActual) {
   return microApi('controlador/?l_cargos_evaluadores')
     .then(datos => rellenarSelectCargos(datos, 'cargo_modal', idCargoActual));
+}
+
+//Select para mostrar supevisores de los evaluadores
+
+async function listarSupervisoresCargos() {
+  try {
+    // Llamar a la API para obtener supervisores con cargos
+    const resp = await microApi('controlador/?mostrar_supervisor');
+
+    if (typeof resp === 'string') {
+      console.error('Error al listar supervisores:', resp);
+      return;
+    }
+
+    llenarSelectSupervisores(resp);
+  } catch (err) {
+    console.error('La petición de supervisores falló:', err);
+  }
+}
+
+function llenarSelectSupervisores(datos) {
+  const select = document.getElementById('id_supervisor');
+  if (!select) return;
+
+  // Opción por defecto
+  select.innerHTML = '<option value="">Seleccione un supervisor</option>';
+
+  // Manejar arrays anidados si los hubiera
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+  // Se asume que datos son objetos con id_supervisor y cargo_supervisor
+  registros.forEach(item => {
+    const opcion = document.createElement('option');
+    opcion.value = item.id_supervisor;    // valor del option
+    opcion.textContent = item.cargo_supervisor; // texto visible en el select
+    select.appendChild(opcion);
+  });
 }

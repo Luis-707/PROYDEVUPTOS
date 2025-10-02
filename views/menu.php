@@ -2,10 +2,10 @@
 
                 <!-- Apps & Pages -->
                  <li class="menu-header small">
-                    <span class="menu-header-text" data-i18n="Módulos">Módulos</span>
+                    <span class="menu-header-text" data-i18n="Módulos De Sistema">Módulos De Sistema</span>
                 </li>
 
-                <li class="menu-item">
+                <!-- <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioDemo">
                         <i class="menu-icon icon-base bx bx-user"></i>
                         <div data-i18n="Formulario demo" >Formulario demo</div>
@@ -16,7 +16,7 @@
                         <i class="menu-icon icon-base bx bx-user"></i>
                         <div data-i18n="Formulario demo2" >Formulario demo2</div>
                     </a>
-                </li>
+                </li> -->
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioUsuarios">
                         <i class="menu-icon icon-base bx bx-user"></i>
@@ -44,7 +44,7 @@
 
 
                 <!--  Menu Seguridad-->
-                <li class="menu-header small">
+                <!-- <li class="menu-header small">
                     <span class="menu-header-text" data-i18n="Seguridad">Seguridad</span>
                 </li>
 
@@ -53,9 +53,9 @@
                         <i class="menu-icon icon-base bx bx-user"></i>
                         <div data-i18n="Usuario" >Usuario</div>
                     </a>
-                </li>
+                </li>-->
                 <!--  Ejemplo menu -->
-                <li class="menu-header small">
+                <!-- <li class="menu-header small">
                     <span class="menu-header-text" data-i18n="Titulo Menu">Titulo Menu</span>
                 </li>
                  <li class="menu-item">
@@ -88,7 +88,7 @@
                             </ul>
                         </li>
                     </ul>
-                </li> 
+                </li> -->
                 
                 <!-- <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -134,7 +134,7 @@
                     </ul>
                 </li> -->
 
-                <li class="menu-item">
+                 <li class="menu-item">
                     <a href="https://demos.themeselection.com/sneat-bootstrap-html-admin-template/documentation/" target="_blank" class="menu-link">
                     <i class="menu-icon icon-base bx bx-file"></i>
                     <div data-i18n="Documentation">Documentation</div>
