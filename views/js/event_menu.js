@@ -63,18 +63,12 @@
         // Una vez cargada la vista, ejecutamos la carga de datos 
         setTimeout(async () => { 
             await cargarPlanilla();
+            setPeriodoAutomatico();
 
             // Crea las tablas para objetivos y competencias
             await cargarTablasPlanilla();
 
-            const inicioEl = document.getElementById("fecha-inicio");
-  const cierreEl = document.getElementById("fecha-cierre");
-
-  if (inicioEl && cierreEl) {
-    inicioEl.addEventListener("change", actualizarPeriodo);
-    cierreEl.addEventListener("change", actualizarPeriodo);
-  }
-            
+           
 
          }, 300); 
     }

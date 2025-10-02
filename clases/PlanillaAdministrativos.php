@@ -78,18 +78,27 @@ public function sql_guardar_evaluacion(): string {
     return sprintf(
         "UPDATE evaluacion_administrativos
          SET id_rango = %d,
-             puntaje_final = %d,
-             fecha_inicio = '%s',
-             fecha_cierre = '%s',
-             periodo_evaluado = '%s'
+             puntaje_final = %d 
          WHERE id_usuario = %d
          RETURNING id_eval_admin;",
         $this->id_rango,
         $this->puntaje_final,
+        $this->id_usuario
+    );
+}
+
+public function sql_actualizar_periodo(): string {
+    return sprintf(
+        "UPDATE evaluacion_administrativos
+         SET periodo_evaluado = '%s',
+             fecha_inicio = '%s',
+             fecha_cierre = '%s'
+         WHERE id_evaluado = %d
+         RETURNING id_eval_admin;",
+        $this->periodo_evaluado,
         $this->fecha_inicio,
         $this->fecha_cierre,
-        $this->periodo_evaluado,
-        $this->id_usuario
+        $this->id_evaluado
     );
 }
 

@@ -177,6 +177,53 @@ async function cargarPlanilla() {
   document.getElementById("supervisor_cargo").textContent = registro.cargo_supervisor || "Sin cargo";
 }
 
+function setPeriodoAutomatico() {
+  const hoy = new Date();
+  const year = hoy.getFullYear();
+  const mes = hoy.getMonth() + 1;
+
+  let periodo = "";
+  let fechaInicio = "";
+  let fechaCierre = "";
+
+  if (mes >= 1 && mes <= 6) {
+    periodo = `Periodo I-${year}`;
+    fechaInicio = `${year}-01-01`;
+    fechaCierre = `${year}-06-01`;
+  } else {
+    periodo = `Periodo II-${year}`;
+    fechaInicio = `${year}-07-01`;
+    fechaCierre = `${year}-12-01`;
+  }
+
+  // Setear en inputs
+  document.getElementById("fecha-inicio").value = fechaInicio;
+  document.getElementById("fecha-cierre").value = fechaCierre;
+  const selectPeriodo = document.getElementById("periodo-evaluacion");
+  selectPeriodo.innerHTML = `<option value="${periodo}">${periodo}</option>`;
+
+  // 👇 Capturar id_evaluado oculto
+  const idEvaluado = document.getElementById("id_evaluado").value;
+
+  // Guardar en BD automáticamente
+  const formData = new FormData();
+  formData.append("id_evaluado", idEvaluado);
+  formData.append("periodo_evaluado", periodo);
+  formData.append("fecha_inicio", fechaInicio);
+  formData.append("fecha_cierre", fechaCierre);
+
+  microApi("controlador/?u_periodo", formData)
+    .then(resp => {
+      if (!resp.success) {
+        console.error("Error al actualizar periodo:", resp.message);
+      } else {
+        console.log("✅ Periodo actualizado automáticamente:", periodo);
+      }
+    })
+    .catch(err => console.error("Error en update periodo:", err));
+}
+
+
 // =============================
 // Rangos de actuación
 // =============================
@@ -321,30 +368,3 @@ async function cargarTablasPlanilla() {
 // =============================
 // Periodo de Evaluación
 // =============================
-function calcularPeriodo(fechaInicio, fechaCierre) {
-  if (!fechaInicio || !fechaCierre) return null;
-
-  const [yearStr, monthStr] = fechaInicio.split("-");
-  const year = parseInt(yearStr);
-  const mesInicio = parseInt(monthStr);
-
-  return (mesInicio >= 1 && mesInicio <= 6) ? `Periodo I-${year}` : `Periodo II-${year}`;
-}
-
-function actualizarPeriodo() {
-  const fechaInicio = document.getElementById("fecha-inicio").value;
-  const fechaCierre = document.getElementById("fecha-cierre").value;
-  const periodoContainer = document.getElementById("periodo-container");
-  const selectPeriodo = document.getElementById("periodo-evaluacion");
-
-  if (fechaInicio && fechaCierre) {
-    const periodo = calcularPeriodo(fechaInicio, fechaCierre);
-    if (periodo) {
-      periodoContainer.style.display = "block";
-      selectPeriodo.innerHTML = `<option value="${periodo}">${periodo}</option>`;
-    }
-  } else {
-    periodoContainer.style.display = "none";
-    selectPeriodo.innerHTML = "";
-  }
-}
