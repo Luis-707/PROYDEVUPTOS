@@ -28,11 +28,41 @@ function validar_form_evaluacion(opc) {
     if (!valor) {
       console.warn(`⚠️ El campo ${key} está vacío`);
     }
+
+    switch (key) {
+      case 'puntaje_final':
+        if (!validarnumero(valor)) {
+          alert("El puntaje final solo debe contener números");
+          isValid = false;
+        }
+        break;
+      case 'id_rango':
+        if (!validarnumero(valor)) {
+          alert("Opción de rango inválida.");
+          isValid = false;
+        }
+        break;
+      case 'fecha_inicio':
+      case 'fecha_cierre':
+      case 'periodo_evaluado':
+        // Estos campos son gestionados automáticamente
+        break;
+      default:
+        console.log(`Campo ${key} no requiere validación específica.`);
+
+        /*if (!isValid) {
+      break; // Salir del switch si ya es inválido
+        }*/
+    }
   }
+
+  
 
   if (isValid) {
     if (opc === 1) guardarEvaluacion();
   }
+
+
 }
 
 // =============================
@@ -49,7 +79,7 @@ async function BuscarEvaluacion(){
 // =============================
 // Validación de campos obligatorios
 // =============================
-function validarCamposObligatorios(fd) {
+/*function validarCamposObligatorios(fd) {
   const obligatorios = [
     "id_usuario",
     "id_evaluado",
@@ -70,16 +100,17 @@ function validarCamposObligatorios(fd) {
     }
   });
   console.groupEnd();
-}
+}*/
 // =============================
 // Guardar Evaluación
 // =============================
 async function guardarEvaluacion() {
+  actualizarTotalGeneral(); 
   let datosEval = capturarValoresFormulario('formulario_planilla');
 
   const idUsuario = document.getElementById('id_usuario_evaluador').value;
   const idEvaluado = document.getElementById('id_evaluado').value;
-  const idRango = document.getElementById('id_rango').value;
+  const idRango = document.getElementById('id_rango').value || 0;
   const puntajeFinal = document.getElementById('puntaje_final').value 
     || document.getElementById('puntaje-total').textContent;
 
@@ -88,15 +119,13 @@ async function guardarEvaluacion() {
   datosEval.append('id_rango', idRango);
   datosEval.append('puntaje_final', puntajeFinal);
 
-  // 👇 Validación en consola
-  validarCamposObligatorios(datosEval);
 
   // 👇 Depuración: imprimir todo el FormData
-  console.group("📦 Contenido completo del FormData");
+  /*console.group("📦 Contenido completo del FormData");
   for (const [k, v] of datosEval.entries()) {
-    console.log('${k} => ${v}');
+    console.log(`${k} => ${v}`);
   }
-  console.groupEnd();
+  console.groupEnd();*/
   try {
     const resp = await microApi('controlador/?g_evaluacion', datosEval);
 
@@ -116,11 +145,10 @@ async function guardarEvaluacion() {
 // =============================
 // Resetear formulario
 // =============================
-function valorFormEvaluacion(evaluado='', evaluador='', Finicio='', Fcierre='', RangoActuacion='', puntaje='') {
+function valorFormEvaluacion(evaluado='', evaluador='', RangoActuacion='', puntaje='') {
   document.getElementById('id_evaluado').value = evaluado;
   document.getElementById('id_usuario_evaluador').value = evaluador;
-  document.getElementById('fecha-inicio').value = Finicio;
-  document.getElementById('fecha-cierre').value = Fcierre;
+ 
   document.getElementById('id_rango').value = RangoActuacion;
   document.getElementById('puntaje_final').value = puntaje;
 }
@@ -234,10 +262,21 @@ periodoInput.value = periodo;
 // =============================
 let rangosActuacion = [];
 
+// =============================
+// Cargar rangos de actuación con depuración
+// =============================
 async function cargarRangosActuacion() {
   const resp = await microApi('controlador/?l_rangos');
   rangosActuacion = Array.isArray(resp[0]) ? resp[0] : resp;
+
   console.log("✅ Rangos cargados:", rangosActuacion);
+
+  /*if (rangosActuacion.length > 0) {
+    console.log("🔎 Claves detectadas en el primer objeto:", Object.keys(rangosActuacion[0]));
+    console.log("🔎 Ejemplo de primer rango:", rangosActuacion[0]);
+  } else {
+    console.warn("⚠️ No se recibieron rangos desde el backend");
+  }*/
 }
 
 // =============================
@@ -262,17 +301,24 @@ function actualizarTotalGeneral() {
   let rangoId = "";
 
   for (const r of rangosActuacion) {
-    const min = parseInt(r.puntaje_minimo);
-    const max = parseInt(r.puntaje_maximo);
+    // Normalizar claves posibles
+    const min = parseInt(r.puntaje_minimo ?? r.minimo ?? 0);
+    const max = parseInt(r.puntaje_maximo ?? r.maximo ?? 0);
+    const texto = r.rango_actuacion ?? r.descripcion ?? "Sin nombre";
+    const id = r.id_rango ?? r.idRango ?? r.id ?? "";
+
     if (totalGeneral >= min && totalGeneral <= max) {
-      rangoTexto = r.rango_actuacion;
-      rangoId = r.id_rango;
+      rangoTexto = texto;
+      rangoId = id;
       break;
     }
   }
 
   rangoEl.textContent = rangoTexto;
   document.getElementById("id_rango").value = rangoId;
+
+  // 👇 Depuración
+  /*console.log("🔎 Total:", totalGeneral, "=> Rango:", rangoTexto, "ID:", rangoId);*/
 }
 
 function actualizarTotales(idTabla, idTotal) {

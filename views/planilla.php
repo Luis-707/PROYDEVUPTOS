@@ -139,7 +139,7 @@
             </tr>
           </tbody>
         </table>
-        <input type="hidden" id="id_rango" name="id_rango">
+        <input type="hidden" id="id_rango" name="id_rango" value="0">
         <input type="hidden" id="puntaje_final" name="puntaje_final">
       </div>
     </div>

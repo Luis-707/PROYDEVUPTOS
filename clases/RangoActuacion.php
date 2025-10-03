@@ -12,7 +12,7 @@ class RangoActuacion {
 
 
   public static function sql_listar(): string {
-    return "SELECT rango_actuacion, puntaje_minimo, puntaje_maximo FROM rango_actuacion;";
+    return "SELECT id_rango,rango_actuacion, puntaje_minimo, puntaje_maximo FROM rango_actuacion;";
   }
 
 
