@@ -59,7 +59,10 @@ function validar_form_evaluacion(opc) {
   
 
   if (isValid) {
-    if (opc === 1) guardarEvaluacion();
+    if (opc === 1){ 
+      
+      guardarEvaluacionCompleta();
+    }
   }
 
 
@@ -74,6 +77,27 @@ async function BuscarEvaluacion(){
   let datosEval = capturarValoresFormulario('formulario_planilla');
   var resp = await microApi('controlador/?b_evaluacion',datosEval);
   return resp;
+}
+
+function capturarResultadosTabla(idTabla, campoId) {
+  const resultados = [];
+  const tbody = document.querySelector(`#${idTabla} tbody`);
+  if (!tbody) return resultados;
+
+  tbody.querySelectorAll("tr").forEach(tr => {
+    const id = tr.getAttribute("data-id"); // 👈 necesitas setear este atributo al renderizar
+    const select = tr.querySelector("select");
+    const rango = parseInt(select.value) || 0;
+    const pesoXRango = parseFloat(tr.children[3].textContent) || 0;
+
+    resultados.push({
+      [campoId]: id,
+      rango: rango,
+      pesoXRango: pesoXRango
+    });
+  });
+
+  return resultados;
 }
 
 // =============================
@@ -104,43 +128,61 @@ async function BuscarEvaluacion(){
 // =============================
 // Guardar Evaluación
 // =============================
-async function guardarEvaluacion() {
-  actualizarTotalGeneral(); 
-  let datosEval = capturarValoresFormulario('formulario_planilla');
+async function guardarEvaluacionCompleta() {
 
-  const idUsuario = document.getElementById('id_usuario_evaluador').value;
-  const idEvaluado = document.getElementById('id_evaluado').value;
-  const idRango = document.getElementById('id_rango').value || 0;
-  const puntajeFinal = document.getElementById('puntaje_final').value 
-    || document.getElementById('puntaje-total').textContent;
+  actualizarTotalGeneral(); // Asegurar que totales estén actualizados
+  let datos = capturarValoresFormulario('formulario_planilla');
 
-  datosEval.append('id_usuario', idUsuario);
-  datosEval.append('id_evaluado', idEvaluado);
-  datosEval.append('id_rango', idRango);
-  datosEval.append('puntaje_final', puntajeFinal);
+  // Capturar objetivos y competencias
+  const objetivos = capturarResultadosTabla("tabla-objetivos", "id_odi");
+  const competencias = capturarResultadosTabla("tabla-competencias", "id_competencia");
 
+  datos.append("objetivos", JSON.stringify(objetivos));
+  datos.append("competencias", JSON.stringify(competencias));
 
-  // 👇 Depuración: imprimir todo el FormData
-  /*console.group("📦 Contenido completo del FormData");
-  for (const [k, v] of datosEval.entries()) {
-    console.log(`${k} => ${v}`);
-  }
-  console.groupEnd();*/
   try {
-    const resp = await microApi('controlador/?g_evaluacion', datosEval);
+    const resp = await microApi("controlador/?g_evaluacion", datos);
+    console.log("Respuesta evaluación completa:", resp);
 
     if (!resp.success) {
       alert(resp.message || "Error al guardar la evaluación");
     } else {
       alert("✅ Evaluación guardada con éxito");
-      valorFormEvaluacion();
-      
+
+      // 👇 Guardar id_eval_admin en un hidden para futuras ediciones
+      /*if (resp.success && resp.id_eval_admin) {
+        document.getElementById("id_eval_admin").value = resp.id_eval_admin;
+      }*/
     }
   } catch (err) {
-    console.error("Error en guardarEvaluacion:", err);
-    alert("Ocurrió un error al guardar la evaluación");
+    console.error("Error en guardarEvaluacionCompleta:", err);
+    alert("Ocurrió un error al guardar");
   }
 }
+
+
+/*async function guardarDetallesEvaluacion() {
+  const objetivos = capturarResultadosTabla("tabla-objetivos", "id_odi");
+  const competencias = capturarResultadosTabla("tabla-competencias", "id_competencia");
+
+  const datos = new FormData();
+  datos.append("objetivos", JSON.stringify(objetivos));
+  datos.append("competencias", JSON.stringify(competencias));
+
+  try {
+    const resp = await microApi("controlador/?g_evaluacion", datos);
+    console.log("Respuesta detalles:", resp);
+
+    if (!resp.success) {
+      alert(resp.message || "Error al guardar objetivos/competencias");
+    } else {
+      console.log("✅ Detalles guardados con éxito");
+    }
+  } catch (err) {
+    console.error("Error en guardarDetallesEvaluacion:", err);
+    alert("Ocurrió un error al guardar los detalles");
+  }
+}*/
 
 // =============================
 // Resetear formulario
@@ -340,7 +382,7 @@ function actualizarTotales(idTabla, idTotal) {
 // =============================
 // Tablas dinámicas
 // =============================
-function renderTablaDinamica(datos, idTabla, idTotal, campoPeso, campoNombre) {
+function renderTablaDinamica(datos, idTabla, idTotal, campoPeso, campoNombre, campoId) {
   if (!Array.isArray(datos)) return;
 
   const tbody = document.querySelector(`#${idTabla} tbody`);
@@ -350,38 +392,82 @@ function renderTablaDinamica(datos, idTabla, idTotal, campoPeso, campoNombre) {
   datos.forEach(item => {
     const tr = document.createElement("tr");
 
+    // Guardar identificador
+    const idValor = item[campoId];
+    tr.setAttribute("data-id", idValor);
+
+    // Nombre
     const tdNombre = document.createElement("td");
     tdNombre.textContent = item[campoNombre];
     tr.appendChild(tdNombre);
 
+    // Peso
     const tdPeso = document.createElement("td");
     tdPeso.textContent = item[campoPeso];
     tr.appendChild(tdPeso);
 
+    // Peso x Rango (celda primero)
+    const tdPxR = document.createElement("td");
+    tdPxR.textContent = parseFloat(item[campoPeso]) * 1;
+    tr.appendChild(tdPxR);
+
+    // Rango (select)
     const tdRango = document.createElement("td");
     const select = document.createElement("select");
+
     for (let i = 1; i <= 5; i++) {
       const opt = document.createElement("option");
       opt.value = i;
       opt.textContent = i;
+      if (i === 1) opt.selected = true;
       select.appendChild(opt);
     }
+
     select.addEventListener("change", () => {
       const peso = parseFloat(item[campoPeso]);
       const rango = parseInt(select.value);
       tdPxR.textContent = peso * rango;
       actualizarTotales(idTabla, idTotal);
-    });
-    tdRango.appendChild(select);
-    tr.appendChild(tdRango);
 
-    const tdPxR = document.createElement("td");
-    tdPxR.textContent = "0";
-    tr.appendChild(tdPxR);
+      // 👇 Depuración: mostrar fila capturada
+      console.log(`Fila en ${idTabla}:`, {
+        id: idValor,
+        nombre: item[campoNombre],
+        peso: peso,
+        rango: rango,
+        pesoXRango: peso * rango
+      });
+    });
+
+    tdRango.appendChild(select);
+    tr.insertBefore(tdRango, tdPxR);
 
     tbody.appendChild(tr);
   });
+
+  actualizarTotales(idTabla, idTotal);
 }
+
+/*function testCapturaDatos() {
+  // Simulación de captura de objetivos
+  const objetivos = capturarResultadosTabla("tabla-objetivos", "id_odi");
+  console.log("Objetivos capturados:", objetivos);
+
+  // Simulación de captura de competencias
+  const competencias = capturarResultadosTabla("tabla-competencias", "id_competencia");
+  console.log("Competencias capturadas:", competencias);
+
+  // Simulación de armado del FormData
+  const datos = new FormData();
+  datos.append("objetivos", JSON.stringify(objetivos));
+  datos.append("competencias", JSON.stringify(competencias));
+
+  // Mostrar lo que realmente se enviaría al backend
+  console.log("FormData (objetivos):", datos.get("objetivos"));
+  console.log("FormData (competencias):", datos.get("competencias"));
+}*/
+
+
 
 async function cargarTablasPlanilla() {
   const cedula = sessionStorage.getItem("cedula_planilla");
@@ -403,16 +489,19 @@ async function cargarTablasPlanilla() {
   }
 
   const objetivos = Array.isArray(objResp.data[0]) ? objResp.data[0] : objResp.data;
-  renderTablaDinamica(objetivos, "tabla-objetivos", "total-objetivos", "peso_objetivo", "nombre_objetivo");
+  renderTablaDinamica(objetivos, "tabla-objetivos", "total-objetivos", "peso_objetivo", "nombre_objetivo", "id_odi");
 
   // 👉 Cargar competencias
   const compResp = await microApi('controlador/?l_competencias');
   console.log("Respuesta competencias:", compResp);
 
   const competencias = Array.isArray(compResp[0]) ? compResp[0] : compResp;
-  renderTablaDinamica(competencias, "tabla-competencias", "total-competencias", "peso_competencia", "nombre_competencia");
+  renderTablaDinamica(competencias, "tabla-competencias", "total-competencias", "peso_competencia", "nombre_competencia", "id_competencia","id_eval_admin");
 
   // 👉 Cargar rangos y actualizar totales
   await cargarRangosActuacion();
   actualizarTotalGeneral();
+
+  // 👇 Test después de renderizar
+  //testCapturaDatos();
 }

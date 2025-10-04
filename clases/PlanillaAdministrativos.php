@@ -14,14 +14,27 @@ class PlanillaAdministrativos {
         
 
       
-        $this->id_usuario       = isset($dataCliente['id_usuario']) ? (int)$dataCliente['id_usuario'] : 0;
-        $this->id_evaluado      = isset($dataCliente['id_evaluado']) ? (int)$dataCliente['id_evaluado'] : 0;
-        $this->id_rango         = isset($dataCliente['id_rango']) ? (int)$dataCliente['id_rango'] : 0;
-        $this->puntaje_final    = isset($dataCliente['puntaje_final']) ? (int)$dataCliente['puntaje_final'] : 0;
-        $this->fecha_inicio     = isset($dataCliente['fecha_inicio']) ? $dataCliente['fecha_inicio'] : "";
-        $this->fecha_cierre     = isset($dataCliente['fecha_cierre']) ? $dataCliente['fecha_cierre'] : "";
-        $this->periodo_evaluado = isset($dataCliente['periodo_evaluado']) ? $dataCliente['periodo_evaluado'] : "";
-
+        if (isset($dataCliente['id_usuario'])) {
+            $this->id_usuario = (int)$dataCliente['id_usuario'];
+        }
+        if (isset($dataCliente['id_evaluado'])) {
+            $this->id_evaluado = (int)$dataCliente['id_evaluado'];
+        }
+        if (isset($dataCliente['id_rango'])) {
+            $this->id_rango = (int)$dataCliente['id_rango'];
+        }
+        if (isset($dataCliente['puntaje_final'])) {
+            $this->puntaje_final = (int)$dataCliente['puntaje_final'];
+        }
+        if (isset($dataCliente['fecha_inicio'])) {
+            $this->fecha_inicio = $dataCliente['fecha_inicio'];
+        }
+        if (isset($dataCliente['fecha_cierre'])) {
+            $this->fecha_cierre = $dataCliente['fecha_cierre'];
+        }
+        if (isset($dataCliente['periodo_evaluado'])) {
+            $this->periodo_evaluado = $dataCliente['periodo_evaluado'];
+        }
         if ($conexion != NULL) {
             $this->conexion = $conexion;
         }
@@ -74,6 +87,7 @@ JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_superviso
     return !empty($res[0]['id_rango']) ? (int)$res[0]['id_rango'] : null;
 }
 
+// Guardar evaluación general
 public function sql_guardar_evaluacion(): string {
     return sprintf(
         "UPDATE evaluacion_administrativos
@@ -84,6 +98,31 @@ public function sql_guardar_evaluacion(): string {
         $this->id_rango,
         $this->puntaje_final,
         $this->id_usuario
+    );
+}
+
+// Guardar objetivo
+public function sql_guardar_objetivo($idOdi, $rango, $pesoXRango): string {
+    return sprintf(
+        "INSERT INTO evaluacion_objetivos (id_odi, rango_obj, pesoxrango_obj)
+         VALUES (%d, %d, %d)
+         RETURNING id_obj_result;",
+        (int)$idOdi,
+        (int)$rango,
+        (int)$pesoXRango
+    );
+}
+
+// Guardar competencia
+public function sql_guardar_competencia($idEvalAdmin, $idCompetencia, $rango, $pesoXRango): string {
+    return sprintf(
+        "INSERT INTO evaluacion_competencias (id_eval_admin, id_competencia, rango_comp, pesoxrango_comp)
+         VALUES (%d, %d, %d, %d)
+         RETURNING id_comp_result;",
+        (int)$idEvalAdmin,
+        (int)$idCompetencia,
+        (int)$rango,
+        (int)$pesoXRango
     );
 }
 
@@ -105,9 +144,9 @@ public function sql_actualizar_periodo(): string {
 public function sql_buscar(): string {
     return sprintf(
         "SELECT * FROM evaluacion_administrativos 
-         WHERE id_evaluado = %d AND periodo_evaluado = '%s';",
-        (int)$this->id_evaluado,
-        $this->periodo_evaluado
+         WHERE id_rango = %d AND puntaje_final = '%s';",
+        $this->id_rango,
+        $this->puntaje_final
     );
 }
 }
