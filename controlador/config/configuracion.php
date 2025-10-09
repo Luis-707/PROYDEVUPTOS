@@ -5,13 +5,13 @@
     /**
      * @var string SISTEMA: Siglas del sistema que presta el servicio
      */
-    define("SISTEMA",'SIGLAB');
+    define("SISTEMA",'ODI');
 
     /**
      * @var string DESCRIP_SISTEMA: Descripcion del sistema o nombre del sistema 
      */
 
-    define("DESCRIP_SISTEMA",'Sistema Integral Para La Gestion de Laboratorio');
+    define("DESCRIP_SISTEMA",'Sistema Para la Evaluacion de personal Administrativo y Obrero');
 
 
     /**

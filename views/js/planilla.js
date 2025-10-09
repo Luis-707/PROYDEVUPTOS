@@ -129,8 +129,8 @@ function capturarResultadosTabla(idTabla, campoId) {
 // Guardar Evaluación
 // =============================
 async function guardarEvaluacionCompleta() {
-
   actualizarTotalGeneral(); // Asegurar que totales estén actualizados
+
   let datos = capturarValoresFormulario('formulario_planilla');
 
   // Capturar objetivos y competencias
@@ -145,9 +145,17 @@ async function guardarEvaluacionCompleta() {
     console.log("Respuesta evaluación completa:", resp);
 
     if (!resp.success) {
-      alert(resp.message || "Error al guardar la evaluación");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al guardar',
+        text: resp.message || "No se pudo guardar la evaluación"
+      });
     } else {
-      alert("✅ Evaluación guardada con éxito");
+      Swal.fire({
+        icon: 'success',
+        title: 'Evaluación de Administrativo',
+        text: "✅ Evaluación guardada con éxito"
+      });
 
       // 👇 Guardar id_eval_admin en un hidden para futuras ediciones
       /*if (resp.success && resp.id_eval_admin) {
@@ -156,7 +164,11 @@ async function guardarEvaluacionCompleta() {
     }
   } catch (err) {
     console.error("Error en guardarEvaluacionCompleta:", err);
-    alert("Ocurrió un error al guardar");
+    Swal.fire({
+      icon: 'error',
+      title: 'Error inesperado',
+      text: 'Ocurrió un error al guardar la evaluación'
+    });
   }
 }
 

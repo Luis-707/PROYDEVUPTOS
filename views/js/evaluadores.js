@@ -112,18 +112,29 @@ async function guardarEvaluador() {
       // Llamada al servicio
       const resp = await microApi('controlador/?g_cargoevaluador', datosPersona);
 
-      // Validar respuesta JSON
       if (!resp.success) {
-          alert(resp.message);
-      } else {
-          valorFormEval();      // Limpia formulario
-          listarEvaluadores();   // Refresca tabla
-          alert(resp.message);
-      }
-  } catch (err) {
-      console.error("Error en guardarEvaluador:", err);
-      alert("Ocurrió un error al guardar el cargo");
-  }
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al guardar',
+            text: resp.message
+        });
+    } else {
+        valorFormEval();
+        listarEvaluadores();
+        Swal.fire({
+            icon: 'success',
+            title: 'Añadir Evaluador y Cargo de Evaluador',
+            text: resp.message
+        });
+    }
+} catch (err) {
+    console.error("Error en guardarEvaluador:", err);
+    Swal.fire({
+        icon: 'error',
+        title: 'Error inesperado',
+        text: 'Ocurrió un error al guardar el evaluador'
+    });
+}
 }
 
 /*async function listarCargosEval(){
@@ -192,48 +203,72 @@ async function listarTablaEvaluadores(datos) {
   tbody.innerHTML = html;
 }
 async function eliminarEvaluador(idUsuario) {
-  if (confirm('¿Está seguro de eliminar este evaluador?')) {
-      // Creamos el FormData con el id_usuario que espera el servicio
-      const formData = new FormData();
-      formData.append('id_usuario', idUsuario);
+  const result = await Swal.fire({
+    title: '¿Está seguro de eliminar este evaluador?',
+    text: 'Esta acción no se puede deshacer',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  });
 
-      try {
-          const resp = await microApi('controlador/?e_evaluadores', formData);
-          listarEvaluadores(); // refresca la tabla
-          alert(resp);
-      } catch (err) {
-          console.error("Error eliminando evaluador:", err);
-          alert("Ocurrió un error al eliminar el evaluador");
-      }
+  if (result.isConfirmed) {
+    const formData = new FormData();
+    formData.append('id_usuario', idUsuario);
+
+    try {
+      const resp = await microApi('controlador/?e_evaluadores', formData);
+      listarEvaluadores(); // refresca la tabla
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Evaluador eliminado',
+        text: typeof resp === 'string' ? resp : 'El evaluador fue eliminado correctamente'
+      });
+    } catch (err) {
+      console.error("Error eliminando evaluador:", err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al eliminar',
+        text: 'Ocurrió un error al eliminar el evaluador'
+      });
+    }
   }
 }
 
-async function actualizarEvaluador(){
+async function actualizarEvaluador() {
+  let datosPersona = capturarValoresFormulario('form-modal-editar-cargo');
 
-          // antes de capturar los valores del formulario debes validarlos
-      let datosPersona = capturarValoresFormulario('form-modal-editar-cargo');
+  try {
+    const resp = await microApi('controlador/?a_evaluadores', datosPersona);
 
-       /*// Obtener el valor del select 'id_cargo_evaluador'
-       let idCargoEval = document.getElementById('id_cargo_evaluador').value;
-       // Agregarlo a los datos que se enviarán
-       datosPersona.append('id_cargo_evaluador', idCargoEval);
-        // Obtener el valor del select 'id_usuario' 
-        let idUsuarioEval = document.getElementById('id_usuario').value;
-        // Agregarlo a los datos que se enviarán
-        datosPersona.append('id_usuario', idUsuarioEval);*/
-      
-      var resp = await microApi('controlador/?a_evaluadores',datosPersona);
-           // limpia formulario
-          if (resp.includes(' No Existe')) {
-              alert(resp);
-          }else{
-              valorFormEval();
-              listarEvaluadores();
-              alert('El Cargo se Actualizo con Exito');
-          }
+    if (typeof resp === 'string' && resp.includes(' No Existe')) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Evaluador no encontrado',
+        text: resp
+      });
+    } else {
+      valorFormEval();
+      listarEvaluadores();
 
+      Swal.fire({
+        icon: 'success',
+        title: 'Cargo actualizado',
+        text: 'El cargo del evaluador se actualizó con éxito'
+      });
+    }
+  } catch (err) {
+    console.error("Error actualizando evaluador:", err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error inesperado',
+      text: 'Ocurrió un error al actualizar el evaluador'
+    });
+  }
 }
-
 function valorFormEval(usuarioevaluador='',cargoeval='',supervisoreval=''){
   // Asignar valores a los campos del formulario
   document.getElementById('id_usuario').value = usuarioevaluador;

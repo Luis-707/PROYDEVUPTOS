@@ -11,7 +11,7 @@ $respuesta = $this->ejecutarConsultaBdds($sql);
 /*  echo "---".count($respuesta)."---";
 die(print_r($respuesta));
 */
-$cargo = new CargosEvaluador($dataCliente['_post']);
+$cargo = new Evaluador($dataCliente['_post']);
 
 $sql = $cargo->sql_buscar_evaluadores();
 $respuesta = $this->ejecutarConsultaBdds($sql);

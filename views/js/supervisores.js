@@ -105,21 +105,32 @@ function validarCadena(cadena){
     datosPersona.append('id_usuario', idUsuarioEvalSuperv);
 
     try {
-        // Llamada al servicio
-        const resp = await microApi('controlador/?g_cargosupervisor', datosPersona);
+      // Llamada al servicio
+      const resp = await microApi('controlador/?g_cargosupervisor', datosPersona);
 
-        // Validar respuesta JSON
-        if (!resp.success) {
-            alert(resp.message);
-        } else {
-            valorFormSuperv();      // Limpia formulario
-            listarSupervisores();   // Refresca tabla
-            alert(resp.message);
-        }
-    } catch (err) {
-        console.error("Error en guardarSupervisor:", err);
-        alert("Ocurrió un error al guardar el cargo");
+      if (!resp.success) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al guardar',
+            text: resp.message
+        });
+    } else {
+        valorFormSuperv();
+        listarSupervisores();
+        Swal.fire({
+            icon: 'success',
+            title: 'Añadir Cargo de Supervisor',
+            text: resp.message
+        });
     }
+} catch (err) {
+    console.error("Error en guardarSupervisor:", err);
+    Swal.fire({
+        icon: 'error',
+        title: 'Error inesperado',
+        text: 'Ocurrió un error al guardar el supervisor'
+    });
+}
 }
   
   /*async function listarCargosEval(){
@@ -188,19 +199,38 @@ function validarCadena(cadena){
     tbody.innerHTML = html;
   }
   async function eliminarSupervisor(idUsuario) {
-    if (confirm('¿Está seguro de eliminar este supervisor?')) {
-        // Creamos el FormData con el id_usuario que espera el servicio
-        const formData = new FormData();
-        formData.append('id_usuario', idUsuario);
+    const result = await Swal.fire({
+      title: '¿Está seguro de eliminar este supervisor?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
   
-        try {
-            const resp = await microApi('controlador/?e_supervisores', formData);
-            listarSupervisores(); // refresca la tabla
-            alert(resp);
-        } catch (err) {
-            console.error("Error eliminando supervisor:", err);
-            alert("Ocurrió un error al eliminar el supervisor");
-        }
+    if (result.isConfirmed) {
+      const formData = new FormData();
+      formData.append('id_usuario', idUsuario);
+  
+      try {
+        const resp = await microApi('controlador/?e_supervisores', formData);
+        listarSupervisores(); // refresca la tabla
+  
+        Swal.fire({
+          icon: 'success',
+          title: 'Supervisor eliminado',
+          text: typeof resp === 'string' ? resp : 'El supervisor fue eliminado correctamente'
+        });
+      } catch (err) {
+        console.error("Error eliminando supervisor:", err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al eliminar',
+          text: 'Ocurrió un error al eliminar el supervisor'
+        });
+      }
     }
   }
   
@@ -218,15 +248,33 @@ function validarCadena(cadena){
           // Agregarlo a los datos que se enviarán
           datosPersona.append('id_usuario', idUsuarioEval);*/
         
-        var resp = await microApi('controlador/?a_supervisores',datosPersona);
-             // limpia formulario
-            if (resp.includes(' No Existe')) {
-                alert(resp);
-            }else{
-                valorFormSuperv();
-                listarSupervisores();
-                alert('El Cargo se Actualizo con Exito');
+          try {
+            const resp = await microApi('controlador/?a_supervisores', datosPersona);
+        
+            if (typeof resp === 'string' && resp.includes(' No Existe')) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Supervisor no encontrado',
+                text: resp
+              });
+            } else {
+              valorFormSuperv();
+              listarSupervisores();
+        
+              Swal.fire({
+                icon: 'success',
+                title: 'Cargo actualizado',
+                text: 'El cargo del supervisor se actualizó con éxito'
+              });
             }
+          } catch (err) {
+            console.error("Error actualizando supervisor:", err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error inesperado',
+              text: 'Ocurrió un error al actualizar el supervisor'
+            });
+          }
   
   }
   

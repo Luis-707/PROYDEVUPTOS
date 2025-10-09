@@ -39,7 +39,7 @@ include_once "middleware/auth.php";
     <!-- Vendors CSS -->
     
     <link rel="stylesheet" href="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    
+    <link rel="stylesheet" href="assets/vendor/libs/sweetalert2/sweetalert2.css"/>
     <!-- endbuild -->
 
     <link rel="stylesheet" href="assets/vendor/fonts/flag-icons.css" />
@@ -139,7 +139,7 @@ include_once "middleware/auth.php";
                 <!-- / Style Switcher-->
         
                 <!-- User -->
-                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                <!--<li class="nav-item navbar-dropdown dropdown-user dropdown">
                     <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
                         <img src="assets/img/avatars/1.png" alt class="rounded-circle" />
@@ -194,7 +194,7 @@ include_once "middleware/auth.php";
                         <a class="dropdown-item" href="auth-login-cover.html" target="_blank"> <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span> </a>
                     </li>
                     </ul>
-                </li>
+                </li> -->
                 <!--/ User -->
                 
             </ul>
@@ -280,7 +280,7 @@ include_once "middleware/auth.php";
     <script src="assets/vendor/js/bootstrap.js"></script>
     <script src="assets/vendor/libs/@algolia/autocomplete-js.js"></script>
 
-    
+    <script src="assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
       
     <script src="assets/vendor/libs/pickr/pickr.js"></script>
     
@@ -319,7 +319,7 @@ include_once "middleware/auth.php";
     <script src="views/js/evaluadores.js"></script>
     <script src="views/js/supervisores.js"></script>
     <script src="views/js/asignar_evaluador.js"></script>
-    
+    <script src="views/js/alertas.js"></script>
     <script src="views/js/evaluados.js"></script>
    
     

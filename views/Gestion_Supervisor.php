@@ -1,18 +1,22 @@
-<form id="formulario_supervisor" onsubmit="event.preventDefault(); validar_formSupervisor(1);">
+<h2>Registro de datos de supervisores</h2>
 
-<label for="id_usuario">Usuario:</label>
-    <select id="id_usuario" name="id_usuario">
-    <option value="">Seleccione a un usuario</option>
-</select><!-- Buscar que se capte el id_usuario en el js para que se guarde junto al cargo -->
-
-<label for="id_cargo_supervisor">Seleccionar cargo:</label>
-    <select id="id_cargo_supervisor" name="id_cargo_supervisor">
-    <option value="">Seleccione a un cargo</option>
-</select>
-
-<button type="submit">Guardar</button>
-
-</form>
+<div class="container py-4">
+      <form id="formulario_supervisor" onsubmit="event.preventDefault(); validar_formSupervisor(1);">
+        <div class="mb-3">
+          <label for="id_usuario" class="form-label">Seleccionar supervisor</label>
+          <select class="form-select" id="id_usuario" name="id_usuario">
+            <option selected disabled>Seleccione un supervisor</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="id_cargo_supervisor" class="form-label">Seleccionar Cargo</label>
+          <select class="form-select" id="id_cargo_supervisor" name="id_cargo_supervisor">
+            <option selected disabled>Seleccione un cargo</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+      </div>
 
 <div class="modal fade" id="modalEditarCargoSuperv" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">

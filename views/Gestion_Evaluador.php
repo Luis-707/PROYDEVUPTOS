@@ -15,27 +15,34 @@
     <tbody></tbody>
 </table>-->
 
-<form id="formulario_evaluador" onsubmit="event.preventDefault(); validar_formEvaluador(1);">
+<!--Evaluador-->
+<h2>Registro de datos de evaluadores</h2>
+<div class="container py-4">
+      <form id="formulario_evaluador" onsubmit="event.preventDefault(); validar_formEvaluador(1);">
+        <div class="mb-3">
+          <label for="id_usuario" class="form-label">Seleccionar Evaluador</label>
+          <select class="form-select" id="id_usuario" name="id_usuario">
+            <option selected disabled>Seleccione un evaluador</option>
+          </select>
+        </div>
+      
+        <div class="mb-3">
+          <label for="id_cargo_evaluador" class="form-label">Seleccionar Cargo</label>
+          <select class="form-select" id="id_cargo_evaluador" name="id_cargo_evaluador">
+            <option selected disabled>Seleccione un cargo</option>
+          </select>
+        </div>
+      
+        <div class="mb-3">
+          <label for="id_supervisor" class="form-label">Asignar Supervisor</label>
+          <select class="form-select" id="id_supervisor" name="id_supervisor">
+            <option selected disabled>Seleccione un supervisor</option>
+          </select>
+        </div>
 
-<label for="id_usuario">Usuario:</label>
-    <select id="id_usuario" name="id_usuario">
-    <option value="">Seleccione a un usuario</option>
-</select><!-- Buscar que se capte el id_usuario en el js para que se guarde junto al cargo -->
-
-<label for="id_cargo_evaluador">Seleccionar cargo:</label>
-    <select id="id_cargo_evaluador" name="id_cargo_evaluador">
-    <option value="">Seleccione a un cargo</option>
-</select>
-
-<label for="id_supervisor">Seleccionar supervisor:</label>
-    <select id="id_supervisor" name="id_supervisor">
-    <option value="">Seleccione a un supervisor</option>
-</select>
-
-
-<button type="submit">Guardar</button>
-
-</form>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      </form>
+      </div>
 
 <div class="modal fade" id="modalEditarCargo" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">

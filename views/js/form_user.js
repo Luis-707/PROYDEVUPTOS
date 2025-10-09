@@ -93,27 +93,35 @@ function validarCadena(cadena){
     }
 }
 async function guardarUsuario() {
-  // Capturar valores del formulario
   let datosPersona = capturarValoresFormulario('formulario_usuario');
-
   let idRol = document.getElementById('id_rol_sistema').value;
-  datosPersona.append('rol_id', idRol); // Agregar rol_id al FormData 
+  datosPersona.append('rol_id', idRol);
 
   try {
-      // Llamada al servicio
       const resp = await microApi('controlador/?g_user', datosPersona);
 
-      // Validar respuesta JSON
       if (!resp.success) {
-          alert(resp.message);
+          Swal.fire({
+              icon: 'error',
+              title: 'Error al guardar',
+              text: resp.message
+          });
       } else {
-          valorFormUsuario();      // Limpia formulario
-          listarUsuario();   // Refresca tabla
-          alert(resp.message);
+          valorFormUsuario();
+          listarUsuario();
+          Swal.fire({
+              icon: 'success',
+              title: 'Añadir Usuario',
+              text: resp.message
+          });
       }
   } catch (err) {
       console.error("Error en guardarUsuario:", err);
-      alert("Ocurrió un error al guardar el usuario");
+      Swal.fire({
+          icon: 'error',
+          title: 'Error inesperado',
+          text: 'Ocurrió un error al guardar el usuario'
+      });
   }
 }
 
@@ -228,35 +236,48 @@ async function listarTablaUsuarios(datos) {
   tbody.innerHTML = html;
 }
 
-async function eliminarUsuario(cod){
-    if(confirm("Deseas eliminar este Usuario"))
-    {
-        let dato = capturarValoresFormulario('formulario_usuario',cod);
+async function eliminarUsuario(cod) {
+  const result = await Swal.fire({
+      title: '¿Deseas eliminar este usuario?',
+      text: "Esta acción no se puede deshacer",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+  });
 
-       var resp = await microApi('controlador/?e_user',dato);
-    
-        listarUsuario();
-    }else{
-       
-        valorFormUsuario(); // limpia formulario
-    }
+  if (result.isConfirmed) {
+      let dato = capturarValoresFormulario('formulario_usuario', cod);
+      var resp = await microApi('controlador/?e_user', dato);
+
+      listarUsuario();
+
+      Swal.fire({
+          icon: 'success',
+          title: 'Eliminacion de usuario',
+          text: 'El usuario fue eliminado correctamente'
+      });
+  } else {
+      valorFormUsuario(); // limpia formulario
+  }
 }
 
-async function actualizarUsuario(){
-    
-    // antes de capturar los valores del formulario debes validarlos
-    let datosPersona = capturarValoresFormulario('form-modal-editar');
+async function actualizarUsuario() {
+  let datosPersona = capturarValoresFormulario('form-modal-editar');
+  let NuevoRol = document.getElementById('rol_modal').value;
+  datosPersona.append('rol_id', NuevoRol);
 
-     // Obtener el valor del select 'rol_modal'
-     let NuevoRol = document.getElementById('rol_modal').value;
-     // Agregarlo a los datos que se enviarán
-     datosPersona.append('rol_id', NuevoRol);
+  var resp = await microApi('controlador/?a_user', datosPersona);
 
-    var resp = await microApi('controlador/?a_user',datosPersona);
-    /*valorFormUsuario();*/// limpia formulario
-    listarTablaUsuarios(resp);
-    alert('El Usuario se actualizo con Exito');
-    
+  listarTablaUsuarios(resp);
+
+  Swal.fire({
+      icon: 'success',
+      title: 'Actualizacion de Usuario',
+      text: 'El usuario se actualizó con éxito'
+  });
 }
 
 function pa(cad){
