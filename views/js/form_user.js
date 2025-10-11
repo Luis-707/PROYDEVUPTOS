@@ -400,51 +400,66 @@ function valorFormUsuario(cl='',ced='',RolSis=''){
   }*/
 
 
-   async function abrirModalPermisosUsuario(id_usuario) {
-    const datos = new FormData();
-    datos.append('id_usuario', id_usuario);
-  
-    const resp = await microApi('controlador/?listar_permisos_usuarios', datos);
-    console.log("Respuesta listar_permisos_usuarios:", resp);
-  
-    if (!resp) {
-      alert('No se pudieron cargar los permisos');
-      return;
-    }
-  
-    const registros = Array.isArray(resp[0]) ? resp.flat() : resp;
-  
-    const cont = document.getElementById('contenedor-switches-permisos');
-    cont.innerHTML = '';
-  
-    registros.forEach(p => {
-      cont.innerHTML += `
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox"
-                 id="perm_${p.permisos_id}"
-                 ${p.acceso ? 'checked' : ''}
-                 onchange="togglePermiso(${id_usuario}, ${p.permisos_id}, this.checked)">
-          <label class="form-check-label" for="perm_${p.permisos_id}">${p.nombre_permiso}</label>
-        </div>`;
-    });
-  
-    $("#modalPermisos").modal("show");
+   // Lista y renderiza los permisos de un usuario en el modal
+async function listarPermisosUsuario(id_usuario) {
+  const datos = new FormData();
+  datos.append('id_usuario', id_usuario);
+
+  const resp = await microApi('controlador/?listar_permisos_usuarios', datos);
+  console.log("Respuesta listar_permisos_usuarios:", resp);
+
+  if (!resp) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los permisos' });
+    return;
   }
-  
-  
-  
-  async function togglePermiso(id_usuario, permisos_id, checked) {
-    const datos = new FormData();
-    datos.append('id_usuario', id_usuario);
-    datos.append('permisos_id', permisos_id);
-  
-    const servicio = checked ? 'controlador/?activar_permiso' : 'controlador/?desactivar_permiso';
-    const resp = await microApi(servicio, datos);
-  
-    if (!resp || resp.success === false) {
-      alert('No se pudo actualizar el permiso');
-    }
+
+  const registros = Array.isArray(resp[0]) ? resp.flat() : resp;
+
+  const cont = document.getElementById('contenedor-switches-permisos');
+  cont.innerHTML = '';
+
+  registros.forEach(p => {
+    cont.innerHTML += `
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox"
+               id="perm_${p.permisos_id}"
+               ${p.acceso == 1 ? 'checked' : ''}
+               onchange="togglePermiso(${id_usuario}, ${p.permisos_id}, this.checked)">
+        <label class="form-check-label" for="perm_${p.permisos_id}">${p.nombre_permiso}</label>
+      </div>`;
+  });
+}
+
+// Abre el modal de permisos y lista los permisos del usuario
+function abrirModalPermisosUsuario(id_usuario) {
+  window.usuarioActual = id_usuario;
+
+  const modalEl = document.getElementById('modalPermisos');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+
+  // Pintar switches al abrir
+  listarPermisosUsuario(id_usuario);
+}
+
+// Activa o desactiva un permiso y refresca el listado
+async function togglePermiso(id_usuario, permisos_id, checked) {
+  const datos = new FormData();
+  datos.append('id_usuario', id_usuario);
+  datos.append('permisos_id', permisos_id);
+
+  const servicio = checked ? 'controlador/?activar_permiso' : 'controlador/?desactivar_permiso';
+  const resp = await microApi(servicio, datos);
+
+  if (!resp || resp.success === false) {
+    // Revertir switch si falla
+    document.getElementById(`perm_${permisos_id}`).checked = !checked;
+    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el permiso' });
+  } else {
+    // 🔄 Refrescar switches desde la BD
+    await listarPermisosUsuario(id_usuario);
   }
+}
 
   
 

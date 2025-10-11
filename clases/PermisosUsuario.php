@@ -46,7 +46,7 @@ class PermisosUsuario {
     public function sql_listar(): string {
         return sprintf(
             "SELECT p.permisos_id, p.nombre_permiso,
-                    CASE WHEN pp.permisos_id IS NOT NULL THEN TRUE ELSE FALSE END AS acceso
+                    CASE WHEN pp.permisos_id IS NOT NULL THEN 1 ELSE 0 END AS acceso
              FROM permisos p
              LEFT JOIN posee_permisos pp
                ON pp.permisos_id = p.permisos_id
