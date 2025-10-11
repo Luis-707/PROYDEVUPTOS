@@ -12,47 +12,64 @@
         mostrarVista('vistaDemo');
     })*/
 
-     //click menu Prueba de servicios
-     $("#formularioUsuarios").click(function(){
-        mostrarVista('usuarios');
-        listarUsuario();
-        listarRolesSistema();
-        listarRolesSistemaModal();
+        async function verificarAccesoMenu(nombre_permiso) {
+          const idUsuarioSesion = sessionStorage.getItem('id_usuario');
+          if (!idUsuarioSesion) {
+            alert("Sesión inválida. Vuelve a iniciar sesión.");
+            return false;
+          }
         
-        })
+          const datos = new FormData();
+          datos.append('id_usuario', idUsuarioSesion);
+          datos.append('nombre_permiso', nombre_permiso);
+        
+          const resp = await microApi('controlador/?verificar_permiso', datos);
+          const acceso = resp && resp.acceso === true;
+        
+          if (!acceso) {
+            alert(`No tienes permiso para acceder a ${nombre_permiso}.`);
+          }
+        
+          return acceso;
+        }
 
-    //click gestion de evaluadores
-    $("#formularioEvaluadores").click(function(){
-        mostrarVista('evaluadores');
-        listarUsuariosEvaluador();
-        listarCargosEvaluadores();
-        listarSupervisoresCargos();
-        /*listarCargosEval();*/
-        listarEvaluadores();
-        /*listarUsuariosEvaluadorModal();*/
-        /*listarCargosEvaluadoresModal();*/
-    })
-    //click gestion de supervisores
-    $("#formularioSupervisores").click(function(){
-        mostrarVista('supervisores');
-        listarUsuariosSupervisor();
-        listarCargosSupervisores();
-        /*listarCargosEval();*/
-        listarSupervisores();
-        listarSupervisor();
-        /*listarCheckEvaluadores();*/
-        /*listarUsuariosEvaluadorModal();*/
-        /*listarCargosEvaluadoresModal();*/
-    })
-    
 
-    //click menu evaluacion
-    $("#formularioEvaluacion").click(function(){
-        mostrarVista('evaluacion');
-        listarEvaluados();
-        /*listarEvaluaciones();*/
 
-    })
+        $("#formularioEvaluadores").click(async function(){
+          if (await verificarAccesoMenu('Gestion de Evaluadores')) {
+            mostrarVista('evaluadores');
+            listarUsuariosEvaluador();
+            listarCargosEvaluadores();
+            listarSupervisoresCargos();
+            listarEvaluadores();
+          }
+        });
+        
+        $("#formularioSupervisores").click(async function(){
+          if (await verificarAccesoMenu('Gestion de Supervisores')) {
+            mostrarVista('supervisores');
+            listarUsuariosSupervisor();
+            listarCargosSupervisores();
+            listarSupervisores();
+            listarSupervisor();
+          }
+        });
+        
+        $("#formularioEvaluacion").click(async function(){
+          if (await verificarAccesoMenu('Evaluaciones')) {
+            mostrarVista('evaluacion');
+            listarEvaluados();
+          }
+        });
+        
+        $("#formularioUsuarios").click(async function(){
+          if (await verificarAccesoMenu('Gestion de Usuarios')) {
+            mostrarVista('usuarios');
+            listarUsuario();
+            listarRolesSistema();
+            listarRolesSistemaModal();
+          }
+        });
 
     function abrirPlanilla(cedula){ 
         // Guardamos la cédula seleccionada 
@@ -91,6 +108,7 @@
         listarUsuario();
     })
 
+
     document.addEventListener('DOMContentLoaded', async () => {
         // Detectar recarga de la página
         const navEntry = performance.getEntriesByType('navigation')[0];
@@ -107,5 +125,7 @@
           window.location.href = 'login.html';
         }
       });
+
+
 
 

@@ -52,6 +52,12 @@ function validarcaracter(cadena){
     var respuesta = await microApi('controlador/?login', datosLogin);
   
     if (respuesta.success) {
+      // Guardar datos en sessionStorage
+      sessionStorage.setItem("id_usuario", respuesta.id_usuario);
+      sessionStorage.setItem("cedula_usuario", respuesta.cedula);
+      sessionStorage.setItem("rol_id", respuesta.rol_id);
+  
+      // Redirigir a la vista principal
       window.location.href = "index.php";
     } else {
       alert(respuesta.message);

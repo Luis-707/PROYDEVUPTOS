@@ -41,16 +41,20 @@ try {
                 exit;
             }
 
+            // Guardar en sesión PHP
             $_SESSION['usuario'] = [
-                'cedula' => $row['cedula_usuario'],
-                'rol_id' => $row['rol_id']
+                'id_usuario' => $row['id_usuario'],
+                'cedula'     => $row['cedula_usuario'],
+                'rol_id'     => $row['rol_id']
             ];
 
+            // Devolver también id_usuario
             echo json_encode([
-                "success" => true,
-                "message" => "Bienvenido",
-                "cedula"  => $row['cedula_usuario'],
-                "rol_id"  => $row['rol_id']
+                "success"   => true,
+                "message"   => "Bienvenido",
+                "id_usuario"=> $row['id_usuario'],
+                "cedula"    => $row['cedula_usuario'],
+                "rol_id"    => $row['rol_id']
             ]);
         } else {
             echo json_encode([

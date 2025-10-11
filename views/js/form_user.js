@@ -220,21 +220,40 @@ async function listarTablaUsuarios(datos) {
           html += '<td>' + fullname + '</td>';
           //html += '<td>' + status + '</td>'; // Nueva columna con estado
           html += '<td>' + rolTexto + '</td>'; // Nueva columna para Rol
+
+        
+
           let eliminarFila = "eliminarUsuario('" + item.cedula_usuario + "')";
+          let editarFila = `abrirModalEditar(
+            '${item.cedula_usuario}',
+            '${item.clave ? "******" : ""}',
+            '${item.rol_id}'
+        )`;
+
+  const ADMIN_ID = 1;
+
+// dentro del loop de filas
+if (item.rol_id == ADMIN_ID) {
+  // Sin acciones para admin
+  html += '<td></td>'; // acciones vacías
+} else {
+  const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
+  html += `<td>
+    <img src="img/iconos/buscar.png" style="cursor:pointer;width:22px;margin-left:8px;" onclick="${btnPerm}" />
+   
+  </td>`;
+
           html += '<td onclick="' + eliminarFila + '"><img src="img/iconos/eliminar.png" style="cursor:pointer;width: 22px;"></td>';
 
-          let editarFila = `abrirModalEditar(
-              '${item.cedula_usuario}',
-              '${item.clave ? "******" : ""}',
-              '${item.rol_id}'
-          )`;
           html += '<td onclick="' + editarFila + '"><img src="img/iconos/actualizar.png" style="cursor:pointer;width:22px;margin-left:8px;" /></td>';
+}
           html += '</tr>';
       }
   }
 
   tbody.innerHTML = html;
 }
+
 
 async function eliminarUsuario(cod) {
   const result = await Swal.fire({
@@ -293,6 +312,142 @@ function valorFormUsuario(cl='',ced='',RolSis=''){
 
     
 }
+
+   // Funciones de permisos usuario
+
+   /*async function abrirModalPermisosUsuario(id_usuario) {
+    const datos = new FormData();
+    datos.append('id_usuario', id_usuario);
+  
+    const resp = await microApi('controlador/?listar_permisos_usuarios', datos);
+    console.log("Respuesta listar_permisos_usuarios:", resp);
+  
+    if (!resp) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los permisos' });
+      return;
+    }
+  
+    const registros = Array.isArray(resp[0]) ? resp.flat() : resp;
+  
+    const cont = document.getElementById('contenedor-switches-permisos');
+    cont.innerHTML = '';
+  
+    registros.forEach(p => {
+      cont.innerHTML += `
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox"
+                 id="perm_${p.permisos_id}"
+                 ${p.acceso ? 'checked' : ''}
+                 onchange="togglePermiso(${id_usuario}, ${p.permisos_id}, this.checked)">
+          <label class="form-check-label" for="perm_${p.permisos_id}">${p.nombre_permiso}</label>
+        </div>`;
+    });
+  
+    // Bootstrap 5: abrir modal con la API oficial
+    const modalEl = document.getElementById('modalPermisos');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+  }
+  
+  
+  
+  
+  async function togglePermiso(id_usuario, permisos_id, checked) {
+    const datos = new FormData();
+    datos.append('id_usuario', id_usuario);
+    datos.append('permisos_id', permisos_id);
+  
+    const servicio = checked ? 'controlador/?activar_permiso' : 'controlador/?desactivar_permiso';
+    const resp = await microApi(servicio, datos);
+  
+    if (!resp || resp.success === false) {
+      // Revertir switch si falla
+      document.getElementById(`perm_${permisos_id}`).checked = !checked;
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el permiso' });
+    }
+  }
+  
+  
+  
+  async function listarPermisosUsuario(id_usuario) {
+    const datos = new FormData();
+    datos.append('id_usuario', id_usuario);
+    const resp = await microApi('controlador/?listar_permisos_usuarios', datos);
+    console.log("Respuesta listar_permisos_usuarios:", resp);
+    const registros = Array.isArray(resp[0]) ? resp.flat() : resp;
+  
+    const cont = document.getElementById('contenedor-switches-permisos');
+    cont.innerHTML = '';
+    registros.forEach(p => {
+      cont.innerHTML += `
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox"
+                 id="perm_${p.permisos_id}"
+                 ${p.acceso ? 'checked' : ''}
+                 onchange="togglePermiso(${id_usuario}, ${p.permisos_id}, this.checked)">
+          <label class="form-check-label" for="perm_${p.permisos_id}">${p.nombre_permiso}</label>
+        </div>`;
+    });
+  }
+  
+  
+  
+  function abrirModalPermisosUsuario(id_usuario) {
+    window.usuarioActual = id_usuario;
+    const modalEl = document.getElementById('modalPermisos');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+  }*/
+
+
+   async function abrirModalPermisosUsuario(id_usuario) {
+    const datos = new FormData();
+    datos.append('id_usuario', id_usuario);
+  
+    const resp = await microApi('controlador/?listar_permisos_usuarios', datos);
+    console.log("Respuesta listar_permisos_usuarios:", resp);
+  
+    if (!resp) {
+      alert('No se pudieron cargar los permisos');
+      return;
+    }
+  
+    const registros = Array.isArray(resp[0]) ? resp.flat() : resp;
+  
+    const cont = document.getElementById('contenedor-switches-permisos');
+    cont.innerHTML = '';
+  
+    registros.forEach(p => {
+      cont.innerHTML += `
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox"
+                 id="perm_${p.permisos_id}"
+                 ${p.acceso ? 'checked' : ''}
+                 onchange="togglePermiso(${id_usuario}, ${p.permisos_id}, this.checked)">
+          <label class="form-check-label" for="perm_${p.permisos_id}">${p.nombre_permiso}</label>
+        </div>`;
+    });
+  
+    $("#modalPermisos").modal("show");
+  }
+  
+  
+  
+  async function togglePermiso(id_usuario, permisos_id, checked) {
+    const datos = new FormData();
+    datos.append('id_usuario', id_usuario);
+    datos.append('permisos_id', permisos_id);
+  
+    const servicio = checked ? 'controlador/?activar_permiso' : 'controlador/?desactivar_permiso';
+    const resp = await microApi(servicio, datos);
+  
+    if (!resp || resp.success === false) {
+      alert('No se pudo actualizar el permiso');
+    }
+  }
+
+  
+
 
   //Select de roles del sistema
 
