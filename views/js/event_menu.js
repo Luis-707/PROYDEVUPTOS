@@ -103,10 +103,33 @@
   });*/
 
     //click menu seguridad usuario
-    $("#formularioUsuario").click(function(){
+    /*$("#formularioUsuario").click(function(){
         mostrarVista('usuario');
         listarUsuario();
-    })
+    })*/
+
+        // Delegación de eventos: funciona aunque cambies de vista
+$(document).on('click', '#btn_buscar_cedula', async function() {
+  const valorCedula = $('#id_cedula_usuario').val().trim();
+  if (valorCedula.length > 0) {
+    const datos = await obtenerDatosPorCedula(valorCedula);
+    llenarFormulario(datos);
+  } else {
+    llenarFormulario(null);
+  }
+});
+
+$(document).on('keypress', '#id_cedula_usuario', function(event) {
+  const charCode = event.which ? event.which : event.keyCode;
+  if (
+    (charCode < 48 || charCode > 57) && // No es número
+    charCode !== 8 && // No es backspace
+    charCode !== 37 && // No es flecha izquierda
+    charCode !== 39   // No es flecha derecha
+  ) {
+    event.preventDefault();
+  }
+});
 
 
     document.addEventListener('DOMContentLoaded', async () => {

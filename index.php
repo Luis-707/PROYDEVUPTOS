@@ -16,7 +16,7 @@ include_once "middleware/auth.php";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Demo: Dashboard</title>
+    <title>Dashboard</title>
     <!-- Favicon -->
     <!-- <link rel="icon" type="image/x-icon" href="assets/img/favicon/favicon.ico" /> -->
     <link rel="shortcut icon" type="image/png" href="img/logo/logo.png"/>
@@ -139,9 +139,9 @@ include_once "middleware/auth.php";
                 <!-- / Style Switcher-->
         
                 <!-- User -->
-                <!--<li class="nav-item navbar-dropdown dropdown-user dropdown">
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
                     <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <div class="avatar avatar-online">
+                     <div class="avatar avatar-online">
                         <img src="assets/img/avatars/1.png" alt class="rounded-circle" />
                     </div>
                     </a>
@@ -191,10 +191,13 @@ include_once "middleware/auth.php";
                         <div class="dropdown-divider my-1"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="auth-login-cover.html" target="_blank"> <i class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span> </a>
+                  <a class="dropdown-item" href="javascript:void(0)" onclick="logout()">
+                     <i class="icon-base bx bx-power-off icon-md me-3"></i>
+                     <span>Log Out</span>
+                  </a>
                     </li>
                     </ul>
-                </li> -->
+                </li> 
                 <!--/ User -->
                 
             </ul>
@@ -321,6 +324,7 @@ include_once "middleware/auth.php";
     <script src="views/js/asignar_evaluador.js"></script>
     <script src="views/js/alertas.js"></script>
     <script src="views/js/evaluados.js"></script>
+    <script src="views/js/logout.js"></script>
    
     
    

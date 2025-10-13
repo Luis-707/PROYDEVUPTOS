@@ -170,62 +170,42 @@ document.getElementById('search_input').addEventListener('input', async (e) => {
     }
 });*/
 
-$(document).ready(function() {
-    // Función para obtener y filtrar datos del JSON
-    async function obtenerDatosJSON(valorBusqueda) {
-      try {
-        const resp = await microApi('views/js/datos_empleado.json');
-        
-        // Acceder a la matriz de datos dentro del primer elemento
-        if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
-          console.error('JSON con formato inesperado');
-          return null;
-        }
-        
-        const datos = resp[0].data;  // CORRECTO acceso aquí
-        const busqueda = valorBusqueda.toLowerCase();
-        
-        const coincidencias = datos.filter(emp => {
-          return (
-            (emp.pin && emp.pin.toLowerCase().includes(busqueda)) ||
-            (emp.fullname && emp.fullname.toLowerCase().includes(busqueda)) ||
-            (Array.isArray(emp.type_str) && emp.type_str.some(tipo => tipo.toLowerCase().includes(busqueda))) ||
-            (emp.additional && emp.additional.toLowerCase().includes(busqueda))
-          );
-        });
-        
-        return coincidencias.length > 0 ? coincidencias[0] : null;
-      } catch (error) {
-        console.error('Error al buscar datos:', error);
+// Este bloque puede ir en tu archivo event_menu.js o en el JS específico de la vista del buscador
+
+// Función para obtener datos por cédula
+async function obtenerDatosPorCedula(cedula) {
+    try {
+      const resp = await microApi('views/js/datos_empleado.json');
+      if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
+        console.error('JSON con formato inesperado');
         return null;
       }
-    }
+      const datos = resp[0].data;
+      const cedulaBusqueda = cedula.toLowerCase();
   
-    // Función para llenar los campos del formulario con los datos encontrados
-    function llenarFormulario(datos) {
-      if (datos && typeof datos === 'object') {
-        $('#id_cedula_usuario').val(datos.pin || '');
-        $('#fullname_input').val(datos.fullname || '');
-        $('#type_str_input').val(Array.isArray(datos.type_str) ? datos.type_str.join(', ') : (datos.type_str || ''));
-        $('#additional_input').val(datos.additional || '');
-      } else {
-        $('#id_cedula_usuario').val('');
-        $('#fullname_input').val('');
-        $('#type_str_input').val('');
-        $('#additional_input').val('');
-      }
-    }
+      // Buscar coincidencia exacta
+      const coincidencia = datos.find(emp => emp.pin && emp.pin.toLowerCase() === cedulaBusqueda);
   
-    // Asignar evento de búsqueda al input
-    $('#search_input').on('input', async function() {
-      const valor = $(this).val().trim();
-      if (valor.length > 0) {
-        const datos = await obtenerDatosJSON(valor);
-        llenarFormulario(datos);
-      } else {
-        llenarFormulario(null);
-      }
-    });
+      return coincidencia || null;
+    } catch (error) {
+      console.error('Error al buscar datos:', error);
+      return null;
+    }
+  }
+  
+  // Función para llenar el formulario
+  function llenarFormulario(datos) {
+    if (datos && typeof datos === 'object') {
+      $('#id_cedula_usuario').val(datos.pin || '');
+      $('#fullname_input').val(datos.fullname || '');
+      $('#type_str_input').val(Array.isArray(datos.type_str) ? datos.type_str.join(', ') : (datos.type_str || ''));
+      $('#additional_input').val(datos.additional || '');
+    } else {
+      $('#fullname_input').val('');
+      $('#type_str_input').val('');
+      $('#additional_input').val('');
+    }
+  }
 
-  });
+  
   

@@ -1,3 +1,8 @@
+<?php
+// Comprobar si la variable de sesión 'usuario' está definida
+include_once '../servicios/Sesion.php';
+?>
+
 <h2>Planillas de evaluación de personal administrativo</h2>
 
 <p class="card-text">

@@ -7,15 +7,15 @@ if (isset($dataCliente['_post']['otros_datos'])) {
     $dataCliente['_post']['id_usuario'] = $dataCliente['_post']['otros_datos'];
 }
 
-$cargo = new Supervisor($dataCliente['_post']);
+$cargoS = new Supervisor($dataCliente['_post']);
 
-$sql = $cargo->sql_buscar_supervisores();
+$sql = $cargoS->sql_buscar_supervisores();
 $respuesta = $this->ejecutarConsultaBdds($sql);
 
 if (count($respuesta) == 0) {     
     $respuesta = $dataCliente['_post']['id_usuario'] . ' No Existe';
 } else {
-    $sql = $cargo->sql_eliminar_cargos_supervisores();
+    $sql = $cargoS->sql_eliminar_cargos_supervisores();
     $respuesta = $this->ejecutarConsultaBdds($sql);
 }
 

@@ -166,9 +166,9 @@ async function listarTablaEvaluadores(datos) {
   let empleados = [];
 
   if (Array.isArray(resp)) {
-      empleados = resp[0]?.data || resp[0] || [];
+    empleados = resp[0]?.data || resp[0] || [];
   } else if (resp?.data) {
-      empleados = resp.data;
+    empleados = resp.data;
   }
 
   // Aplanar si vienen anidados
@@ -177,27 +177,27 @@ async function listarTablaEvaluadores(datos) {
   let html = "";
 
   registros.forEach(item => {
-      const cedula = String(item.cedula_usuario).trim();
-      const empleado = empleados.find(emp =>
-          emp.pin_str === cedula || emp.pin === cedula
-      );
+    const cedula = String(item.cedula_usuario).trim();
+    const empleado = empleados.find(emp =>
+      emp.pin_str === cedula || emp.pin === cedula
+    );
 
-      const fullname = empleado ? empleado.fullname : "No encontrado";
-      const cargoTexto = item.cargo_evaluador || "Sin cargo";
+    const fullname = empleado ? empleado.fullname : "No encontrado";
+    const cargoTexto = item.cargo_evaluador || "Sin cargo";
 
-      html += `
-          <tr>
-              <td>${fullname}</td>
-              <td>${cedula}</td>
-              <td>${cargoTexto}</td>
-              <td onclick="abrirModalEditarCargo(${item.id_usuario}, ${item.id_cargo_evaluador})">
-                  <img src="img/iconos/actualizar.png" style="cursor:pointer;width: 22px;">
-              </td>
-              <td onclick="eliminarEvaluador(${item.id_usuario})">
-                  <img src="img/iconos/eliminar.png" style="cursor:pointer;width: 22px;">
-              </td>
-          </tr>
-      `;
+    html += `
+      <tr>
+        <td>${fullname}</td>
+        <td>${cedula}</td>
+        <td>${cargoTexto}</td>
+        <td class="acciones">
+          <div class="acciones-icons">
+            <img src="img/iconos/actualizar.png" onclick="abrirModalEditarCargo(${item.id_usuario}, ${item.id_cargo_evaluador})" />
+            <img src="img/iconos/eliminar.png" onclick="eliminarEvaluador(${item.id_usuario})" />
+          </div>
+        </td>
+      </tr>
+    `;
   });
 
   tbody.innerHTML = html;

@@ -162,9 +162,9 @@ function validarCadena(cadena){
     let empleados = [];
   
     if (Array.isArray(resp)) {
-        empleados = resp[0]?.data || resp[0] || [];
+      empleados = resp[0]?.data || resp[0] || [];
     } else if (resp?.data) {
-        empleados = resp.data;
+      empleados = resp.data;
     }
   
     // Aplanar si vienen anidados
@@ -173,27 +173,27 @@ function validarCadena(cadena){
     let html = "";
   
     registros.forEach(item => {
-        const cedula = String(item.cedula_usuario).trim();
-        const empleado = empleados.find(emp =>
-            emp.pin_str === cedula || emp.pin === cedula
-        );
+      const cedula = String(item.cedula_usuario).trim();
+      const empleado = empleados.find(emp =>
+        emp.pin_str === cedula || emp.pin === cedula
+      );
   
-        const fullname = empleado ? empleado.fullname : "No encontrado";
-        const cargoTexto = item.cargo_supervisor || "Sin cargo";
+      const fullname = empleado ? empleado.fullname : "No encontrado";
+      const cargoTexto = item.cargo_supervisor || "Sin cargo";
   
-        html += `
-            <tr>
-                <td>${fullname}</td>
-                <td>${cedula}</td>
-                <td>${cargoTexto}</td>
-                <td onclick="abrirModalEditarCargoSuperv(${item.id_usuario}, ${item.id_cargo_supervisor})">
-                    <img src="img/iconos/actualizar.png" style="cursor:pointer;width: 22px;">
-                </td>
-                <td onclick="eliminarSupervisor(${item.id_usuario})">
-                    <img src="img/iconos/eliminar.png" style="cursor:pointer;width: 22px;">
-                </td>
-            </tr>
-        `;
+      html += `
+        <tr>
+          <td>${fullname}</td>
+          <td>${cedula}</td>
+          <td>${cargoTexto}</td>
+          <td class="acciones">
+            <div class="acciones-icons">
+              <img src="img/iconos/actualizar.png" onclick="abrirModalEditarCargoSuperv(${item.id_usuario}, ${item.id_cargo_supervisor})" />
+              <img src="img/iconos/eliminar.png" onclick="eliminarSupervisor(${item.id_usuario})" />
+            </div>
+          </td>
+        </tr>
+      `;
     });
   
     tbody.innerHTML = html;

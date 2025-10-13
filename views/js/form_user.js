@@ -189,66 +189,56 @@ async function listarTablaUsuarios(datos) {
   var resp = await microApi('views/js/datos_empleado.json');
   const empleados = resp[0].data; // asumiendo estructura del JSON enviada
 
-  // Cargar lista de roles desde la API (igual que listarRolesSistema)
+  // Cargar lista de roles desde la API
   const rolesResp = await microApi('controlador/?listar_RolesSistema');
-  // Normalizar arreglo de roles
   const rolesList = Array.isArray(rolesResp[0]) ? rolesResp.flat() : rolesResp;
 
   let html = "";
-
-  for (let i = 0; i < datos.length; i++) {
-      const grupo = datos[i];
-      for (let j = 0; j < grupo.length; j++) {
-          const item = grupo[j];
-          
-          // Buscar empleado cuyo pin coincida con cedula_usuario
-          let empleado = empleados.find(emp => emp.pin_str === item.cedula_usuario || emp.pin === item.cedula_usuario);
-
-          // Obtener fullname si existe el empleado
-          let fullname = empleado ? empleado.fullname : "No encontrado";
-          //let status = empleado ? empleado.status_str : "Desconocido";
-
-        // Buscar texto del rol según rol_id
-          const rolObj = rolesList.find(r => r.rol_id == item.rol_id || r.idrol == item.rol_id);
-          const rolTexto = rolObj ? (rolObj.rol || rolObj.nombrerol || "Desconocido") : "Desconocido";
-
-
-          html += '<tr>';
-          html += '<td>' + (item.clave ? "******" : "") + '</td>';
-          html += '<td>' + item.cedula_usuario + '</td>';
-          // Mostrar fullname en vez de cédula o también se puede mostrar ambos si quieres
-          html += '<td>' + fullname + '</td>';
-          //html += '<td>' + status + '</td>'; // Nueva columna con estado
-          html += '<td>' + rolTexto + '</td>'; // Nueva columna para Rol
-
-        
-
-          let eliminarFila = "eliminarUsuario('" + item.cedula_usuario + "')";
-          let editarFila = `abrirModalEditar(
-            '${item.cedula_usuario}',
-            '${item.clave ? "******" : ""}',
-            '${item.rol_id}'
-        )`;
-
   const ADMIN_ID = 1;
 
-// dentro del loop de filas
-if (item.rol_id == ADMIN_ID) {
-  // Sin acciones para admin
-  html += '<td></td>'; // acciones vacías
-} else {
-  const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
-  html += `<td>
-    <img src="img/iconos/buscar.png" style="cursor:pointer;width:22px;margin-left:8px;" onclick="${btnPerm}" />
-   
-  </td>`;
+  for (let i = 0; i < datos.length; i++) {
+    const grupo = datos[i];
+    for (let j = 0; j < grupo.length; j++) {
+      const item = grupo[j];
 
-          html += '<td onclick="' + eliminarFila + '"><img src="img/iconos/eliminar.png" style="cursor:pointer;width: 22px;"></td>';
+      // Buscar empleado
+      let empleado = empleados.find(emp => emp.pin_str === item.cedula_usuario || emp.pin === item.cedula_usuario);
+      let fullname = empleado ? empleado.fullname : "No encontrado";
 
-          html += '<td onclick="' + editarFila + '"><img src="img/iconos/actualizar.png" style="cursor:pointer;width:22px;margin-left:8px;" /></td>';
-}
-          html += '</tr>';
+      // Buscar rol
+      const rolObj = rolesList.find(r => r.rol_id == item.rol_id || r.idrol == item.rol_id);
+      const rolTexto = rolObj ? (rolObj.rol || rolObj.nombrerol || "Desconocido") : "Desconocido";
+
+      // Fila
+      html += '<tr>';
+      html += '<td>' + (item.clave ? "******" : "") + '</td>';
+      html += '<td>' + item.cedula_usuario + '</td>';
+      html += '<td>' + fullname + '</td>';
+      html += '<td>' + rolTexto + '</td>';
+
+      // Acciones
+      if (item.rol_id == ADMIN_ID) {
+        html += `<td class="acciones">
+          <div class="acciones-icons">
+            <img src="img/iconos/Usuario Administrador.png" />
+          </div>
+        </td>`;
+      } else {
+        const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
+        let eliminarFila = "eliminarUsuario('" + item.cedula_usuario + "')";
+        const editarFila = `abrirModalEditar('${item.cedula_usuario}','${item.clave ? "******" : ""}','${item.rol_id}')`;
+
+        html += `<td class="acciones">
+          <div class="acciones-icons">
+            <img src="img/iconos/Permisos.png" onclick="${btnPerm}" />
+            <img src="img/iconos/eliminar.png" onclick="${eliminarFila}" />
+            <img src="img/iconos/actualizar.png" onclick="${editarFila}" />
+          </div>
+        </td>`;
       }
+
+      html += '</tr>';
+    }
   }
 
   tbody.innerHTML = html;

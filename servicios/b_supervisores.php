@@ -1,10 +1,10 @@
 <?php
-include_once "../clases/CargosSupervisor.php";
+include_once "../clases/Supervisor.php";
 
 $dataCliente['_post']['id_supervisor'] = $dataCliente['_post']['otros_datos'];
 
 
-$supervisor = new CargosSupervisor($dataCliente['_post']['id_supervisor'] );
+$supervisor = new Supervisor($dataCliente['_post']['id_supervisor'] );
 
   $sql=$supervisor->sql_buscar_supervisores();
 

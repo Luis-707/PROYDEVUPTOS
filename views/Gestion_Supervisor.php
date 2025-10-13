@@ -1,3 +1,33 @@
+<?php
+// Comprobar si la variable de sesión 'usuario' está definida
+include_once '../servicios/Sesion.php';
+?>
+
+<style>
+
+/* Columna de acciones */
+td.acciones {
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Contenedor de íconos */
+.acciones-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* espacio uniforme entre íconos */
+}
+
+/* Íconos */
+.acciones-icons img {
+  width: 22px;
+  cursor: pointer;
+}
+
+</style>
+
 <h2>Registro de datos de supervisores</h2>
 
 <div class="container py-4">

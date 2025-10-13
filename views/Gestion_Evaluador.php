@@ -1,3 +1,7 @@
+<?php
+// Comprobar si la variable de sesión 'usuario' está definida
+include_once '../servicios/Sesion.php';
+?>
 <!--<label for="id_evaluador">Seleccionar usuario:</label>
     <select id="id_evaluador" name="id_evaluador">
     <option value="">Seleccione a un usuario</option>
@@ -14,6 +18,32 @@
     </thead>
     <tbody></tbody>
 </table>-->
+
+
+<style>
+
+/* Columna de acciones */
+td.acciones {
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Contenedor de íconos */
+.acciones-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; /* espacio uniforme entre íconos */
+}
+
+/* Íconos */
+.acciones-icons img {
+  width: 22px;
+  cursor: pointer;
+}
+
+</style>
 
 <!--Evaluador-->
 <h2>Registro de datos de evaluadores</h2>

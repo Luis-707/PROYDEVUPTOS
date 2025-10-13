@@ -1,3 +1,8 @@
+<?php
+session_start();
+
+?>
+
 <div class="container mt-4">
   <h3>EVALUACION DEL DESEMPEÑO</h3>
   <h5>NIVEL ADMINISTRATIVO</h5>
