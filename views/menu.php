@@ -42,6 +42,12 @@
                     </a>
                 </li>
 
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioComentarios">
+                        <i class="menu-icon icon-base bx bx-comment-detail"></i>
+                        <div data-i18n="Comentarios" >Comentarios</div>
+                    </a>
+
 
                 <!--  Menu Seguridad-->
                 <!-- <li class="menu-header small">

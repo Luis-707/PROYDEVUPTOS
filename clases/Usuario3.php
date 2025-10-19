@@ -4,6 +4,7 @@ class Usuario {
     // Propiedades privadas
     private $conexion;
     private $clave = "";
+    private $id_usuario = 0;
     private $cedula_usuario = "";
     private $rol_id = "";
 
@@ -73,8 +74,11 @@ class Usuario {
     // Método para buscar por clave primaria cedula_usuario
     public function sql_buscar(): string {
         return sprintf(
-            "SELECT * FROM usuarios WHERE cedula_usuario = %d;",
-            $this->cedula_usuario
+            "SELECT u.id_usuario, u.cedula_usuario, u.clave, r.rol_id, r.rol
+             FROM usuarios u
+             JOIN roles_sistema r ON u.rol_id = r.rol_id
+             WHERE u.cedula_usuario = '%s';",
+            addslashes($this->cedula_usuario)
         );
     }
 

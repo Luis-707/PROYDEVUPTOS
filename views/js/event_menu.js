@@ -61,6 +61,13 @@
             listarEvaluados();
           }
         });
+
+        $("#formularioComentarios").click(async function(){
+          if (await verificarAccesoMenu('Comentarios')) {
+            mostrarVista('comentarios');
+            listarEvaluadosComentarios();
+          }
+        });
         
         $("#formularioUsuarios").click(async function(){
           if (await verificarAccesoMenu('Gestion de Usuarios')) {
@@ -90,6 +97,19 @@
          }, 300); 
     }
 
+    function abrirPlanillaReadonly(cedula){ 
+      console.log("👉 abrirPlanillaReadonly() recibió:", cedula);
+      sessionStorage.setItem("cedula_planilla", cedula); 
+      
+  
+      // Cargar la vista de la planilla en modo lectura
+      mostrarVista('planilla_comentario'); 
+  
+      // Una vez cargada la vista, ejecutamos la carga de datos
+      setTimeout(async () => { 
+          await cargarPlanillaReadonly(); // 👈 función definida en el JS de la vista readonly
+      }, 300); 
+  }
     // Evento del botón
 /*document.querySelectorAll('.btn-detalles').forEach(btn => {
     btn.addEventListener('click', e => {
@@ -130,6 +150,23 @@ $(document).on('keypress', '#id_cedula_usuario', function(event) {
     event.preventDefault();
   }
 });
+
+// Delegación de eventos para boton Mostrar: funciona aunque cambies de vista
+        
+$(document).on('click', '#toggleClave', function() {
+  const claveInput = document.getElementById('id_clave');
+  const toggleBtn = document.getElementById('toggleClave');
+
+  if (claveInput.type === 'password') {
+    claveInput.type = 'text';
+    toggleBtn.textContent = 'Ocultar';
+  } else {
+    claveInput.type = 'password';
+    toggleBtn.textContent = 'Mostrar';
+  }
+});
+
+// Detectar recarga de página y cerrar sesión si es así
 
 
     document.addEventListener('DOMContentLoaded', async () => {

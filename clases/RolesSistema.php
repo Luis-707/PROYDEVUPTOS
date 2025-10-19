@@ -28,6 +28,18 @@ class RolesSistema {
         return "No se ha definido la conexión";
     }
 
+    public static function sql_listar_roles_select(): string {
+        return "SELECT * FROM roles_sistema WHERE rol != 'Administrador';";
+    }
+
+    // Método que ejecuta la consulta y devuelve el resultado
+    public function listarRolesSelect() {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds(self::sql_listar_roles_select());
+        }
+        return "No se ha definido la conexión";
+    }
+
 }
 
 ?>

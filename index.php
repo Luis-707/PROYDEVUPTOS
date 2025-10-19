@@ -321,9 +321,12 @@ include_once "middleware/auth.php";
     <script src="views/js/form_user.js"></script>
     <script src="views/js/evaluadores.js"></script>
     <script src="views/js/supervisores.js"></script>
+    <script src="views/js/comentario_evaluado.js"></script>
+<script src="views/js/comentario_supervisor.js"></script>
     <script src="views/js/asignar_evaluador.js"></script>
     <script src="views/js/alertas.js"></script>
     <script src="views/js/evaluados.js"></script>
+    <script src="views/js/evaluados_comentarios.js"></script>
     <script src="views/js/logout.js"></script>
    
     

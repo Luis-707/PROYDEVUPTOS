@@ -25,6 +25,13 @@ try {
         exit;
     }
 
+    // Ajusta tu clase Usuario para que en sql_buscar incluya el JOIN con roles_sistema
+    // Ejemplo de SQL esperado:
+    // SELECT u.id_usuario, u.cedula_usuario, u.clave, r.rol_id, r.rol
+    // FROM usuarios u
+    // JOIN roles_sistema r ON u.rol_id = r.rol_id
+    // WHERE u.cedula_usuario = :cedula
+
     $usuario = new Usuario($_POST, $this->conexion);
     $sql = $usuario->sql_buscar();
     $respuesta = $this->ejecutarConsultaBdds($sql);
@@ -41,20 +48,22 @@ try {
                 exit;
             }
 
-            // Guardar en sesión PHP
+            // Guardar en sesión PHP con rol normalizado
             $_SESSION['usuario'] = [
                 'id_usuario' => $row['id_usuario'],
                 'cedula'     => $row['cedula_usuario'],
-                'rol_id'     => $row['rol_id']
+                'rol_id'     => $row['rol_id'],
+                'rol'        => strtolower(trim($row['rol'])) // aquí guardamos el nombre del rol
             ];
 
-            // Devolver también id_usuario
+            // Devolver también rol
             echo json_encode([
                 "success"   => true,
                 "message"   => "Bienvenido",
                 "id_usuario"=> $row['id_usuario'],
                 "cedula"    => $row['cedula_usuario'],
-                "rol_id"    => $row['rol_id']
+                "rol_id"    => $row['rol_id'],
+                "rol"       => strtolower(trim($row['rol']))
             ]);
         } else {
             echo json_encode([

@@ -177,7 +177,7 @@ function rellenarSelect(datos, idSelect) {
 // Variantes de tu función de listar, apuntando al ID del modal
 
 function listarRolesSistemaModal() {
-  return microApi('controlador/?listar_RolesSistema')
+  return microApi('controlador/?listar_RolesSelect')
     .then(datos => rellenarSelect(datos, 'rol_modal'));
 }
 
@@ -459,7 +459,7 @@ async function togglePermiso(id_usuario, permisos_id, checked) {
 async function listarRolesSistema() {
   try {
     // Llamas a la API que te devuelve los datos de jefes_superiores
-    const resp = await microApi('controlador/?listar_RolesSistema');
+    const resp = await microApi('controlador/?listar_RolesSelect');
 
     if (typeof resp === 'string') {
       console.error('Error al listar Roles del Sistema:', resp);
