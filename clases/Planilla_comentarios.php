@@ -104,25 +104,24 @@ class Planilla_comentarios {
     public static function sql_objetivos_por_cedula(string $cedula): string {
         return sprintf(
             "SELECT 
-            odi.id_odi,
-            odi.nombre_objetivo, 
-            odi.peso_objetivo,
-            c.id_eval_admin,
-            u.cedula_usuario,
-            eo.rango_obj,
-            eo.pesoxrango_obj
-         FROM objetivos_desempeno_individual odi
-         JOIN contiene c 
-              ON odi.id_odi = c.id_odi
-         JOIN evaluacion_objetivos eo 
-              ON eo.id_odi = odi.id_odi
-         JOIN evaluacion_administrativos ea 
-              ON c.id_eval_admin = ea.id_eval_admin  -- solo si realmente existe esta relación
-         JOIN evaluados e 
-              ON ea.id_evaluado = e.id_evaluado
-         JOIN usuarios u 
-              ON e.id_usuario = u.id_usuario
-         WHERE u.cedula_usuario = '%s';",
+                odi.id_odi,
+                odi.nombre_objetivo,
+                odi.peso_objetivo,
+                eo.id_eval_admin,
+                u.cedula_usuario,
+                eo.rango_obj,
+                eo.pesoxrango_obj
+             FROM evaluacion_objetivos eo
+             JOIN objetivos_desempeno_individual odi 
+                  ON eo.id_odi = odi.id_odi
+             JOIN evaluacion_administrativos ea 
+                  ON eo.id_eval_admin = ea.id_eval_admin
+             JOIN evaluados e 
+                  ON ea.id_evaluado = e.id_evaluado
+             JOIN usuarios u 
+                  ON e.id_usuario = u.id_usuario
+             WHERE u.cedula_usuario = '%s'
+             ORDER BY eo.id_obj_result ASC;",
             addslashes($cedula)
         );
     }

@@ -15,7 +15,12 @@
         async function verificarAccesoMenu(nombre_permiso) {
           const idUsuarioSesion = sessionStorage.getItem('id_usuario');
           if (!idUsuarioSesion) {
-            alert("Sesión inválida. Vuelve a iniciar sesión.");
+            Swal.fire({
+              icon: 'error',
+              title: 'Sesión inválida',
+              text: 'Vuelve a iniciar sesión.',
+              confirmButtonColor: '#3085d6'
+            });
             return false;
           }
         
@@ -27,7 +32,12 @@
           const acceso = resp && resp.acceso === true;
         
           if (!acceso) {
-            alert(`No tienes permiso para acceder a ${nombre_permiso}.`);
+            Swal.fire({
+              icon: 'warning',
+              title: 'Acceso denegado',
+              text: `No tienes permiso para acceder a ${nombre_permiso}.`,
+              confirmButtonColor: '#d33'
+            });
           }
         
           return acceso;
@@ -185,6 +195,17 @@ $(document).on('click', '#toggleClave', function() {
           window.location.href = 'login.html';
         }
       });
+
+// Detectar cierre de pestaña o navegador y cerrar sesión si es así
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    const idUsuarioSesion = sessionStorage.getItem("id_usuario");
+    if (!idUsuarioSesion) {
+      // No hay sesión en el navegador → redirigir al login
+      window.location.href = "login.html";
+    }
+  }
+});
 
 
 

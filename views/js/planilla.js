@@ -501,7 +501,7 @@ async function cargarTablasPlanilla() {
   }
 
   const objetivos = Array.isArray(objResp.data[0]) ? objResp.data[0] : objResp.data;
-  renderTablaDinamica(objetivos, "tabla-objetivos", "total-objetivos", "peso_objetivo", "nombre_objetivo", "id_odi");
+  renderTablaDinamica(objetivos, "tabla-objetivos", "total-objetivos", "peso_objetivo", "nombre_objetivo", "id_odi","id_eval_admin");
 
   // 👉 Cargar competencias
   const compResp = await microApi('controlador/?l_competencias');

@@ -87,26 +87,29 @@ JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_superviso
     return !empty($res[0]['id_rango']) ? (int)$res[0]['id_rango'] : null;
 }
 
-// Guardar evaluación general
-public function sql_guardar_evaluacion(): string {
+  // Guardar evaluación general (UPDATE)
+  public function sql_guardar_evaluacion(): string {
     return sprintf(
         "UPDATE evaluacion_administrativos
          SET id_rango = %d,
-             puntaje_final = %d 
-         WHERE id_usuario = %d
+             puntaje_final = %d
+         WHERE id_evaluado = %d
+           AND id_usuario = %d
          RETURNING id_eval_admin;",
         $this->id_rango,
         $this->puntaje_final,
+        $this->id_evaluado,
         $this->id_usuario
     );
 }
 
 // Guardar objetivo
-public function sql_guardar_objetivo($idOdi, $rango, $pesoXRango): string {
+public function sql_guardar_objetivo($idEvalAdmin, $idOdi, $rango, $pesoXRango): string {
     return sprintf(
-        "INSERT INTO evaluacion_objetivos (id_odi, rango_obj, pesoxrango_obj)
-         VALUES (%d, %d, %d)
+        "INSERT INTO evaluacion_objetivos (id_eval_admin,id_odi, rango_obj, pesoxrango_obj)
+         VALUES (%d,%d, %d, %d)
          RETURNING id_obj_result;",
+         (int)$idEvalAdmin,
         (int)$idOdi,
         (int)$rango,
         (int)$pesoXRango
@@ -141,14 +144,19 @@ public function sql_actualizar_periodo(): string {
     );
 }
 
-public function sql_buscar(): string {
-    return sprintf(
-        "SELECT * FROM evaluacion_administrativos 
-         WHERE id_rango = %d AND puntaje_final = '%s';",
-        $this->id_rango,
-        $this->puntaje_final
-    );
-}
+    // Buscar evaluación existente
+    public function sql_buscar(): string {
+        return sprintf(
+            "SELECT id_eval_admin
+             FROM evaluacion_administrativos
+             WHERE id_evaluado = %d
+               AND id_usuario = %d
+             ORDER BY id_eval_admin DESC
+             LIMIT 1;",
+            $this->id_evaluado,
+            $this->id_usuario
+        );
+    }
 }
 
 

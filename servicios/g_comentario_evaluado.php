@@ -6,12 +6,18 @@ error_reporting(E_ALL);*/
 
 include_once "../clases/Planilla_comentarios.php";
 
+$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
+if (!$cedulaSesion) {
+    echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
+    exit;
+}
+
 $data=$dataCliente['_post'];
 
 
 // 1. Buscar si existe la evaluación
 $planilla = new Planilla_comentarios($dataCliente['_post']);
-$sql = $planilla->sql_buscarEvaluacionPorId();
+$sql = $planilla->sql_buscar_por_id_y_evaluado($cedulaSesion);
 $respuesta = $this->ejecutarConsultaBdds($sql);
 
 if (count($respuesta) == 0) {

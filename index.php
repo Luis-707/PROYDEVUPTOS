@@ -167,7 +167,7 @@ include_once "middleware/auth.php";
                     <li>
                         <a class="dropdown-item" href="pages-profile-user.html"> <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span> </a>
                     </li>
-                    <li>
+                    <!--<li>
                         <a class="dropdown-item" href="pages-account-settings-account.html"> <i class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span> </a>
                     </li>
                     <li>
@@ -189,7 +189,7 @@ include_once "middleware/auth.php";
                     </li>
                     <li>
                         <div class="dropdown-divider my-1"></div>
-                    </li>
+                    </li>-->
                     <li>
                   <a class="dropdown-item" href="javascript:void(0)" onclick="logout()">
                      <i class="icon-base bx bx-power-off icon-md me-3"></i>
