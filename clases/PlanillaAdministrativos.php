@@ -2,13 +2,13 @@
 
 class PlanillaAdministrativos {
     private $conexion;
-    public $id_usuario = 0;
-    public $id_evaluado = 0;
-    public $id_rango = 0;
-    public $puntaje_final = 0;
-    public $fecha_inicio = "";
-    public $fecha_cierre = "";
-    public $periodo_evaluado = "";
+    private $id_usuario = 0;
+    private $id_evaluado = 0;
+    private $id_rango = 0;
+    private $puntaje_final = 0;
+    private $fecha_inicio = "";
+    private $fecha_cierre = "";
+    private $periodo_evaluado = "";
 
     public function __construct($dataCliente=array(''),$conexion = NULL) {
         
@@ -157,6 +157,37 @@ public function sql_actualizar_periodo(): string {
             $this->id_usuario
         );
     }
+
+
+    public function getCedulaUsuario(): string {
+        return $this->cedula_usuario;
+    }
+
+    public function getIdevaluado(): int {
+        return $this->id_evaluado;
+    }
+
+    public function getIdrango(): int {
+        return $this->id_rango;
+    }
+
+    public function getPuntajefinal(): int {
+        return $this->puntaje_final;
+    }
+
+    public function getFechainicio(): string {
+        return $this->fecha_inicio;
+    }
+
+    public function getFechacierre(): string {
+        return $this->fecha_cierre;
+    }
+
+    public function getPeriodoevaluado(): string {
+        return $this->periodo_evaluado;
+    }
+
+
 }
 
 

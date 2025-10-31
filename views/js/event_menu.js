@@ -78,6 +78,17 @@
             listarEvaluadosComentarios();
           }
         });
+
+        $("#formularioGestionEvaluados").click(async function(){
+          if (await verificarAccesoMenu('Gestion de Evaluados')) {
+            // Cargar la vista evaluados.php
+            mostrarVista('gestion_evaluados');
+        
+            // Inicializar funciones específicas de la vista
+            listarGestionEvaluados();        // Poblar tabla de evaluados
+            listarCargosEvaluados();    // Poblar select de cargos
+          }
+        });
         
         $("#formularioUsuarios").click(async function(){
           if (await verificarAccesoMenu('Gestion de Usuarios')) {
@@ -146,6 +157,17 @@ $(document).on('click', '#btn_buscar_cedula', async function() {
     llenarFormulario(datos);
   } else {
     llenarFormulario(null);
+  }
+});
+
+// Evento para el botón de búsqueda en la vista de Evaluados
+$(document).on('click', '#btn_buscar_cedula_eval', async function() {
+  const valorCedula = $('#id_cedula_evaluado').val().trim();
+  if (valorCedula.length > 0) {
+    const datos = await obtenerDatosPorCedulaEvaluado(valorCedula);
+    llenarFormularioEvaluado(datos);
+  } else {
+    llenarFormularioEvaluado(null);
   }
 });
 

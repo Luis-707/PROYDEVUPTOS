@@ -1,14 +1,20 @@
 <?php
-
-//ini_set('display_errors', '1');
-
+session_start();
 include_once '../clases/PlanillaAdministrativos.php';
 
-// Instanciar la clase con la conexión
+$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
+$rolUsuario   = $_SESSION['usuario']['rol'] ?? null;
+
 $PlanillaAdmin = new PlanillaAdministrativos([],$this);
 
-// Obtener los evaluados administrativos
-$respuesta = $PlanillaAdmin->listarRelaciones();
+if ($rolUsuario === 'evaluador') {
+    $sql = PlanillaAdministrativos::sql_listar_relaciones($cedulaSesion);
+} elseif ($rolUsuario === 'admin') {
+    $sql = PlanillaAdministrativos::sql_listar_relaciones();
+} else {
+    echo json_encode(["success" => false, "message" => "Rol no autorizado"]);
+    exit;
+}
 
+$respuesta = $this->ejecutarConsultaBdds($sql);
 return $respuesta;
-?>

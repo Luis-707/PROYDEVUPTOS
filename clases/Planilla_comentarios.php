@@ -2,7 +2,7 @@
 
 class Planilla_comentarios {
     private $conexion;
-    public $cedula_usuario = "";
+    private $cedula_usuario = "";
     private $comentario_supervisor;
     private $comentario_evaluado;
     public $id_eval_admin = 0;
@@ -89,14 +89,48 @@ class Planilla_comentarios {
         return [];
     }
 
-    public function sql_buscarEvaluacionPorId(): string {
+    /*public function sql_buscarEvaluacionPorId(): string {
         return sprintf(
             "SELECT *
              FROM evaluacion_administrativos
              WHERE id_eval_admin = %d;",
             $this->id_eval_admin
         );
-    }
+    }*/
+
+    // =============================
+// Buscar evaluación por ID restringida a un evaluado
+// =============================
+public function sql_buscar_por_id_y_evaluado(string $cedula): string {
+    return sprintf(
+        "SELECT ea.id_eval_admin
+         FROM evaluacion_administrativos ea
+         JOIN evaluados e ON ea.id_evaluado = e.id_evaluado
+         JOIN usuarios u ON e.id_usuario = u.id_usuario
+         WHERE ea.id_eval_admin = %d
+           AND u.cedula_usuario = '%s';",
+        $this->id_eval_admin,
+        addslashes($cedula)
+    );
+}
+
+// =============================
+// Buscar evaluación por ID restringida a un supervisor
+// =============================
+public function sql_buscar_por_id_y_supervisor(string $cedula): string {
+    return sprintf(
+        "SELECT ea.id_eval_admin
+         FROM evaluacion_administrativos ea
+         JOIN evaluados e ON ea.id_evaluado = e.id_evaluado
+         JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+         JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
+         JOIN usuarios u ON s.id_usuario = u.id_usuario
+         WHERE ea.id_eval_admin = %d
+           AND u.cedula_usuario = '%s';",
+        $this->id_eval_admin,
+        addslashes($cedula)
+    );
+}
 
     // =============================
     // Objetivos
@@ -131,7 +165,6 @@ class Planilla_comentarios {
     // Competencias
     // =============================
     public static function sql_competencias(int $idEvalAdmin): string {
-        error_log("DEBUG: id_eval_admin recibido en sql_competencias_por_eval = " . $idEvalAdmin);
         return "
             SELECT ec.id_comp_result,
                    ec.id_competencia,
@@ -150,12 +183,12 @@ class Planilla_comentarios {
         return sprintf(
             "UPDATE evaluacion_administrativos 
              SET comentario_supervisor = '%s'
-             WHERE id_eval_admin = %d;",
-            $this->comentario_supervisor,
+             WHERE id_eval_admin = %d
+             RETURNING id_eval_admin;",
+            addslashes($this->comentario_supervisor),
             $this->id_eval_admin
         );
     }
-
     // 🔹 Actualizar comentario del evaluado
     public function sql_update_comentario_evaluado(): string {
         return sprintf(
@@ -166,6 +199,12 @@ class Planilla_comentarios {
             $this->id_eval_admin
         );
     }
+
+    public function getCedulaUsuario(): string {
+        return $this->cedula_usuario;
+    }
+
+    
 
    
 }
