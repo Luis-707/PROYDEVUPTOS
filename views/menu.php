@@ -44,6 +44,12 @@
                 </li>
 
                 <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioDatosEvaluados">
+                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <div data-i18n="Cargos de Evaluados" >Cargos de Evaluados</div>
+                    </a>
+
+                <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacion">
                         <i class="menu-icon icon-base bx bx-user"></i>
                         <div data-i18n="Evaluaciones" >Evaluaciones</div>

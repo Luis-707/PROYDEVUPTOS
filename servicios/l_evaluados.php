@@ -6,6 +6,6 @@ include_once "../clases/Evaluados.php";
 $GEvaluados = new Evaluado([], $this);
 
 // Obtener las opciones HTML (o los datos) desde listarEvaluados
-$respuesta = $GEvaluados->listarEvaluados();
+$respuesta = $GEvaluados->listar_user_evaluado();
 
 return $respuesta;

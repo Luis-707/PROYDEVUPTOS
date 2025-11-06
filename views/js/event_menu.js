@@ -86,9 +86,24 @@
         
             // Inicializar funciones específicas de la vista
             listarGestionEvaluados();        // Poblar tabla de evaluados
-            listarCargosEvaluados();    // Poblar select de cargos
+            /*listarCargosEvaluados();*/ 
+            listarRolesEvaluados();      // Poblar select de roles
           }
         });
+
+        $("#formularioDatosEvaluados").click(async function(){
+          if (await verificarAccesoMenu('Cargos de Evaluados')) {
+            // Cargar la vista evaluados.php
+            mostrarVista('cargos_evaluados');
+        
+            listarUsuariosEvaluados();
+            listarCargosEvaluados();
+            listarDatosEvaluados();
+           // listarEvaluado();
+          }
+        });
+
+        
         
         $("#formularioUsuarios").click(async function(){
           if (await verificarAccesoMenu('Gestion de Usuarios')) {

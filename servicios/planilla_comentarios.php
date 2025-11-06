@@ -49,15 +49,16 @@ try {
         exit;
     }
 
-    $planilla->id_eval_admin = (int)$evalData['id_eval_admin'];
+    // Usar setter en lugar de acceso directo
+    $planilla->setIdEvalAdmin((int)$evalData['id_eval_admin']);
 
     // 2. Objetivos (con tabla contiene)
     $sqlObj = $planilla->sql_objetivos_por_cedula($cedula);
     $objetivos = $this->ejecutarConsultaBdds($sqlObj);
     if (isset($objetivos[0][0])) $objetivos = $objetivos[0];
 
-    // 3. Competencias
-    $sqlComp = $planilla->sql_competencias($planilla->id_eval_admin);
+    // 3. Competencias (usando getter)
+    $sqlComp = $planilla->sql_competencias($planilla->getIdEvalAdmin());
     $competencias = $this->ejecutarConsultaBdds($sqlComp);
     if (isset($competencias[0][0])) $competencias = $competencias[0];
 

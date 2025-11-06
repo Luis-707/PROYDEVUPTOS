@@ -112,4 +112,4 @@ include_once "Sesion.php";
 </form>
 </div>
 
-<script src="views/js/planilla_readonly.js"></script>
+<script src="views/js/planilla_comentarios.js"></script>

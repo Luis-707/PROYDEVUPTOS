@@ -5,7 +5,7 @@ class Planilla_comentarios {
     private $cedula_usuario = "";
     private $comentario_supervisor;
     private $comentario_evaluado;
-    public $id_eval_admin = 0;
+    private $id_eval_admin = 0;
 
     public function __construct($dataCliente=array(''), $conexion = NULL) {
         if (isset($dataCliente['cedula_usuario'])) {
@@ -23,6 +23,14 @@ class Planilla_comentarios {
         if ($conexion != NULL) {
             $this->conexion = $conexion;
         }
+    }
+
+    public function getIdEvalAdmin(): int {
+        return $this->id_eval_admin;
+    }
+    
+    public function setIdEvalAdmin(int $id): void {
+        $this->id_eval_admin = $id;
     }
 
     // =============================
