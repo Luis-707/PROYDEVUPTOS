@@ -186,7 +186,7 @@ function validarCadena(cadena){
       formData.append('id_usuario', idUsuario);
   
       try {
-        const resp = await microApi('controlador/?e_evaluado', formData);
+        const resp = await microApi('controlador/?e_datos_evaluados', formData);
         listarDatosEvaluados(); // refresca la tabla
   
         Swal.fire({
@@ -220,7 +220,7 @@ function validarCadena(cadena){
           datosPersona.append('id_usuario', idUsuarioEval);*/
         
           try {
-            const resp = await microApi('controlador/?a_evaluadores', datosPersona);
+            const resp = await microApi('controlador/?a_datos_evaluados', datosPersona);
         
             if (typeof resp === 'string' && resp.includes(' No Existe')) {
               Swal.fire({

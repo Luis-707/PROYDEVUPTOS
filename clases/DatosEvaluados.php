@@ -79,6 +79,24 @@ class DatosEvaluados {
         );
     }
 
+     //Metodo para actualizar (UPDATE)
+     public function sql_actualizar_datos_evaluados(): string {
+        return sprintf(
+            "UPDATE evaluados SET id_cargo_evaluado = %d WHERE id_usuario = %d;",
+            $this->id_cargo_evaluado,
+            $this->id_usuario
+        );
+    }
+
+
+    //Metodo para eliminar (DELETE)
+    public function sql_eliminar_datos_evaluados(): string {
+        return sprintf(
+            "DELETE FROM evaluados WHERE id_usuario = %d;",
+            $this->id_usuario
+        );
+    }
+
     public function sql_buscar_evaluados(): string {
         return sprintf(
             "SELECT * FROM evaluados WHERE id_usuario = %d;",

@@ -11,16 +11,22 @@
     $("#formularioDemo2").click(function(){
         mostrarVista('vistaDemo');
     })*/
+   
 
-        async function verificarAccesoMenu(nombre_permiso) {
+          // Replegar menú automáticamente al hacer clic en cualquier opción
+$(document).on('click', '.menu-link', function() {
+  const toggler = document.querySelector('.layout-menu-toggle');
+  if (toggler) {
+    toggler.click(); // simula el clic en el botón de colapso de Sneat
+  }
+});
+
+        async function verificarAccesoMenu(nombre_permiso, idMenuElemento) {
           const idUsuarioSesion = sessionStorage.getItem('id_usuario');
           if (!idUsuarioSesion) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Sesión inválida',
-              text: 'Vuelve a iniciar sesión.',
-              confirmButtonColor: '#3085d6'
-            });
+            if (idMenuElemento) {
+              document.getElementById(idMenuElemento).style.display = 'none';
+            }
             return false;
           }
         
@@ -31,13 +37,8 @@
           const resp = await microApi('controlador/?verificar_permiso', datos);
           const acceso = resp && resp.acceso === true;
         
-          if (!acceso) {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Acceso denegado',
-              text: `No tienes permiso para acceder a ${nombre_permiso}.`,
-              confirmButtonColor: '#d33'
-            });
+          if (idMenuElemento) {
+            document.getElementById(idMenuElemento).style.display = acceso ? 'block' : 'none';
           }
         
           return acceso;
@@ -46,41 +47,45 @@
 
 
         $("#formularioEvaluadores").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Evaluadores')) {
+          if (await verificarAccesoMenu('Gestion de Evaluadores', 'formularioEvaluadores')) {
             mostrarVista('evaluadores');
             listarUsuariosEvaluador();
             listarCargosEvaluadores();
             listarSupervisoresCargos();
             listarEvaluadores();
+            
           }
         });
         
         $("#formularioSupervisores").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Supervisores')) {
+          if (await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores')) {
             mostrarVista('supervisores');
             listarUsuariosSupervisor();
             listarCargosSupervisores();
             listarSupervisores();
             listarSupervisor();
+            
           }
         });
         
         $("#formularioEvaluacion").click(async function(){
-          if (await verificarAccesoMenu('Evaluaciones')) {
+          if (await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion')) {
             mostrarVista('evaluacion');
             listarEvaluados();
+            
           }
         });
 
         $("#formularioComentarios").click(async function(){
-          if (await verificarAccesoMenu('Comentarios')) {
+          if (await verificarAccesoMenu('Comentarios', 'formularioComentarios')) {
             mostrarVista('comentarios');
             listarEvaluadosComentarios();
+            
           }
         });
 
         $("#formularioGestionEvaluados").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Evaluados')) {
+          if (await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados')) {
             // Cargar la vista evaluados.php
             mostrarVista('gestion_evaluados');
         
@@ -88,17 +93,19 @@
             listarGestionEvaluados();        // Poblar tabla de evaluados
             /*listarCargosEvaluados();*/ 
             listarRolesEvaluados();      // Poblar select de roles
+         
           }
         });
 
         $("#formularioDatosEvaluados").click(async function(){
-          if (await verificarAccesoMenu('Cargos de Evaluados')) {
+          if (await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados')) {
             // Cargar la vista evaluados.php
             mostrarVista('cargos_evaluados');
         
             listarUsuariosEvaluados();
             listarCargosEvaluados();
             listarDatosEvaluados();
+          
            // listarEvaluado();
           }
         });
@@ -106,11 +113,12 @@
         
         
         $("#formularioUsuarios").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Usuarios')) {
+          if (await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios')) {
             mostrarVista('usuarios');
             listarUsuario();
             listarRolesSistema();
             listarRolesSistemaModal();
+            
           }
         });
 
@@ -132,6 +140,23 @@
 
          }, 300); 
     }
+
+    function abrirPlanillaEditar(cedula){ 
+      console.log("👉 abrirPlanillaEditar() recibió:", cedula);
+      sessionStorage.setItem("cedula_planilla", cedula); 
+  
+      // Cargar la vista de edición de la planilla
+      mostrarVista('planilla_editar'); 
+  
+      // Una vez cargada la vista, ejecutamos la carga de datos
+      setTimeout(async () => { 
+        
+          await cargarPlanillaEditar();   // 👈 función en planilla_editar.js
+          debugIdsEvaluacion(); // muestra ids en consola para debug
+          cargarPeriodoEvaluacion(); // carga periodo evaluación
+          await cargarTablasPlanillaEditar(); // inicializa tablas con rangos guardados
+      }, 300); 
+  }
 
     function abrirPlanillaReadonly(cedula){ 
       console.log("👉 abrirPlanillaReadonly() recibió:", cedula);
@@ -213,26 +238,6 @@ $(document).on('click', '#toggleClave', function() {
   }
 });
 
-// Detectar recarga de página y cerrar sesión si es así
-
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Detectar recarga de la página
-        const navEntry = performance.getEntriesByType('navigation')[0];
-        const isReload = navEntry ? navEntry.type === 'reload' : (performance.navigation && performance.navigation.type === 1);
-      
-        if (isReload) {
-          try {
-            // Cerrar sesión en el servidor
-            await microApi('controlador/?logout');
-          } catch (e) {
-            console.error('Error cerrando sesión en reload:', e);
-          }
-          // Redirigir al login
-          window.location.href = 'login.html';
-        }
-      });
-
 // Detectar cierre de pestaña o navegador y cerrar sesión si es así
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
@@ -242,6 +247,18 @@ document.addEventListener("visibilitychange", () => {
       window.location.href = "login.html";
     }
   }
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+ 
+  // 🔹 Al entrar a la sesión, verificar permisos y ocultar menús
+  await verificarAccesoMenu('Gestion de Evaluadores', 'formularioEvaluadores');
+  await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores');
+  await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados');
+  await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados');
+  await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion');
+  await verificarAccesoMenu('Comentarios', 'formularioComentarios');
+  await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios');
 });
 
 

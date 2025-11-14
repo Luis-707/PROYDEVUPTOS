@@ -33,7 +33,7 @@ td.acciones {
 <div class="container py-4">
       <form id="formulario_DatosEvaluado" onsubmit="event.preventDefault(); validar_formDatosEvaluado(1);">
         <div class="mb-3">
-        <input type="hidden" name="id_usuario_sesion" id="id_usuario_sesion" value="<?php echo isset($_SESSION['usuario']['id_usuario']) ? htmlspecialchars($_SESSION['usuario']['id_usuario']) : ''; ?>">
+        <input type="hidden" name="id_usuario_sesion" id="id_usuario_sesion" value="">
           <label for="id_usuario" class="form-label">Seleccionar evaluado</label>
           <select class="form-select" id="id_usuario" name="id_usuario">
             <option selected disabled>Seleccione un evaluado</option>

@@ -29,15 +29,17 @@ class Usuario {
         // No implementación específica necesaria
     }
 
-    // Método para guardar (INSERT)
-    public function sql_guardar(): string {
-        return sprintf(
-            "INSERT INTO usuarios (clave, cedula_usuario, rol_id) VALUES ('%s', %d, %d);",
-            $this->clave,
-            $this->cedula_usuario,
-            $this->rol_id
-        );
-    }
+  // Método para guardar (INSERT)
+public function sql_guardar(): string {
+    $hash = password_hash($this->clave, PASSWORD_DEFAULT);
+    return sprintf(
+        "INSERT INTO usuarios (clave, cedula_usuario, rol_id) VALUES ('%s', %d, %d);",
+        $hash,
+        $this->cedula_usuario,
+        $this->rol_id
+    );
+}
+
 
     // Método para eliminar (DELETE) según cedula_usuario
     public function sql_eliminar(): string {
@@ -47,16 +49,16 @@ class Usuario {
         );
     }
 
-    // Método para actualizar (UPDATE) según cedula_usuario
-    public function sql_actualizar(): string {
-        return sprintf(
-            "UPDATE usuarios SET clave = '%s', rol_id = '%d' WHERE cedula_usuario = '%d';",
-          
-            $this->clave,
-            $this->rol_id,
-            $this->cedula_usuario
-        );
-    }
+   // Método para actualizar (UPDATE) según cedula_usuario
+public function sql_actualizar(): string {
+    $hash = password_hash($this->clave, PASSWORD_DEFAULT);
+    return sprintf(
+        "UPDATE usuarios SET clave = '%s', rol_id = '%d' WHERE cedula_usuario = '%d';",
+        $hash,
+        $this->rol_id,
+        $this->cedula_usuario
+    );
+}
 
     // Método para listar todos (SELECT)
     public static function sql_listar(): string {

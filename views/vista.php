@@ -27,6 +27,7 @@ if (isset($_POST['file']) && isset($_POST['idElemento'])) {
         'gestion_evaluados' => $DIR. 'GestionEvaluados.php',
         'cargos_evaluados' => $DIR. 'Datos_Evaluados.php',
         'planilla' => $DIR. 'planilla.php',
+        'planilla_editar' => $DIR. 'planilla_editar.php',
         'planilla_comentario' => $DIR. 'Planilla_Comentarios.php'
         /*'empleado' => $DIR. 'vempleado.php'*/
 

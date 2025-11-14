@@ -39,7 +39,7 @@ try {
     if ($respuesta && count($respuesta[0]) > 0) {
         $row = $respuesta[0][0];
 
-        if ($row['clave'] === $clave) {
+        if (password_verify($clave, $row['clave'])) {
             if ($pin !== null && $pin !== $row['cedula_usuario']) {
                 echo json_encode([
                     "success" => false,

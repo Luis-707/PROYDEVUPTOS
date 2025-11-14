@@ -30,6 +30,10 @@ async function listarEvaluados() {
           <button type="button" class="btn btn-info btn-sm" onclick="abrirPlanilla('${cedula}')">
             Ver planilla
           </button>
+
+          <button type="button" class="btn btn-warning btn-sm" onclick="abrirPlanillaEditar('${cedula}')">
+            Editar planilla
+          </button>
         </td>
       </tr>
     `;

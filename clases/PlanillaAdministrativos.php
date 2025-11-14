@@ -103,6 +103,22 @@ JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_superviso
     );
 }
 
+// Guardar evaluación general (UPDATE)
+public function sql_actualizar_evaluacion(): string {
+    return sprintf(
+        "UPDATE evaluacion_administrativos
+         SET id_rango = %d,
+             puntaje_final = %d
+         WHERE id_evaluado = %d
+           AND id_usuario = %d
+         RETURNING id_eval_admin;",
+        $this->id_rango,
+        $this->puntaje_final,
+        $this->id_evaluado,
+        $this->id_usuario
+    );
+}
+
 // Guardar objetivo
 public function sql_guardar_objetivo($idEvalAdmin, $idOdi, $rango, $pesoXRango): string {
     return sprintf(
@@ -144,6 +160,55 @@ public function sql_actualizar_periodo(): string {
     );
 }
 
+// Obtener periodo y fechas de una evaluación
+public function sql_obtener_periodo(): string {
+    return sprintf(
+        "SELECT periodo_evaluado, fecha_inicio, fecha_cierre
+         FROM evaluacion_administrativos
+         WHERE id_evaluado = %d
+           AND id_usuario = %d
+         ORDER BY id_eval_admin DESC
+         LIMIT 1;",
+        $this->id_evaluado,
+        $this->id_usuario
+    );
+}
+
+/*// Listar objetivos guardados con su rango y pesoXRango
+public function sql_listar_objetivos_guardados($idEvalAdmin): string {
+    return sprintf(
+        "SELECT eo.id_obj_result, eo.id_odi, o.nombre_objetivo, o.peso_objetivo,
+                eo.rango_obj, eo.pesoxrango_obj
+         FROM evaluacion_objetivos eo
+         JOIN objetivos_desempeno_individual o ON eo.id_odi = o.id_odi
+         WHERE eo.id_eval_admin = %d;",
+        (int)$idEvalAdmin
+    );
+}
+
+// Listar competencias guardadas con su rango y pesoXRango
+public function sql_listar_competencias_guardadas($idEvalAdmin): string {
+    return sprintf(
+        "SELECT ec.id_comp_result, ec.id_competencia, c.nombre_competencia, c.peso_competencia,
+                ec.rango_comp, ec.pesoxrango_comp
+         FROM evaluacion_competencias ec
+         JOIN competencias c ON ec.id_competencia = c.id_competencia
+         WHERE ec.id_eval_admin = %d;",
+        (int)$idEvalAdmin
+    );
+}*/
+
+public function sql_listar_periodo_por_id($idEvalAdmin): string {
+    return sprintf(
+        "SELECT fecha_inicio, fecha_cierre, periodo_evaluado
+         FROM evaluacion_administrativos
+         WHERE id_eval_admin = %d;",
+        (int)$idEvalAdmin
+    );
+}
+
+
+
     // Buscar evaluación existente
     public function sql_buscar(): string {
         return sprintf(
@@ -157,6 +222,59 @@ public function sql_actualizar_periodo(): string {
             $this->id_usuario
         );
     }
+
+    // Verificar si ya existen objetivos para una evaluación
+    public function sql_existen_objetivos($idEvalAdmin): string {
+        return sprintf(
+            "SELECT COUNT(*) AS total 
+             FROM evaluacion_objetivos 
+             WHERE id_eval_admin = %d;",
+            (int)$idEvalAdmin
+        );
+    }
+
+    // Verificar si ya existen competencias para una evaluación
+    public function sql_existen_competencias($idEvalAdmin): string {
+        return sprintf(
+            "SELECT COUNT(*) AS total 
+             FROM evaluacion_competencias 
+             WHERE id_eval_admin = %d;",
+            (int)$idEvalAdmin
+        );
+    }
+
+     // Actualizar un objetivo existente
+     public function sql_actualizar_objetivo($idEvalAdmin, $idOdi, $rango, $pesoXRango): string {
+        return sprintf(
+            "UPDATE evaluacion_objetivos
+             SET rango_obj = %d,
+                 pesoxrango_obj = %d
+             WHERE id_eval_admin = %d
+               AND id_odi = %d
+             RETURNING id_obj_result;",
+            (int)$rango,
+            (int)$pesoXRango,
+            (int)$idEvalAdmin,
+            (int)$idOdi
+        );
+    }
+
+    // Actualizar una competencia existente
+    public function sql_actualizar_competencia($idEvalAdmin, $idComp, $rango, $pesoXRango): string {
+        return sprintf(
+            "UPDATE evaluacion_competencias
+             SET rango_comp = %d,
+                 pesoxrango_comp = %d
+             WHERE id_eval_admin = %d
+               AND id_competencia = %d
+             RETURNING id_comp_result;",
+            (int)$rango,
+            (int)$pesoXRango,
+            (int)$idEvalAdmin,
+            (int)$idComp
+        );
+    }
+
 
 
     public function getCedulaUsuario(): string {
