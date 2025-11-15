@@ -110,6 +110,15 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
+        $("#formularioEvaluacionAdministrativos").click(async function(){
+
+          if (await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvaluacionAdministrativos')) {
+            mostrarVista('evaluacion_administrativos');
+            listarEvalAdmin();
+            listarEvaluadosAdmin();
+          }
+        });
+
         
         
         $("#formularioUsuarios").click(async function(){
@@ -256,6 +265,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores');
   await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados');
   await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados');
+  await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvaluacionAdministrativos');
   await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion');
   await verificarAccesoMenu('Comentarios', 'formularioComentarios');
   await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios');

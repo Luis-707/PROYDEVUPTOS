@@ -50,6 +50,12 @@
                     </a>
 
                 <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacionAdministrativos">
+                        <i class="menu-icon icon-base bx bx-file"></i>
+                        <div data-i18n="Evaluación Administrativos" >Evaluacion Administrativos</div>
+                    </a>
+
+                <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacion">
                         <i class="menu-icon icon-base bx bx-user"></i>
                         <div data-i18n="Evaluaciones" >Evaluaciones</div>

@@ -231,24 +231,6 @@ async function cargarPeriodoEvaluacion() {
   }*/
 }
 
-function debugIdsEvaluacion() {
-  const ids = ["id_evaluado", "id_usuario"];
-  
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      const valor = el.value;
-      if (valor && valor.trim() !== "") {
-        console.log(`✅ ${id} está seteado con valor: ${valor}`);
-      } else {
-        console.warn(`⚠️ ${id} NO tiene valor (está vacío o no se ha seteado)`);
-      }
-    } else {
-      console.error(`❌ No se encontró el elemento con id="${id}" en el DOM`);
-    }
-  });
-}
-
 // =============================
 // Rangos de actuación
 // =============================
