@@ -36,7 +36,7 @@ td.acciones {
 }
 </style>
 
-<h2>Registro de periodos de evaluación administrativa</h2>
+<h2>Registro de evaluaciónes administrativas</h2>
 <div class="container py-4">
   <form id="formulario_EvalAdmin" onsubmit="event.preventDefault(); validar_formEvalAdmin(1);">
     
@@ -78,7 +78,7 @@ td.acciones {
 
 <table class="table table-bordered align-middle" id="tabla-EvalAdmin">
     <thead class="table-dark">
-        <tr><th>Cedula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Cargo</th><th>Periodo</th><th>Acciones</th></tr>
+        <tr><th>Cedula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Cargo</th><th>Periodo</th><th>Estatus</th></tr>
     </thead>
     <tbody></tbody>
 </table>

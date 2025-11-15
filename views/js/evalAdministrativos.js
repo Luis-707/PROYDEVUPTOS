@@ -204,6 +204,7 @@ async function listarTablaEvalAdmin(datos) {
       const additional = empleado ? empleado.additional || "" : "";
       const cargoTexto = item.cargo_evaluado || "Sin cargo";
       const periodoEvaluado = item.periodo_evaluado || "";
+      const Estatus = empleado ? empleado.status_str : "No encontrado";
   
       html += `
         <tr>
@@ -212,12 +213,8 @@ async function listarTablaEvalAdmin(datos) {
           <td>${additional}</td>
           <td>${cargoTexto}</td>
           <td>${periodoEvaluado}</td>
-          <td class="acciones">
-            <div class="acciones-icons">
-              <img src="img/iconos/actualizar.png" onclick="abrirModalEditarCargo(${item.id_usuario}, ${item.id_cargo_evaluado})" />
-              <img src="img/iconos/eliminar.png" onclick="eliminarEvaluador(${item.id_usuario})" />
-            </div>
-          </td>
+          <td>${Estatus}</td>
+        
         </tr>
       `;
     });

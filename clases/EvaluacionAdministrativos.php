@@ -57,7 +57,7 @@ public function getIdUsuario(): int {
 }
 
     // Método para guardar nuevo registro en evaluacion_administrativos
-    public function sql_guardar_eval_administrativos(): string {
+    /*public function sql_guardar_eval_administrativos(): string {
         return sprintf(
             "INSERT INTO evaluacion_administrativos (id_usuario, id_evaluado, fecha_inicio, fecha_cierre, periodo_evaluado) 
             VALUES (%d, %d, '%s', '%s', '%s');",
@@ -66,6 +66,20 @@ public function getIdUsuario(): int {
             $this->fecha_inicio,
             $this->fecha_cierre,
             $this->periodo_evaluado
+        );
+    }*/
+
+    public function sql_guardar_eval_administrativos(): string {
+        return sprintf(
+            "INSERT INTO evaluacion_administrativos 
+                (id_usuario, id_evaluado, fecha_inicio, fecha_cierre, periodo_evaluado) 
+             VALUES (%d, %d, '%s', '%s', '%s')
+             RETURNING id_eval_admin;",
+            $this->id_usuario,   // evaluador (de la sesión)
+            $this->id_evaluado,  // evaluado (del formulario)
+            addslashes($this->fecha_inicio),
+            addslashes($this->fecha_cierre),
+            addslashes($this->periodo_evaluado)
         );
     }
 
@@ -106,7 +120,7 @@ public function getIdUsuario(): int {
         );
     }*/
 
-    public function sql_actualizar_periodo(): string {
+   /* public function sql_actualizar_periodo(): string {
         return sprintf(
             "UPDATE evaluacion_administrativos
              SET periodo_evaluado = '%s',
@@ -119,7 +133,7 @@ public function getIdUsuario(): int {
             addslashes($this->fecha_cierre),
             $this->getIdEvalAdmin()
         );
-    }
+    }*/
    // Buscar evaluación por id_evaluado
    public function sql_buscarPorEvaluado(): string {
     return sprintf(
@@ -127,6 +141,16 @@ public function getIdUsuario(): int {
          FROM evaluacion_administrativos ea
          WHERE ea.id_evaluado = %d;",
         $this->id_evaluado
+    );
+}
+
+public static function sql_buscar_evaluador_por_usuario(int $idUsuario): string {
+    return sprintf(
+        "SELECT id_evaluador 
+         FROM evaluadores 
+         WHERE id_usuario = %d 
+         LIMIT 1;",
+        $idUsuario
     );
 }
 
