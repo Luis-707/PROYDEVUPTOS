@@ -264,50 +264,39 @@ async function cargarPlanilla() {
 // =============================
 
 
-function setPeriodoAutomatico() {
-  const hoy = new Date();
-  const year = hoy.getFullYear();
-  const mes = hoy.getMonth() + 1;
+async function cargarPeriodoEval() {
+  const cedula = sessionStorage.getItem("cedula_planilla");
+  const idEvaluado = document.getElementById("id_evaluado")?.value;
+  const idUsuario = document.getElementById("id_usuario_evaluador")?.value;
 
-  let periodo = "";
-  let fechaInicio = "";
-  let fechaCierre = "";
+  console.log("👉 Enviando al servicio l_periodo:", {
+    cedula_usuario: cedula,
+    id_evaluado: idEvaluado,
+    id_usuario: idUsuario
+  });
 
-  if (mes >= 1 && mes <= 6) {
-    periodo = `Periodo I-${year}`;
-    fechaInicio = `${year}-01-01`;
-    fechaCierre = `${year}-06-01`;
-  } else {
-    periodo = `Periodo II-${year}`;
-    fechaInicio = `${year}-07-01`;
-    fechaCierre = `${year}-12-01`;
+  const formData = new FormData();
+  formData.append("cedula_usuario", cedula);
+  formData.append("id_evaluado", idEvaluado);
+  formData.append("id_usuario", idUsuario);
+
+  const resp = await microApi('controlador/?l_periodo', formData);
+  console.log("Respuesta periodo:", resp);
+
+  if (!resp.success || !resp.data) {
+    Swal.fire({ icon: 'error', title: 'Error', text: resp.message || "No se pudo cargar el periodo" });
+    return;
   }
 
-  // Setear en inputs
-  document.getElementById("fecha-inicio").value = fechaInicio;
-  document.getElementById("fecha-cierre").value = fechaCierre;
-  const periodoInput = document.getElementById("periodo-evaluacion");
-periodoInput.value = periodo;
+  const periodo = resp.data;
+  document.getElementById("fecha-inicio").value = periodo.fecha_inicio || "";
+  document.getElementById("fecha-cierre").value = periodo.fecha_cierre || "";
+  document.getElementById("periodo-evaluacion").value = periodo.periodo_evaluado || "";
 
-  // 👇 Capturar id_evaluado oculto
-  const idEvaluado = document.getElementById("id_evaluado").value;
-
-  // Guardar en BD automáticamente
-  const formData = new FormData();
-  formData.append("id_evaluado", idEvaluado);
-  formData.append("periodo_evaluado", periodo);
-  formData.append("fecha_inicio", fechaInicio);
-  formData.append("fecha_cierre", fechaCierre);
-
-  microApi("controlador/?u_periodo", formData)
-    .then(resp => {
-      if (!resp.success) {
-        console.error("Error al actualizar periodo:", resp.message);
-      } else {
-        console.log("✅ Periodo actualizado automáticamente:", periodo);
-      }
-    })
-    .catch(err => console.error("Error en update periodo:", err));
+  // Si quieres guardar el id_eval_admin en memoria para otros usos:
+  /*if (resp.id_eval_admin) {
+    sessionStorage.setItem("id_eval_admin", resp.id_eval_admin);
+  }*/
 }
 
 

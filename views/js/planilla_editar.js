@@ -234,15 +234,15 @@ async function cargarPeriodoEvaluacion() {
 // =============================
 // Rangos de actuación
 // =============================
-let rangosActuacion = [];
+let rangosActuacionEditar = [];
 
 // =============================
 // Cargar rangos de actuación
 // =============================
 async function cargarRangosActuacionEditar() {
   const resp = await microApi('controlador/?l_rangos');
-  rangosActuacion = Array.isArray(resp[0]) ? resp[0] : resp;
-  console.log("✅ Rangos cargados (editar):", rangosActuacion);
+  rangosActuacionEditar = Array.isArray(resp[0]) ? resp[0] : resp;
+  console.log("✅ Rangos cargados (editar):", rangosActuacionEditar);
 }
 
 // =============================
@@ -266,7 +266,7 @@ function actualizarTotalGeneralEditar() {
   let rangoTexto = "No definido";
   let rangoId = "";
 
-  for (const r of rangosActuacion) {
+  for (const r of rangosActuacionEditar) {
     const min = parseInt(r.puntaje_minimo ?? r.minimo ?? 0);
     const max = parseInt(r.puntaje_maximo ?? r.maximo ?? 0);
     const texto = r.rango_actuacion ?? r.descripcion ?? "Sin nombre";

@@ -140,7 +140,7 @@ $(document).on('click', '.menu-link', function() {
         // Una vez cargada la vista, ejecutamos la carga de datos 
         setTimeout(async () => { 
             await cargarPlanilla();
-            setPeriodoAutomatico();
+           cargarPeriodoEval(); // carga periodo evaluación
 
             // Crea las tablas para objetivos y competencias
             await cargarTablasPlanilla();
@@ -161,7 +161,7 @@ $(document).on('click', '.menu-link', function() {
       setTimeout(async () => { 
         
           await cargarPlanillaEditar();   // 👈 función en planilla_editar.js
-          debugIdsEvaluacion(); // muestra ids en consola para debug
+          //debugIdsEvaluacion(); // muestra ids en consola para debug
           cargarPeriodoEvaluacion(); // carga periodo evaluación
           await cargarTablasPlanillaEditar(); // inicializa tablas con rangos guardados
       }, 300); 
