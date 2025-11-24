@@ -157,10 +157,7 @@ async function guardarEvaluacionCompleta() {
         text: "✅ Evaluación guardada con éxito"
       });
 
-      // Guardar id_eval_admin en hidden si lo devuelve
-      /*if (resp.id_eval_admin) {
-        document.getElementById("id_eval_admin").value = resp.id_eval_admin;
-      }*/
+ 
     }
   } catch (err) {
     console.error("Error en guardarEvaluacionCompleta:", err);
@@ -171,30 +168,6 @@ async function guardarEvaluacionCompleta() {
     });
   }
 }
-
-
-/*async function guardarDetallesEvaluacion() {
-  const objetivos = capturarResultadosTabla("tabla-objetivos", "id_odi");
-  const competencias = capturarResultadosTabla("tabla-competencias", "id_competencia");
-
-  const datos = new FormData();
-  datos.append("objetivos", JSON.stringify(objetivos));
-  datos.append("competencias", JSON.stringify(competencias));
-
-  try {
-    const resp = await microApi("controlador/?g_evaluacion", datos);
-    console.log("Respuesta detalles:", resp);
-
-    if (!resp.success) {
-      alert(resp.message || "Error al guardar objetivos/competencias");
-    } else {
-      console.log("✅ Detalles guardados con éxito");
-    }
-  } catch (err) {
-    console.error("Error en guardarDetallesEvaluacion:", err);
-    alert("Ocurrió un error al guardar los detalles");
-  }
-}*/
 
 // =============================
 // Resetear formulario

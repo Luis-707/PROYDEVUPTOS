@@ -93,6 +93,19 @@ function validarCadena(cadena){
     }
 }
 async function guardarUsuario() {
+
+  let clave = document.getElementById('id_clave').value;
+  
+  // Verificar si la longitud de clave está entre 10 y 16 caracteres
+  if (clave.length < 10) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Longitud inválida',
+      text: 'La clave debe tener entre 10 y 16 caracteres.'
+    });
+    return; // Impide continuar con el guardado
+  }
+
   let datosPersona = capturarValoresFormulario('formulario_usuario');
   let idRol = document.getElementById('id_rol_sistema').value;
   datosPersona.append('rol_id', idRol);
@@ -204,6 +217,8 @@ async function listarTablaUsuarios(datos) {
       // Buscar empleado
       let empleado = empleados.find(emp => emp.pin_str === item.cedula_usuario || emp.pin === item.cedula_usuario);
       let fullname = empleado ? empleado.fullname : "No encontrado";
+      let status = empleado ? empleado.status_str : "Desconocido";
+
 
       // Buscar rol
       const rolObj = rolesList.find(r => r.rol_id == item.rol_id || r.idrol == item.rol_id);
@@ -215,6 +230,7 @@ async function listarTablaUsuarios(datos) {
       html += '<td>' + item.cedula_usuario + '</td>';
       html += '<td>' + fullname + '</td>';
       html += '<td>' + rolTexto + '</td>';
+      html += '<td>' + status + '</td>'; // Nueva columna con estado
 
       // Acciones
       if (item.rol_id == ADMIN_ID) {
@@ -228,11 +244,15 @@ async function listarTablaUsuarios(datos) {
         let eliminarFila = "eliminarUsuario('" + item.cedula_usuario + "')";
         const editarFila = `abrirModalEditar('${item.cedula_usuario}','${item.clave ? "******" : ""}','${item.rol_id}')`;
 
-        html += `<td class="acciones">
-          <div class="acciones-icons">
-            <img src="img/iconos/Permisos.png" onclick="${btnPerm}" />
-            <img src="img/iconos/eliminar.png" onclick="${eliminarFila}" />
-            <img src="img/iconos/actualizar.png" onclick="${editarFila}" />
+        html += `
+        <td>
+          <div class="dropdown">
+            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="javascript:void(0);" onclick="${editarFila}"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="${eliminarFila}"><i class="icon-base bx bx-trash me-1"></i>Eliminar</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="${btnPerm}"><i class="icon-base bx bx-lock-open me-1"></i>Permisos</a>
+            </div>
           </div>
         </td>`;
       }

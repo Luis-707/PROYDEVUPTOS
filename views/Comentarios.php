@@ -3,7 +3,7 @@
 include_once '../servicios/Sesion.php';
 ?>
 
-<h2>Comentarios para planilla de evaluacion</h2>
+<h2>Comentarios para evaluaciones de desempeño del personal administrativo</h2>
 
 <p class="card-text">
   En esta tabla puede comentar las evaluaciones de un empleado cuya evaluación usted ha supervisado o Calificado.

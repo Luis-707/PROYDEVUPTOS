@@ -56,19 +56,6 @@ public function getIdUsuario(): int {
     return $this->id_usuario;
 }
 
-    // Método para guardar nuevo registro en evaluacion_administrativos
-    /*public function sql_guardar_eval_administrativos(): string {
-        return sprintf(
-            "INSERT INTO evaluacion_administrativos (id_usuario, id_evaluado, fecha_inicio, fecha_cierre, periodo_evaluado) 
-            VALUES (%d, %d, '%s', '%s', '%s');",
-            $this->id_usuario,
-            $this->id_evaluado,
-            $this->fecha_inicio,
-            $this->fecha_cierre,
-            $this->periodo_evaluado
-        );
-    }*/
-
     public function sql_guardar_eval_administrativos(): string {
         return sprintf(
             "INSERT INTO evaluacion_administrativos 
@@ -83,19 +70,21 @@ public function getIdUsuario(): int {
         );
     }
 
-    // Método para editar un registro en evaluacion_administrativos
-    public function sql_actualizar_eval_administrativos(): string {
-        return sprintf(
-            "UPDATE evaluacion_administrativos 
-            SET id_evaluado = %d, fecha_inicio = '%s', fecha_cierre = '%s', periodo_evaluado = '%s'
-            WHERE id_evaluado = %d;",
-            $this->fecha_inicio,
-            $this->fecha_cierre,
-            $this->periodo_evaluado,
-            $this->id_evaluado
-        );
-    }
-
+    // Método UPDATE para fechas y periodo
+public function sql_actualizar_periodo(): string {
+    return sprintf(
+        "UPDATE evaluacion_administrativos
+         SET fecha_inicio = '%s',
+             fecha_cierre = '%s',
+             periodo_evaluado = '%s'
+         WHERE id_eval_admin = %d
+         RETURNING id_eval_admin;",
+        addslashes($this->fecha_inicio),
+        addslashes($this->fecha_cierre),
+        addslashes($this->periodo_evaluado),
+        $this->getIdEvalAdmin()
+    );
+}
     // Método para eliminar un registro en evaluacion_administrativos
     public function sql_eliminar_eval_administrativos(): string {
         return sprintf(
@@ -141,6 +130,15 @@ public function getIdUsuario(): int {
          FROM evaluacion_administrativos ea
          WHERE ea.id_evaluado = %d;",
         $this->id_evaluado
+    );
+}
+
+public function sql_buscarPorId(): string {
+    return sprintf(
+        "SELECT id_eval_admin 
+         FROM evaluacion_administrativos 
+         WHERE id_eval_admin = %d;",
+        $this->id_eval_admin
     );
 }
 
@@ -191,12 +189,12 @@ public static function sql_buscar_evaluador_por_usuario(int $idUsuario): string 
 
     // Método que ejecuta la consulta y devuelve el resultado
 
-    public function actualizarEvalAdministrativos() {
+    /*public function actualizarEvalAdministrativos() {
         if ($this->conexion !== NULL) {
             return $this->conexion->ejecutarConsultaBdds($this->sql_actualizar_eval_administrativos());
         }
         return "No se ha definido la conexión";
-    }
+    }*/
 
     // Método que ejecuta la consulta y devuelve el resultado
     public function buscarPorUsuario() {

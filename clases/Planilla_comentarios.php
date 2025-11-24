@@ -5,6 +5,7 @@ class Planilla_comentarios {
     private $cedula_usuario = "";
     private $comentario_supervisor;
     private $comentario_evaluado;
+    private $conformidad = "";
     private $id_eval_admin = 0;
 
     public function __construct($dataCliente=array(''), $conexion = NULL) {
@@ -20,6 +21,10 @@ class Planilla_comentarios {
         if (isset($dataCliente['comentario_evaluado'])) {
             $this->comentario_evaluado = trim($dataCliente['comentario_evaluado']);
         }
+        if (isset($dataCliente['conformidad'])) {
+            $this->conformidad = trim($dataCliente['conformidad']);
+        }
+
         if ($conexion != NULL) {
             $this->conexion = $conexion;
         }
@@ -197,16 +202,19 @@ public function sql_buscar_por_id_y_supervisor(string $cedula): string {
             $this->id_eval_admin
         );
     }
-    // 🔹 Actualizar comentario del evaluado
-    public function sql_update_comentario_evaluado(): string {
+     // 🔹 Actualizar comentario del evaluado + conformidad
+     public function sql_update_comentario_evaluado(): string {
         return sprintf(
             "UPDATE evaluacion_administrativos 
-             SET comentario_evaluado = '%s'
+             SET comentario_evaluado = '%s',
+                 conformidad = '%s'
              WHERE id_eval_admin = %d;",
             addslashes($this->comentario_evaluado),
+            addslashes($this->conformidad),
             $this->id_eval_admin
         );
     }
+
 
     public function getCedulaUsuario(): string {
         return $this->cedula_usuario;

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once '../clases/ListaComentarios.php';
+include_once '../clases/Listados.php';
 
 $cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
 $rolUsuario   = $_SESSION['usuario']['rol'] ?? null;
@@ -10,22 +10,23 @@ if (!$cedulaSesion || !$rolUsuario) {
     exit;
 }
 
-$Lista = new ListaComentarios($this);
+$Lista = new Listados($this);
 
 // Seleccionar SQL según rol
 switch ($rolUsuario) {
+
     case 'evaluado':
-        $sql = ListaComentarios::sql_listar_por_evaluado($cedulaSesion);
+        $sql = Listados::sql_listar_por_evaluado($cedulaSesion);
         break;
-    case 'supervisor del evaluador':
-        $sql = ListaComentarios::sql_listar_por_supervisor($cedulaSesion);
+    
+    case 'supervisor':
+        $sql = Listados::sql_listar_por_supervisor($cedulaSesion);
         break;
+   
     case 'evaluador':
-        $sql = ListaComentarios::sql_listar_por_evaluador($cedulaSesion);
+        $sql = Listados::sql_listar_por_evaluador($cedulaSesion);
         break;
-    case 'administrador': // si tienes un rol admin que ve todo
-        $sql = ListaComentarios::sql_listar_evaluados();
-        break;
+   
     default:
         echo json_encode(["success" => false, "message" => "Rol no autorizado"]);
         exit;

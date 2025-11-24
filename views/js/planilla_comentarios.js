@@ -100,6 +100,15 @@ function renderizarPlanillaReadonly(data, empleados) {
   } else {
     console.warn("⚠️ No llegó id_eval_admin desde backend");
   }
+
+  // Setear conformidad si viene del backend
+if (evalData.conformidad) {
+  if (evalData.conformidad.toLowerCase() === "si") {
+    document.getElementById("conformidad_si").checked = true;
+  } else if (evalData.conformidad.toLowerCase() === "no") {
+    document.getElementById("conformidad_no").checked = true;
+  }
+}
   
   // Habilitar según rol
   habilitarCamposPorRol();

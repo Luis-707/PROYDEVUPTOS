@@ -179,18 +179,23 @@ function validarCadena(cadena){
       );
   
       const fullname = empleado ? empleado.fullname : "No encontrado";
+      const additional = empleado ? empleado.additional || "" : "";
       const cargoTexto = item.cargo_supervisor || "Sin cargo";
   
       html += `
         <tr>
+          <td>${cedula}</td>  
           <td>${fullname}</td>
-          <td>${cedula}</td>
+          <td>${additional}</td>
           <td>${cargoTexto}</td>
-          <td class="acciones">
-            <div class="acciones-icons">
-              <img src="img/iconos/actualizar.png" onclick="abrirModalEditarCargoSuperv(${item.id_usuario}, ${item.id_cargo_supervisor})" />
-              <img src="img/iconos/eliminar.png" onclick="eliminarSupervisor(${item.id_usuario})" />
+          <td>
+          <div class="dropdown">
+            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarCargoSuperv(${item.id_usuario}, ${item.id_cargo_supervisor})"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarSupervisor(${item.id_usuario})"><i class="icon-base bx bx-trash me-1"></i>Eliminar</a>
             </div>
+          </div>
           </td>
         </tr>
       `;

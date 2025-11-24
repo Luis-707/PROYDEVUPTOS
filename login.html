@@ -39,7 +39,12 @@
                 </div>
                 <div class="mb-6">
                   <label for="clave" class="form-label">Clave</label>
-                  <input type="password" class="form-control" id="clave" name="clave" required />
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="clave" name="clave" required />
+                    <button class="btn btn-outline-secondary" type="button" id="toggleClave" aria-label="Mostrar u ocultar contraseña">
+                      Mostrar
+                    </button>
+                  </div>
                 </div>
                 <div class="mb-6">
                   <button class="btn btn-primary d-grid w-100" type="submit">Entrar</button>
@@ -58,5 +63,34 @@
     <script src="assets/vendor/js/bootstrap.js"></script>
     <script src="controlador/js/proceso.js"></script> <!-- importante para usar microApi -->
     <script src="views/js/login.js"></script>
+
+    <script>
+       const inputCedula = document.getElementById('cedula');
+
+inputCedula.addEventListener('input', function () {
+  // Eliminar cualquier caracter que no sea número
+  this.value = this.value.replace(/[^0-9]/g, '');
+  // Limitar la longitud a 8 caracteres
+  if (this.value.length > 8) {
+    this.value = this.value.slice(0, 8);
+  }
+});
+    </script>
+
+    <script>
+      const claveInput = document.getElementById('clave');
+  const toggleBtn = document.getElementById('toggleClave');
+
+  toggleBtn.addEventListener('click', () => {
+    if (claveInput.type === 'password') {
+      claveInput.type = 'text';
+      toggleBtn.textContent = 'Ocultar';
+    } else {
+      claveInput.type = 'password';
+      toggleBtn.textContent = 'Mostrar';
+    }
+  });
+    </script>
+    
   </body>
 </html>

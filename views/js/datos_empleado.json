@@ -56,7 +56,7 @@
                 "last_update": "2025-01-15 10:30:00",
                 "last_update_str": "mié 15 ene 2025, 10:30am",
                 "home": "1",
-                "additional": "LICENCIADO EN MATEMÁTICAS,DEPARTAMENTO DE MATEMÁTICAS PURAS",
+                "additional": "DEPARTAMENTO DE MATEMÁTICAS PURAS",
                 "ldap_account": "jperezg"
             },
             {
@@ -104,7 +104,7 @@
                 "sex_str": "Masculino",
                 "type": "3",
                 "type_str": [
-                    "Docente"
+                    "Docente", "Administrativo"
                 ],
                 "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_pedro.jpg",
                 "status": "1",
@@ -133,7 +133,7 @@
                 "sex_str": "Femenino",
                 "type": "4",
                 "type_str": [
-                    "Administrativo"
+                    "Estudiante", "Administrativo"
                 ],
                 "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_luisa.jpg",
                 "status": "1",
@@ -143,7 +143,7 @@
                 "last_update": "2025-05-15 08:00:00",
                 "last_update_str": "jue 15 may 2025, 08:00am",
                 "home": "1",
-                "additional": "COORDINADORA ADMINISTRATIVA,UNIDAD DE RECURSOS HUMANOS",
+                "additional": "UNIDAD DE RECURSOS HUMANOS",
                 "ldap_account": "lgomez"
             },
             {
@@ -162,7 +162,7 @@
                 "sex_str": "Masculino",
                 "type": "3",
                 "type_str": [
-                    "Docente"
+                    "Administrativo"
                 ],
                 "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_carlos.jpg",
                 "status": "1",
@@ -172,7 +172,7 @@
                 "last_update": "2025-06-01 07:40:00",
                 "last_update_str": "sáb 01 jun 2025, 07:40am",
                 "home": "1",
-                "additional": "PROFESOR ASISTENTE,DEPARTAMENTO DE CIENCIAS SOCIALES",
+                "additional": "DEPARTAMENTO DE CIENCIAS SOCIALES",
                 "ldap_account": "cmartinez"
             },
             {
@@ -220,7 +220,7 @@
                 "sex_str": "Masculino",
                 "type": "3",
                 "type_str": [
-                    "Docente"
+                    "Estudiante", "Administrativo"
                 ],
                 "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_jorge_daniel.jpg",
                 "status": "1",
@@ -230,7 +230,7 @@
                 "last_update": "2025-08-19 11:30:00",
                 "last_update_str": "mar 19 ago 2025, 11:30am",
                 "home": "1",
-                "additional": "LICENCIADO EN FILOSOFÍA,UNIDAD DE INVESTIGACIÓN",
+                "additional": "UNIDAD DE SERVICIOS GENERALES",
                 "ldap_account": "jfernandez"
             },
             {
@@ -290,6 +290,209 @@
                 "home": "1",
                 "additional": "ASESORA ADMINISTRATIVA,DEPARTAMENTO DE CALIDAD",
                 "ldap_account": "mdiaz"
+            },
+            {
+                "profile_id": "3424",
+                "profile_id_str": "003424",
+                "customcode": "3802400341420",
+                "nationality": "V",
+                "nationality_str": "Venezolano",
+                "pin": "15990011",
+                "pin_str": "V-15990011",
+                "fullname": "LUIS FERNANDO TORRES MARTINEZ",
+                "shortname": "LUIS F. TORRES M.",
+                "firstnames": "LUIS FERNANDO",
+                "lastnames": "TORRES MARTINEZ",
+                "sex": "M",
+                "sex_str": "Masculino",
+                "type": "3",
+                "type_str": [
+                    "Obrero"
+                ],
+                "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_luis.jpg",
+                "status": "1",
+                "status_str": "Activo",
+                "create": "2020-03-10 10:10:00",
+                "create_str": "mar 10 mar 2020, 10:10am",
+                "last_update": "2025-10-05 09:30:00",
+                "last_update_str": "dom 05 oct 2025, 09:30am",
+                "home": "1",
+                "additional": "DEPARTAMENTO DE INGENIERÍA ELÉCTRICA",
+                "ldap_account": "ltorres"
+            },
+            {
+                "profile_id": "3425",
+                "profile_id_str": "003425",
+                "customcode": "3802400341421",
+                "nationality": "V",
+                "nationality_str": "Venezolano",
+                "pin": "16000012",
+                "pin_str": "V-16000012",
+                "fullname": "SARA ELENA CASTILLO RAMIREZ",
+                "shortname": "SARA E. CASTILLO R.",
+                "firstnames": "SARA ELENA",
+                "lastnames": "CASTILLO RAMIREZ",
+                "sex": "F",
+                "sex_str": "Femenino",
+                "type": "4",
+                "type_str": [
+                    "Administrativo"
+                ],
+                "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_sara.jpg",
+                "status": "1",
+                "status_str": "Activo",
+                "create": "2021-05-14 11:15:00",
+                "create_str": "vie 14 may 2021, 11:15am",
+                "last_update": "2025-11-03 12:00:00",
+                "last_update_str": "lun 03 nov 2025, 12:00pm",
+                "home": "1",
+                "additional": "UNIDAD DE RECURSOS HUMANOS",
+                "ldap_account": "scastillo"
+            },
+            {
+                "profile_id": "3426",
+                "profile_id_str": "003426",
+                "customcode": "3802400341422",
+                "nationality": "V",
+                "nationality_str": "Venezolano",
+                "pin": "16110013",
+                "pin_str": "V-16110013",
+                "fullname": "MIGUEL ANGEL DIAZ VEGA",
+                "shortname": "MIGUEL A. DIAZ V.",
+                "firstnames": "MIGUEL ANGEL",
+                "lastnames": "DIAZ VEGA",
+                "sex": "M",
+                "sex_str": "Masculino",
+                "type": "3",
+                "type_str": [
+                    "Estudiante"
+                ],
+                "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_miguel.jpg",
+                "status": "1",
+                "status_str": "Activo",
+                "create": "2018-08-09 08:45:00",
+                "create_str": "jue 09 ago 2018, 08:45am",
+                "last_update": "2025-09-20 13:20:00",
+                "last_update_str": "sáb 20 sep 2025, 01:20pm",
+                "home": "1",
+                "additional": "DEPARTAMENTO DE MATEMÁTICAS APLICADAS",
+                "ldap_account": "mdiazv"
+            },
+            {
+                "profile_id": "3427",
+                "profile_id_str": "003427",
+                "customcode": "3802400341423",
+                "nationality": "V",
+                "nationality_str": "Venezolano",
+                "pin": "16220014",
+                "pin_str": "V-16220014",
+                "fullname": "PATRICIA MARIA SOTO ALVAREZ",
+                "shortname": "PATRICIA M. SOTO A.",
+                "firstnames": "PATRICIA MARIA",
+                "lastnames": "SOTO ALVAREZ",
+                "sex": "F",
+                "sex_str": "Femenino",
+                "type": "4",
+                "type_str": [
+                    "Administrativo"
+                ],
+                "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_patricia.jpg",
+                "status": "1",
+                "status_str": "Activo",
+                "create": "2017-11-13 09:00:00",
+                "create_str": "lun 13 nov 2017, 09:00am",
+                "last_update": "2025-08-10 10:30:00",
+                "last_update_str": "dom 10 ago 2025, 10:30am",
+                "home": "1",
+                "additional": "UNIDAD DE SERVICIOS ADMINISTRATIVOS",
+                "ldap_account": "psoto"
+            },
+            {
+                "profile_id": "3428",
+                "profile_id_str": "003428",
+                "customcode": "3802400341424",
+                "nationality": "V",
+                "nationality_str": "Venezolano",
+                "pin": "16330015",
+                "pin_str": "V-16330015",
+                "fullname": "RAUL EDUARDO MORALES PEREZ",
+                "shortname": "RAUL E. MORALES P.",
+                "firstnames": "RAUL EDUARDO",
+                "lastnames": "MORALES PEREZ",
+                "sex": "M",
+                "sex_str": "Masculino",
+                "type": "3",
+                "type_str": [
+                    "Docente", "Administrativo"
+                ],
+                "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_raul.jpg",
+                "status": "1",
+                "status_str": "Activo",
+                "create": "2019-10-20 07:30:00",
+                "create_str": "dom 20 oct 2019, 07:30am",
+                "last_update": "2025-07-18 11:40:00",
+                "last_update_str": "vie 18 jul 2025, 11:40am",
+                "home": "1",
+                "additional": "DEPARTAMENTO DE CIENCIAS ECONÓMICAS",
+                "ldap_account": "rmorales"
+            },
+            {
+                "profile_id": "3429",
+                "profile_id_str": "003429",
+                "customcode": "3802400341425",
+                "nationality": "V",
+                "nationality_str": "Venezolano",
+                "pin": "16440016",
+                "pin_str": "V-16440016",
+                "fullname": "SUSANA ELENA VILLARREAL RODRIGUEZ",
+                "shortname": "SUSANA E. VILLARREAL R.",
+                "firstnames": "SUSANA ELENA",
+                "lastnames": "VILLARREAL RODRIGUEZ",
+                "sex": "F",
+                "sex_str": "Femenino",
+                "type": "4",
+                "type_str": [
+                    "Administrativo"
+                ],
+                "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_susana.jpg",
+                "status": "1",
+                "status_str": "Activo",
+                "create": "2021-07-07 12:00:00",
+                "create_str": "mié 07 jul 2021, 12:00pm",
+                "last_update": "2025-10-01 14:00:00",
+                "last_update_str": "mié 01 oct 2025, 02:00pm",
+                "home": "1",
+                "additional": "UNIDAD DE CALIDAD Y GESTIÓN",
+                "ldap_account": "svillarreal"
+            },
+            {
+                "profile_id": "3430",
+                "profile_id_str": "003430",
+                "customcode": "3802400341426",
+                "nationality": "V",
+                "nationality_str": "Venezolano",
+                "pin": "16550017",
+                "pin_str": "V-16550017",
+                "fullname": "ENRIQUE JAVIER LOPEZ SANTOS",
+                "shortname": "ENRIQUE J. LOPEZ S.",
+                "firstnames": "ENRIQUE JAVIER",
+                "lastnames": "LOPEZ SANTOS",
+                "sex": "M",
+                "sex_str": "Masculino",
+                "type": "3",
+                "type_str": [
+                    "Docente"
+                ],
+                "profile_image_url": "http://api.uptos.edu.ve/directory/images/sample_enrique.jpg",
+                "status": "1",
+                "status_str": "Activo",
+                "create": "2022-02-25 08:30:00",
+                "create_str": "sáb 25 feb 2022, 08:30am",
+                "last_update": "2025-11-05 09:10:00",
+                "last_update_str": "mar 05 nov 2025, 09:10am",
+                "home": "1",
+                "additional": "DEPARTAMENTO DE INGENIERÍA DE SISTEMAS",
+                "ldap_account": "elopez"
             }
         ]
     }

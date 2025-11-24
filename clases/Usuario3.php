@@ -62,7 +62,7 @@ public function sql_actualizar(): string {
 
     // Método para listar todos (SELECT)
     public static function sql_listar(): string {
-        return "SELECT * FROM usuarios;";
+        return "SELECT * FROM usuarios WHERE rol_id != 4;";
     }
 
     // Método para listar todos ejecutando la consulta usando $conexion

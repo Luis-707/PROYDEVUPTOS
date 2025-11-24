@@ -46,31 +46,31 @@ td.acciones {
 </style>
 
 <!--Evaluador-->
-<h2>Registro de datos de evaluadores</h2>
+<h2>Asignacion de cargos de evaluadores</h2>
 <div class="container py-4">
       <form id="formulario_evaluador" onsubmit="event.preventDefault(); validar_formEvaluador(1);">
-        <div class="mb-3">
+        <div class="col-md-4 mb-3">
           <label for="id_usuario" class="form-label">Seleccionar Evaluador</label>
           <select class="form-select" id="id_usuario" name="id_usuario">
             <option selected disabled>Seleccione un evaluador</option>
           </select>
         </div>
       
-        <div class="mb-3">
+        <div class="col-md-4 mb-3">
           <label for="id_cargo_evaluador" class="form-label">Seleccionar Cargo</label>
           <select class="form-select" id="id_cargo_evaluador" name="id_cargo_evaluador">
             <option selected disabled>Seleccione un cargo</option>
           </select>
         </div>
       
-        <div class="mb-3">
+        <div class="col-md-4 mb-3">
           <label for="id_supervisor" class="form-label">Asignar Supervisor</label>
           <select class="form-select" id="id_supervisor" name="id_supervisor">
             <option selected disabled>Seleccione un supervisor</option>
           </select>
         </div>
 
-      <button type="submit" class="btn btn-primary">Guardar</button>
+      <button type="submit" class="btn btn-primary mb-3">Guardar</button>
       </form>
       </div>
 
@@ -100,7 +100,7 @@ td.acciones {
 
 <table class="table table-bordered align-middle" id="tabla-evaluadores">
     <thead class="table-dark">
-        <tr><th>Apellidos y Nombres</th><th>Cédula </th><th>Cargo</th><th>Acciones</th></tr>
+        <tr><th>Cedula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Cargo</th><th>Acciones</th></tr>
     </thead>
     <tbody></tbody>
 </table>

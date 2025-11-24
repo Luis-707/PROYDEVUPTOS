@@ -29,7 +29,7 @@ class RolesSistema {
     }
 
     public static function sql_listar_roles_select(): string {
-        return "SELECT * FROM roles_sistema WHERE rol != 'Administrador';";
+        return "SELECT * FROM roles_sistema WHERE rol != 'Administrador' AND rol != 'Evaluado';";
     }
 
     // Método que ejecuta la consulta y devuelve el resultado

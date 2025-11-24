@@ -35,30 +35,42 @@
                         <div data-i18n="Gestión de supervisores" >Gestión de Supervisores</div>
                     </a>
                 </li>
-                
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioGestionEvaluados">
                         <i class="menu-icon icon-base bx bx-user"></i>
-                        <div data-i18n="Gestión de Evaluados" >Gestión de Evaluados</div>
+                        <div data-i18n="Gestión de evaluados" >Gestión de evaluados</div>
                     </a>
                 </li>
-
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioDatosEvaluados">
                         <i class="menu-icon icon-base bx bx-user"></i>
                         <div data-i18n="Cargos de Evaluados" >Cargos de Evaluados</div>
                     </a>
-
+                </li>
                 <li class="menu-item">
-                    <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacionAdministrativos">
-                        <i class="menu-icon icon-base bx bx-file"></i>
-                        <div data-i18n="Evaluación Administrativos" >Evaluacion Administrativos</div>
+                    <a href="javascript:void(0)" class="menu-link" id="formularioEvalAdministrativos">
+                        <i class="menu-icon icon-base bx bx-pinsel"></i>
+                        <div data-i18n="Evaluacion administrativos" >Evaluacion administrativos</div>
                     </a>
-
+                </li>
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacion">
                         <i class="menu-icon icon-base bx bx-user"></i>
                         <div data-i18n="Evaluaciones" >Evaluaciones</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioObjetivos">
+                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <div data-i18n="Gestion de objetivos">Objetivos</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioCompetencias">
+                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <div data-i18n="Gestion de competencias">Gestion de competencias</div>
                     </a>
                 </li>
 

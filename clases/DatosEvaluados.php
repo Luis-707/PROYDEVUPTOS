@@ -103,4 +103,25 @@ class DatosEvaluados {
             $this->id_usuario
         );
     }
+
+    public static function sql_listar_evaluados(): string {
+        return "
+        SELECT 
+        e.id_usuario,
+        u.cedula_usuario,
+        c.cargo_evaluado
+    FROM evaluados e
+    INNER JOIN usuarios u 
+        ON e.id_usuario = u.id_usuario
+    INNER JOIN cargos_evaluados c 
+        ON e.id_cargo_evaluado = c.id_cargo_evaluado;
+        ";
+    }
+
+    public function listarEvaluados() {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds(self::sql_listar_evaluados());
+        }
+        return "No se ha definido la conexión";
+    }
 }

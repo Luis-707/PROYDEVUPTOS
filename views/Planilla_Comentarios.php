@@ -99,7 +99,21 @@ include_once "Sesion.php";
 
       <!-- Formulario Evaluado -->
 <form id="form_comentario_evaluado" onsubmit="event.preventDefault(); Validar_form_comentario_evaluado(1);">
+  
+  <!-- Nuevo apartado de conformidad -->
+  <div class="mb-3">
+    <label class="form-label">¿Está de acuerdo con la evaluación?</label>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="conformidad" id="conformidad_si" value="si">
+      <label class="form-check-label" for="conformidad_si">Sí</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="conformidad" id="conformidad_no" value="no">
+      <label class="form-check-label" for="conformidad_no">No</label>
+    </div>
+  </div>
   <textarea id="comentario_evaluado" name="comentario_evaluado" class="form-control" rows="4"></textarea>
+
   <input type="hidden" id="id_eval_admin_eval" name="id_eval_admin" value="">
   <button type="submit" class="btn btn-primary">Guardar Comentario Evaluado</button>
 </form>

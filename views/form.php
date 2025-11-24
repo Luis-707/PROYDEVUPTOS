@@ -96,10 +96,13 @@ td.acciones {
   <div class="mb-4 row">
     <div class="col-md-6">
       <label for="id_clave" class="form-label">Clave</label>
-      <div class="d-flex">
-        <input class="form-control" type="password" id="id_clave" name="clave" placeholder="********" />
-        <button type="button" class="btn btn-outline-secondary ms-2" id="toggleClave">Mostrar</button>
-      </div>
+      <div class="d-flex flex-column">
+        <div class="d-flex">
+          <input class="form-control" type="password" id="id_clave" name="clave" placeholder="********" />
+          <button type="button" class="btn btn-outline-secondary ms-2" id="toggleClave">Mostrar</button>
+        </div>
+          <small id="mensajeSeguridad" class="mt-2"></small>
+        </div>
     </div>
     <div class="col-md-6">
       <label for="id_rol_sistema" class="form-label">Rol</label>
@@ -121,7 +124,7 @@ td.acciones {
     </div>
 <table class="table table-bordered align-middle" id="tabla-usuarios">
     <thead class="table-dark">
-        <tr><th>Clave</th><th>Cédula Usuario</th><th>Apellidos y nombres</th><th>Rol</th><th>Acciones</th></tr>
+        <tr><th>Clave</th><th>Cédula Usuario</th><th>Apellidos y nombres</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
     </thead>
     <tbody></tbody>
 </table>

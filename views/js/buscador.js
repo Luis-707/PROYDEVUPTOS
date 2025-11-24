@@ -1,211 +1,232 @@
-// Función para buscar y cargar datos al formulario
-/*async function buscarYMostrarDatos(valorBusqueda) {
-    try {
-        // Consultar JSON usando microApi
-        const resp = await microApi('views/js/datos_empleado.json');
-
-        // Suponiendo que resp es un objeto JSON parseado
-        if (resp.length == 0 || !resp[0].data) {
-            console.error('JSON con formato inesperado');
-            return;
-        }
-
-        // Buscar coincidencias filtrando por pin, fullname, type_str o additional
-        const coincidencias = resp.data.filter(emp => {
-            const busqueda = valorBusqueda.toLowerCase();
-            return (
-                emp.pin.toLowerCase().includes(busqueda) ||
-                emp.fullname.toLowerCase().includes(busqueda) ||
-                emp.type_str.some(tipo => tipo.toLowerCase().includes(busqueda)) ||
-                emp.additional.toLowerCase().includes(busqueda)
-            );
-        });
-
-        if (coincidencias.length > 0) {
-            const primerMatch = coincidencias[0];
-
-            // Asignar valores a los inputs
-            document.getElementById('id_cedula_usuario').value = primerMatch.pin || '';
-            document.getElementById('fullname_input').value = primerMatch.fullname || '';
-            document.getElementById('type_str_input').value = (primerMatch.type_str || []).join(', ') || '';
-            document.getElementById('additional_input').value = primerMatch.additional || '';
-        } else {
-            // Limpiar los campos si no hay coincidencias
-            document.getElementById('id_cedula_usuario').value = '';
-            document.getElementById('fullname_input').value = '';
-            document.getElementById('type_str_input').value = '';
-            document.getElementById('additional_input').value = '';
-        }
-    } catch (error) {
-        console.error('Error al buscar datos:', error);
-    }
-}
-
-// Evento para el input search
-document.getElementById('search_input').addEventListener('input', (e) => {
-    const valor = e.target.value.trim();
-    if (valor.length > 0) {
-        buscarYMostrarDatos(valor);
-    } else {
-        // Limpiar campos si no hay texto en búsqueda
-        document.getElementById('id_cedula_usuario').value = '';
-        document.getElementById('fullname_input').value = '';
-        document.getElementById('type_str_input').value = '';
-        document.getElementById('additional_input').value = '';
-    }
-});*/
-
-// Función asíncrona que trae y filtra datos del JSON según valor de búsqueda
-/*async function obtenerDatosJSON(valorBusqueda) {
-    try {
-        const resp = await microApi('views/js/datos_empleado.json');
-        console.log(resp);
-        if (resp.length == 0 || !resp[0].data) {
+//Buscador con filtrado de cedula de uno en uno funcional
+/*
+$(document).ready(function() {
+    async function obtenerDatosPorCedula(cedula) {
+        try {
+          const resp = await microApi('views/js/datos_empleado.json');
+          if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
             console.error('JSON con formato inesperado');
             return null;
+          }
+          const datos = resp[0].data;
+          const cedulaBusqueda = cedula.toLowerCase();
+      
+          // Buscar coincidencia exacta (convertida a minúsculas para no distinguir mayúsculas)
+          const coincidencia = datos.find(emp => emp.pin && emp.pin.toLowerCase() === cedulaBusqueda);
+      
+          return coincidencia || null; // Devuelve el objeto coincidencia o null si no hay
+        } catch (error) {
+          console.error('Error al buscar datos:', error);
+          return null;
         }
-
-        const busqueda = valorBusqueda.toLowerCase();
-        const coincidencias = resp.data.filter(emp =>
-            emp.pin.toLowerCase().includes(busqueda) ||
-            emp.fullname.toLowerCase().includes(busqueda) ||
-            emp.type_str.some(tipo => tipo.toLowerCase().includes(busqueda)) ||
-            emp.additional.toLowerCase().includes(busqueda)
-        );
-
-        // Retorna el primer resultado o null si no hay coincidencias
-        return coincidencias.length > 0 ? coincidencias[0] : null;
-
-    } catch (error) {
-        console.error('Error al buscar datos:', error);
-        return null;
+      }
+      
+  
+    // Función para llenar los campos del formulario con los datos encontrados
+    function llenarFormulario(datos) {
+      if (datos && typeof datos === 'object') {
+        $('#id_cedula_usuario').val(datos.pin || '');
+        $('#fullname_input').val(datos.fullname || '');
+        $('#type_str_input').val(Array.isArray(datos.type_str) ? datos.type_str.join(', ') : (datos.type_str || ''));
+        $('#additional_input').val(datos.additional || '');
+      } else {
+        $('#fullname_input').val('');
+        $('#type_str_input').val('');
+        $('#additional_input').val('');
+      }
     }
-}
-
-
-// Función normal que recibe datos y los coloca en el formulario
-function llenarFormulario(datos) {
-    if (datos) {
-        document.getElementById('id_cedula_usuario').value = datos.pin || '';
-        document.getElementById('fullname_input').value = datos.fullname || '';
-        document.getElementById('type_str_input').value = (datos.type_str || []).join(', ') || '';
-        document.getElementById('additional_input').value = datos.additional || '';
-    } else {
-        // Limpiar campos si no hay datos
-        document.getElementById('id_cedula_usuario').value = '';
-        document.getElementById('fullname_input').value = '';
-        document.getElementById('type_str_input').value = '';
-        document.getElementById('additional_input').value = '';
-    }
-}
-
-
-// Evento para el input search
-document.getElementById('search_input').addEventListener('input', async (e) => {
-    const valor = e.target.value.trim();
-    if (valor.length > 0) {
-        const datos = await obtenerDatosJSON(valor);
+  
+    // Crear y agregar botón junto al input de búsqueda
+    const $inputDiv = $('#id_cedula_usuario').parent();
+    const $buscarBtn = $('<button type="button" class="btn btn-primary ms-2">Buscar</button>');
+    $inputDiv.append($buscarBtn);
+  
+    // Evento click botón que ejecuta la búsqueda por cédula y llena el formulario
+    $buscarBtn.on('click', async function() {
+      const valorCedula = $('#id_cedula_usuario').val().trim();
+      if (valorCedula.length > 0) {
+        const datos = await obtenerDatosPorCedula(valorCedula);
         llenarFormulario(datos);
-    } else {
+      } else {
         llenarFormulario(null);
-    }
-});
-*/
+      }
+    });
+  
+  });
 
-// Función para obtener y filtrar datos del JSON
-/*async function obtenerDatosJSON(valorBusqueda) {
-    try {
+  $('#id_cedula_usuario').on('keypress', function(event) {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode < 48 || charCode > 57) && // No es número
+      charCode !== 8 && // No es backspace
+      charCode !== 37 && // No es flecha izquierda
+      charCode !== 39 // No es flecha derecha
+    ) {
+      event.preventDefault();
+    }
+  });
+  */
+
+  //Codigo funcional con error de eventos dinamicos
+  /*$(document).ready(function() {
+    async function obtenerDatosPorCedula(cedula) {
+      try {
         const resp = await microApi('views/js/datos_empleado.json');
-        
         if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
-            console.error('JSON con formato inesperado');
-            return null;
+          console.error('JSON con formato inesperado');
+          return null;
         }
-
-        const datos = resp.data;
-        const busqueda = valorBusqueda.toLowerCase();
-
-        const coincidencias = datos.filter(emp => {
-            return (
-                emp.pin.toLowerCase().includes(busqueda) ||
-                emp.fullname.toLowerCase().includes(busqueda) ||
-                emp.type_str.some(tipo => tipo.toLowerCase().includes(busqueda)) ||
-                emp.additional.toLowerCase().includes(busqueda)
-            );
-        });
-
-        return coincidencias.length > 0 ? coincidencias[0] : null;
-
-    } catch (error) {
+        const datos = resp[0].data;
+        const cedulaBusqueda = cedula.toLowerCase();
+  
+        // Buscar coincidencia exacta (convertida a minúsculas para no distinguir mayúsculas)
+        const coincidencia = datos.find(emp => emp.pin && emp.pin.toLowerCase() === cedulaBusqueda);
+  
+        return coincidencia || null; // Devuelve el objeto coincidencia o null si no hay
+      } catch (error) {
         console.error('Error al buscar datos:', error);
-        return null;
-    }
-}
-
-// Función para llenar los campos del formulario con los datos encontrados
-function llenarFormulario(datos) {
-    // Verificar que datos no sea undefined, null ni vacío
-    if (datos && typeof datos === 'object') {
-        document.getElementById('id_cedula_usuario').value = datos.pin || '';
-        document.getElementById('fullname_input').value = datos.fullname || '';
-        document.getElementById('type_str_input').value = (datos.type_str || []).join(', ') || '';
-        document.getElementById('additional_input').value = datos.additional || '';
-    } else {
-        // Limpiar campos si no hay datos
-        document.getElementById('id_cedula_usuario').value = '';
-        document.getElementById('fullname_input').value = '';
-        document.getElementById('type_str_input').value = '';
-        document.getElementById('additional_input').value = '';
-    }
-}
-
-// Asignación del evento input a search_input solo cuando el formulario esté visible
-document.getElementById('search_input').addEventListener('input', async (e) => {
-    const valor = e.target.value.trim();
-    if (valor.length > 0) {
-        const datos = await obtenerDatosJSON(valor);
-        llenarFormulario(datos);
-    } else {
-        llenarFormulario(null);
-    }
-});*/
-
-// Este bloque puede ir en tu archivo event_menu.js o en el JS específico de la vista del buscador
-
-// Función para obtener datos por cédula
-async function obtenerDatosPorCedula(cedula) {
-    try {
-      const resp = await microApi('views/js/datos_empleado.json');
-      if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
-        console.error('JSON con formato inesperado');
         return null;
       }
-      const datos = resp[0].data;
-      const cedulaBusqueda = cedula.toLowerCase();
+    }
   
-      // Buscar coincidencia exacta
-      const coincidencia = datos.find(emp => emp.pin && emp.pin.toLowerCase() === cedulaBusqueda);
+    // Función para llenar los campos del formulario con los datos encontrados
+    function llenarFormulario(datos) {
+      if (datos && typeof datos === 'object') {
+        $('#id_cedula_usuario').val(datos.pin || '');
+        $('#fullname_input').val(datos.fullname || '');
+        $('#type_str_input').val(Array.isArray(datos.type_str) ? datos.type_str.join(', ') : (datos.type_str || ''));
+        $('#additional_input').val(datos.additional || '');
+      } else {
+        $('#fullname_input').val('');
+        $('#type_str_input').val('');
+        $('#additional_input').val('');
+      }
+    }
   
-      return coincidencia || null;
-    } catch (error) {
-      console.error('Error al buscar datos:', error);
+    // Evento click del botón buscar
+    $('#btn_buscar_cedula').off('click').on('click', async function() {
+      const valorCedula = $('#id_cedula_usuario').val().trim();
+      if (valorCedula.length > 0) {
+        const datos = await obtenerDatosPorCedula(valorCedula);
+        llenarFormulario(datos);
+      } else {
+        llenarFormulario(null);
+      }
+    });
+  
+    // Validación para que solo se puedan ingresar números en el input cédula
+    $('#id_cedula_usuario').off('keypress').on('keypress', function(event) {
+      const charCode = event.which ? event.which : event.keyCode;
+      if (
+        (charCode < 48 || charCode > 57) && // No es número
+        charCode !== 8 && // No es backspace
+        charCode !== 37 && // No es flecha izquierda
+        charCode !== 39 // No es flecha derecha
+      ) {
+        event.preventDefault();
+      }
+    });
+  });
+  
+  //const resp = await microApi(`https://api.uptos.edu.ve/1.7.7/directory/search_person.json?pin=${cedula}&token=123`);
+  */
+  
+
+  // Función para obtener datos por cédula
+async function obtenerDatosPorCedula(cedula) {
+  try {
+    const resp = await microApi('views/js/datos_empleado.json');
+    if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
+      console.error('JSON con formato inesperado');
       return null;
     }
+    const datos = resp[0].data;
+    const cedulaBusqueda = cedula.toLowerCase();
+
+    // Buscar coincidencia exacta
+    const coincidencia = datos.find(emp => emp.pin && emp.pin.toLowerCase() === cedulaBusqueda);
+
+    return coincidencia || null;
+  } catch (error) {
+    console.error('Error al buscar datos:', error);
+    return null;
   }
-  
-  // Función para llenar el formulario
-  function llenarFormulario(datos) {
-    if (datos && typeof datos === 'object') {
-      $('#id_cedula_usuario').val(datos.pin || '');
-      $('#fullname_input').val(datos.fullname || '');
-      $('#type_str_input').val(Array.isArray(datos.type_str) ? datos.type_str.join(', ') : (datos.type_str || ''));
-      $('#additional_input').val(datos.additional || '');
-    } else {
-      $('#fullname_input').val('');
-      $('#type_str_input').val('');
-      $('#additional_input').val('');
+}
+
+// Función para llenar el formulario
+function llenarFormulario(datos) {
+
+  let opcDetener = ["Obrero", "Docente"];
+  let opcAdministrativo = ["Administrativo"];
+
+  if (view !== "" && view === "gestion_evaluados") {
+    if (datos && Array.isArray(datos.type_str)) {
+      const tieneOpcDetener = datos.type_str.some(tipo => opcDetener.includes(tipo));
+      const tieneAdministrativo = datos.type_str.includes("Administrativo");
+      const soloEstudiante = datos.type_str.length === 1 && datos.type_str[0] === "Estudiante";
+
+      // Detiene si solo Estudiante
+      if (soloEstudiante) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Atención',
+          text: `La cédula ingresada corresponde solo a un Estudiante.`,
+          confirmButtonText: 'Aceptar'
+        });
+        return false;
+      }
+      
+      // Detiene si contiene Obrero o Docente (incluso con otros valores)
+      if (tieneOpcDetener) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Atención',
+          text: `La cédula ingresada corresponde a un tipo no permitido: ${datos.type_str.join(', ')}.`,
+          confirmButtonText: 'Aceptar'
+        });
+        return false;
+      }
     }
   }
 
   
-  
+  if (view !== "" && view === "usuarios") {
+    if (datos && Array.isArray(datos.type_str)) {
+      const tieneObrero = datos.type_str.includes("Obrero");
+      const tieneEstudiante = datos.type_str.includes("Estudiante");
+      const tieneAdministrativo = datos.type_str.includes("Administrativo");
+      const tieneDocente = datos.type_str.includes("Docente");
+
+      // Detener si tiene Obrero o Estudiante
+      if (tieneObrero || tieneEstudiante) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Atención',
+          text: `La cédula ingresada corresponde a un tipo no permitido: ${datos.type_str.join(', ')}.`,
+          confirmButtonText: 'Aceptar'
+        });
+        return false;
+      }
+
+      // No detener si tiene Administrativo (solo o junto con Docente)
+      if (tieneAdministrativo) {
+        // Se ejecuta normalmente
+      } else {
+        // En teoría no llega aquí si solo hay Obrero o Estudiante porque se detiene arriba
+      }
+    }
+  }
+
+
+
+  if (datos && typeof datos === 'object') {
+    $('#id_cedula_usuario').val(datos.pin || '');
+    $('#fullname_input').val(datos.fullname || '');
+    $('#type_str_input').val(Array.isArray(datos.type_str) ? datos.type_str.join(', ') : (datos.type_str || ''));
+    $('#additional_input').val(datos.additional || '');
+  } else {
+    $('#fullname_input').val('');
+    $('#type_str_input').val('');
+    $('#additional_input').val('');
+  }
+}

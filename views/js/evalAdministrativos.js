@@ -70,6 +70,9 @@ function validar_formEvalAdmin(opc) {
       if(opc==1){
           guardarPeriodoEvaluacion();  
       }
+      else{
+          actualizarPeriodoEvaluacion();  
+      }
           
   }
 }
@@ -126,13 +129,13 @@ async function guardarPeriodoEvaluacion() {
     }
 
     // Llamada al servicio PHP para guardar
-    const resp = await microApi('controlador/?g_periodo', datos);
+    const resp = await microApi('controlador/?g_EvalAdmin', datos);
 
     // Validar respuesta
     if (resp.success) {
       Swal.fire({
         icon: 'success',
-        title: 'Periodo guardado',
+        title: 'Registro de Evaluacion guardado',
         text: resp.message
       });
 
@@ -169,11 +172,14 @@ function validarFechasPeriodo(fechaInicio, fechaCierre, periodo) {
   return false;
 }
 
+//Consultar evaluacines de personal administrativo
 
 async function listarEvalAdmin(){
     var resp = await microApi('controlador/?l_evalAdministrativos');
     listarTablaEvalAdmin(resp);
 }  
+
+//Listar las evaluaciones de personal administrativo en una tabla
 
 async function listarTablaEvalAdmin(datos) {
     const tbody = document.querySelector("#tabla-EvalAdmin tbody");
@@ -204,7 +210,6 @@ async function listarTablaEvalAdmin(datos) {
       const additional = empleado ? empleado.additional || "" : "";
       const cargoTexto = item.cargo_evaluado || "Sin cargo";
       const periodoEvaluado = item.periodo_evaluado || "";
-      const Estatus = empleado ? empleado.status_str : "No encontrado";
   
       html += `
         <tr>
@@ -213,8 +218,15 @@ async function listarTablaEvalAdmin(datos) {
           <td>${additional}</td>
           <td>${cargoTexto}</td>
           <td>${periodoEvaluado}</td>
-          <td>${Estatus}</td>
-        
+          <td>
+          <div class="dropdown">
+            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarPeriodo(${item.id_eval_admin})"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalObjetivosEvaluador(${item.id_eval_admin})"><i class="icon-base bx bx-target-lock me-1"></i>Objetivos</a>
+            </div>
+          </div>
+          </td>
         </tr>
       `;
     });
@@ -222,57 +234,207 @@ async function listarTablaEvalAdmin(datos) {
     tbody.innerHTML = html;
   }
 
-  function valorFormEvalAdmin(evaluado=''){
-    // Asignar valores a los campos del formulario
-    document.getElementById('id_evaluado').value = evaluado;  
-    
-  }
+//==============================================================//
+async function actualizarPeriodoEvaluacion() {
+  // Capturar valores del formulario del modal
+  let datosPeriodo = capturarValoresFormulario('form-modal-editar-periodo');
 
-  async function listarEvaluadosAdmin() {
-    try {
-      // Cargar JSON con datos de empleados
-      const resp = await microApi('views/js/datos_empleado.json');
-  
-      // Obtener empleados con robustez para varias estructuras
-      let empleados = [];
-      if (Array.isArray(resp)) {
-        empleados = resp[0]?.data || resp[0] || [];
-      } else if (resp?.data) {
-        empleados = resp.data;
-      } else {
-        empleados = resp;
-      }
-  
-      // Obtener lista de evaluados desde API
-      const respEvaluados = await microApi('controlador/?listar_datos');
-      if (typeof respEvaluados === 'string') {
-        console.error('Error al listar usuarios:', respEvaluados);
-        return;
-      }
-  
-      llenarSelectEvaluados(respEvaluados, empleados);
-    } catch (err) {
-      console.error('La petición falló:', err);
+  // Reconstruir fechas completas según el periodo
+const periodo = datosPeriodo.get("periodo_evaluado");
+const yearInicio = datosPeriodo.get("fecha_inicio");
+const yearCierre = datosPeriodo.get("fecha_cierre");
+
+if (periodo === "Enero-Junio") {
+  datosPeriodo.set("fecha_inicio", yearInicio + "-01-01");
+  datosPeriodo.set("fecha_cierre", yearCierre + "-06-30");
+} else if (periodo === "Julio-Diciembre") {
+  datosPeriodo.set("fecha_inicio", yearInicio + "-07-01");
+  datosPeriodo.set("fecha_cierre", yearCierre + "-12-31");
+}
+
+  try {
+    // Llamada al servicio PHP
+    const resp = await microApi('controlador/?a_periodo', datosPeriodo);
+
+    // Validar respuesta
+    if (typeof resp === 'string' && resp.includes(' No Existe')) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Evaluación no encontrada',
+        text: resp
+      });
+    } else {
+      // Refrescar tabla y limpiar formulario
+      listarEvalAdmin();
+      valorFormEvalAdmin();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Periodo actualizado',
+        text: 'Las fechas y el periodo se actualizaron con éxito'
+      });
+
+      // Cerrar modal si usas Bootstrap
+      $("#modalEditarPeriodo").modal("hide");
     }
-  }
-  
-  function llenarSelectEvaluados(datos, empleados) {
-    const select = document.getElementById('id_evaluado'); // 👈 este id deberías renombrarlo a 'id_evaluado'
-    if (!select) return;
-  
-    select.innerHTML = '<option value="">Seleccione a un usuario</option>';
-  
-    const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-    const evaluados = registros.filter(item => item.rol === 'Evaluado');
-  
-    evaluados.forEach(item => {
-      const empleado = empleados.find(emp => emp.pin_str === item.cedula_usuario || emp.pin === item.cedula_usuario);
-      const fullname = empleado ? empleado.fullname : item.cedula_usuario;
-  
-      const opcion = document.createElement('option');
-      opcion.value = item.id_evaluado;   // 👈 ahora usamos id_evaluado
-      opcion.textContent = fullname;
-      select.appendChild(opcion);
+  } catch (err) {
+    console.error("Error actualizando periodo:", err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error inesperado',
+      text: 'Ocurrió un error al actualizar el periodo'
     });
   }
+}
+
+function valorFormEvalAdmin(evaluado=''){
+  // Asignar valores a los campos del formulario
+  document.getElementById('id_evaluado').value = evaluado;  
   
+}
+
+async function listarEvaluadosAdmin() {
+  try {
+    // Cargar JSON con datos de empleados
+    const resp = await microApi('views/js/datos_empleado.json');
+
+    // Obtener empleados con robustez para varias estructuras
+    let empleados = [];
+    if (Array.isArray(resp)) {
+      empleados = resp[0]?.data || resp[0] || [];
+    } else if (resp?.data) {
+      empleados = resp.data;
+    } else {
+      empleados = resp;
+    }
+
+    // Obtener lista de evaluados desde API
+    const respEvaluados = await microApi('controlador/?listar_datos');
+    if (typeof respEvaluados === 'string') {
+      console.error('Error al listar usuarios:', respEvaluados);
+      return;
+    }
+
+    llenarSelectEvaluadosA(respEvaluados, empleados);
+  } catch (err) {
+    console.error('La petición falló:', err);
+  }
+}
+
+function llenarSelectEvaluadosA(datos, empleados) {
+  const select = document.getElementById('id_evaluado'); // 👈 este id deberías renombrarlo a 'id_evaluado'
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Seleccione a un usuario</option>';
+
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+  const evaluados = registros.filter(item => item.rol === 'Evaluado');
+
+  evaluados.forEach(item => {
+    const empleado = empleados.find(emp => emp.pin_str === item.cedula_usuario || emp.pin === item.cedula_usuario);
+    const fullname = empleado ? empleado.fullname : item.cedula_usuario;
+
+    const opcion = document.createElement('option');
+    opcion.value = item.id_evaluado;   // 👈 ahora usamos id_evaluado
+    opcion.textContent = fullname;
+    select.appendChild(opcion);
+  });
+}
+
+function abrirModalEditarPeriodo(idEvalAdmin, periodo, fechaInicio, fechaCierre) {
+  // Resetear formulario
+  document.getElementById("form-modal-editar-periodo").reset();
+
+  // Setear valores actuales
+  document.getElementById("id_eval_admin_modal").value = idEvalAdmin;
+  document.getElementById("periodo_evaluado_modal").value = periodo;
+
+  // Extraer año de las fechas actuales
+  const yearInicio = new Date(fechaInicio).getFullYear();
+  const yearCierre = new Date(fechaCierre).getFullYear();
+
+  document.getElementById("fecha_inicio_modal").value = yearInicio;
+  document.getElementById("fecha_cierre_modal").value = yearCierre;
+
+  // Mostrar modal
+  $("#modalEditarPeriodo").modal("show");
+}
+
+function ajustarFechasPeriodoModal(periodo) {
+  const yearInicio = document.getElementById("fecha_inicio_modal").value || new Date().getFullYear();
+  const yearCierre = document.getElementById("fecha_cierre_modal").value || new Date().getFullYear();
+
+  if (periodo === "Enero-Junio") {
+    // Mantener mes/día fijos, solo cambiar año
+    document.getElementById("fecha_inicio_modal").value = yearInicio;
+    document.getElementById("fecha_cierre_modal").value = yearCierre;
+  } else if (periodo === "Julio-Diciembre") {
+    document.getElementById("fecha_inicio_modal").value = yearInicio;
+    document.getElementById("fecha_cierre_modal").value = yearCierre;
+  }
+}
+
+
+
+//==============================================================//  
+  // Lista y renderiza los objetivos disponibles para una evaluacion
+async function listarObjetivosEvaluador(id_eval_admin) {
+  const datos = new FormData();
+  datos.append('id_eval_admin', id_eval_admin);
+
+  const resp = await microApi('controlador/?listarObjetivosAsig', datos);
+  console.log("Respuesta listarObjetivosAsig:", resp);
+
+  if (!resp) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los objetivos' });
+    return;
+  }
+
+  // Normalizar la estructura recibida
+  const registros = Array.isArray(resp[0]) ? resp.flat() : resp;
+
+  const cont = document.getElementById('contenedor-switches-objetivos');
+  cont.innerHTML = '';
+
+  registros.forEach(o => {
+    cont.innerHTML += `
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox"
+               id="obj_${o.id_odi}"
+               ${o.acceso == 1 ? 'checked' : ''}
+               onchange="toggleObjetivo(${id_eval_admin}, ${o.id_odi}, this.checked)">
+        <label class="form-check-label" for="obj_${o.id_odi}">${o.nombre_objetivo}</label>
+      </div>`;
+  });
+}
+
+// Abre el modal de objetivos y lista los objetivos del evaluador
+function abrirModalObjetivosEvaluador(id_eval_admin) {
+  window.evalAdminActual = id_eval_admin;
+
+  const modalEl = document.getElementById('modalObjetivos');
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+
+  // Pintar switches al abrir
+  listarObjetivosEvaluador(id_eval_admin);
+}
+
+// Activa o desactiva una relación y refresca el listado
+async function toggleObjetivo(id_eval_admin, id_odi, checked) {
+  const datos = new FormData();
+  datos.append('id_eval_admin', id_eval_admin);
+  datos.append('id_odi', id_odi);
+
+  const servicio = checked ? 'controlador/?agregarObjetivoEval' : 'controlador/?desactivarObjetivoEval';
+  const resp = await microApi(servicio, datos);
+
+  if (!resp || resp.success === false) {
+    // Revertir switch si falla
+    document.getElementById(`obj_${id_odi}`).checked = !checked;
+    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el objetivo' });
+  } else {
+    // Refrescar objetivos desde la BD
+    await listarObjetivosEvaluador(id_eval_admin);
+  }
+}

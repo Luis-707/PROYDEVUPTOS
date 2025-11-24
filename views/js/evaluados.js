@@ -30,7 +30,6 @@ async function listarEvaluados() {
           <button type="button" class="btn btn-info btn-sm" onclick="abrirPlanilla('${cedula}')">
             Ver planilla
           </button>
-
           <button type="button" class="btn btn-warning btn-sm" onclick="abrirPlanillaEditar('${cedula}')">
             Editar planilla
           </button>
@@ -45,7 +44,7 @@ async function listarEvaluados() {
 // Función para llamar al servicio SQL listar_datos_personales
 async function obtenerDatosPersonales() {
   try {
-    let resp = await microApi('controlador/?listar_datos_personales');
+    let resp = await microApi('controlador/?listar_evaluaciones');
     return resp;
   } catch (error) {
     console.error('Error al obtener datos personales:', error);

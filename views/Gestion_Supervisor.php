@@ -28,23 +28,23 @@ td.acciones {
 
 </style>
 
-<h2>Registro de datos de supervisores</h2>
+<h2>Asignacion de cargos de supervisores</h2>
 
 <div class="container py-4">
       <form id="formulario_supervisor" onsubmit="event.preventDefault(); validar_formSupervisor(1);">
-        <div class="mb-3">
+        <div class="col-md-4 mb-3">
           <label for="id_usuario" class="form-label">Seleccionar supervisor</label>
           <select class="form-select" id="id_usuario" name="id_usuario">
             <option selected disabled>Seleccione un supervisor</option>
           </select>
         </div>
-        <div class="mb-3">
+        <div class="col-md-4 mb-3">
           <label for="id_cargo_supervisor" class="form-label">Seleccionar Cargo</label>
           <select class="form-select" id="id_cargo_supervisor" name="id_cargo_supervisor">
             <option selected disabled>Seleccione un cargo</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="submit" class="btn btn-primary mb-3">Guardar</button>
       </form>
       </div>
 
@@ -74,7 +74,7 @@ td.acciones {
 
 <table class="table table-bordered align-middle" id="tabla-supervisores">
     <thead class="table-dark">
-        <tr><th>Apellidos y Nombres</th><th>Cédula </th><th>Cargo</th><th>Acciones</th></tr>
+        <tr><th>Cedula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Cargo</th><th>Acciones</th></tr>
     </thead>
     <tbody></tbody>
 </table>

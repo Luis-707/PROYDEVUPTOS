@@ -55,6 +55,9 @@ include_once "middleware/auth.php";
     <script src="assets/vendor/js/helpers.js"></script>
     <script src="assets/js/config.js"></script>
     <script src="controlador/js/proceso.js"></script>
+
+    <!--tipografia-->
+    <link rel="stylesheet" href="views/tipografia.css">
     
   </head>
 
@@ -165,7 +168,7 @@ include_once "middleware/auth.php";
                         <div class="dropdown-divider my-1"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="pages-profile-user.html"> <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span> </a>
+                        <a class="dropdown-item" href="pages-profile-user.html"> <i class="icon-base bx bx-user icon-md me-3"></i><span>Perfil</span> </a>
                     </li>
                     <!--<li>
                         <a class="dropdown-item" href="pages-account-settings-account.html"> <i class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span> </a>
@@ -193,7 +196,7 @@ include_once "middleware/auth.php";
                     <li>
                   <a class="dropdown-item" href="javascript:void(0)" onclick="logout()">
                      <i class="icon-base bx bx-power-off icon-md me-3"></i>
-                     <span>Log Out</span>
+                     <span>Cerrar sesion</span>
                   </a>
                     </li>
                     </ul>
@@ -217,21 +220,21 @@ include_once "middleware/auth.php";
             
             <div class="row mb-12 g-6" id= "CentroPrinci">
                 <div class="col-md-12 col-lg-12">
-                <h6 class="mt-2 text-body-secondary">Título de la página</h6>
+                <h6 class="mt-2 text-body-secondary"></h6>
                 <div class="card mb-6">
-                    <div class="card-header d-flex justify-content-between">
+                <div class="card-header d-flex justify-content-between">
                         <div class="card-title mb-0">
-                          <h5 class="mb-1 me-2">Titulo del panel</h5>
-                          <p class="card-subtitle">subtitulo del panel</p>
+                          <h5 class="mb-1 me-2">ODI</h5>
+                          <p class="card-subtitle">(Objetivos de Desempeño Individual)</p>
                         </div>
                     </div>
                     <div class="card-body">
                         <p class="card-text">
-                            This is some text within a card body. Jelly lemon drops tiramisu chocolate cake cotton candy soufflé oat cake sweet roll. Sugar plum marzipan dragée topping cheesecake chocolate bar. Danish muffin icing donut.
+                            Este es un sistema de información pensado para tener un seguimiento y control de las evaluaciones del personal administrativo y obrero de la Universidad Politécnica territorial del oeste de Sucre "Clodosbaldo Rússian" más eficiente.
                         </p>
-                        <p>
+                        <!--<p>
                             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Doloribus labore, non saepe assumenda rem deleniti, architecto repellendus nobis minima temporibus eligendi dolorem sed? Perspiciatis quaerat voluptatum harum adipisci sequi magni non temporibus corporis magnam! Dolor, nobis exercitationem tenetur officiis omnis quas architecto ullam nihil animi suscipit ratione fuga veniam placeat consequuntur porro nostrum! Sapiente cupiditate ipsum quo ratione ullam? Accusantium rem iusto vitae nemo vero voluptatum voluptas itaque, officia ipsum temporibus veritatis eaque non. Distinctio enim quibusdam assumenda dignissimos sequi doloremque ipsa porro beatae, officia dolorum? Perferendis, iure? Cumque sit iusto nihil! Totam, recusandae. Veniam eveniet nulla iusto fugit vitae.
-                        </p>
+                        </p>-->
                     </div>
                 </div>
                 </div>
@@ -317,20 +320,25 @@ include_once "middleware/auth.php";
 
     <script src="views/js/event_menu.js"></script>
     <script src="js/siglab.js"></script>
-    <script src="views/js/usuario.js"></script>
+    <!--<script src="views/js/usuario.js"></script>-->
     <script src="views/js/form_user.js"></script>
     <script src="views/js/evaluadores.js"></script>
-    <script src="views/js/GestionEvaluados.js"></script>
-    <script src="views/js/Datos_Evaluados.js"></script>
-    <script src="views/js/evalAdministrativos.js"></script>
     <script src="views/js/supervisores.js"></script>
     <script src="views/js/comentario_evaluado.js"></script>
     <script src="views/js/comentario_supervisor.js"></script> 
-    <script src="views/js/asignar_evaluador.js"></script>
+    <!--<script src="views/js/asignar_evaluador.js"></script>-->
     <script src="views/js/evaluados.js"></script>
     <script src="views/js/evaluados_comentarios.js"></script>
     <script src="views/js/logout.js"></script>
-   
+    <script src="views/js/GestionEvaluados.js"></script>
+    <script src="views/js/evalAdministrativos.js"></script>
+    <script src="views/js/Datos_Evaluados.js"></script>
+    <script src="views/js/GestionObjetivos.js"></script>
+    <script src="views/js/GestionCompetencias.js"></script>
+
+    <script>
+        var view = "";
+    </script>
     
    
   </body>

@@ -1,11 +1,13 @@
 <?php
 
-include_once "../clases/Evaluados.php";
+include_once "../clases/UsuariosSistema.php";
 
-// Instanciar la clase con la conexión
-$GEvaluados = new Evaluado([], $this);
+// Crear instancia de la clase UsuariosSistema, pasando un array vacío y la conexión ($this)
+$Usuarios = new UsuariosSistema([], $this);
 
-// Obtener las opciones HTML (o los datos) desde listarEvaluados
-$respuesta = $GEvaluados->listar_user_evaluado();
+// Obtener el resultado de la consulta para listar usuarios con sus roles
+$respuesta = $Usuarios->listarUsuarios();
 
 return $respuesta;
+
+?>

@@ -28,18 +28,18 @@ td.acciones {
 
 </style>
 
-<h2>Registro de datos de supervisores</h2>
+<h2>Asignacion de cargos de evaluados</h2>
 
 <div class="container py-4">
       <form id="formulario_DatosEvaluado" onsubmit="event.preventDefault(); validar_formDatosEvaluado(1);">
-        <div class="mb-3">
+        <div class="col-md-4 mb-3">
         <input type="hidden" name="id_usuario_sesion" id="id_usuario_sesion" value="">
           <label for="id_usuario" class="form-label">Seleccionar evaluado</label>
           <select class="form-select" id="id_usuario" name="id_usuario">
             <option selected disabled>Seleccione un evaluado</option>
           </select>
         </div>
-        <div class="mb-3">
+        <div class="col-md-4 mb-3">
           <label for="id_cargo_evaluado" class="form-label">Seleccionar Cargo</label>
           <select class="form-select" id="id_cargo_evaluado" name="id_cargo_evaluado">
             <option selected disabled>Seleccione un cargo</option>
@@ -75,7 +75,7 @@ td.acciones {
 
 <table class="table table-bordered align-middle" id="tabla-DatosEvaluados">
     <thead class="table-dark">
-        <tr><th>Apellidos y Nombres</th><th>Cédula </th><th>Cargo</th><th>Acciones</th></tr>
+        <tr><th>Cedula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Cargo</th><th>Acciones</th></tr>
     </thead>
     <tbody></tbody>
 </table>

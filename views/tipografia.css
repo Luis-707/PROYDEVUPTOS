@@ -1,0 +1,8 @@
+h2 {
+    font-family: 'Poppins', sans-serif;
+  }
+  /* Poner Calibri para todo el resto del texto con tamaño 14px */
+  body, div, form, label, input, button, select, table, th, td {
+    font-family: 'Calibri', sans-serif;
+    font-size: 14px;
+  }

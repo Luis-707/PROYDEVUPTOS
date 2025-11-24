@@ -25,7 +25,7 @@ include_once '../servicios/Sesion.php';
   }
 </style>
 
-<h2>Registro de Evaluados</h2>
+<h2>Registro de usuarios evaluados</h2>
 <div class="container py-4">
   <form id="formulario_evaluado" onsubmit="event.preventDefault(); validar_form_evaluado(1);">
   <div class="mb-4 row">
@@ -64,12 +64,15 @@ include_once '../servicios/Sesion.php';
 
 
   <div class="mb-4 row">
-    <div class="col-md-6">
+  <div class="col-md-6">
       <label for="id_clave" class="form-label">Clave</label>
-      <div class="d-flex">
-        <input class="form-control" type="password" id="id_clave" name="clave" placeholder="********" />
-        <button type="button" class="btn btn-outline-secondary ms-2" id="toggleClave">Mostrar</button>
-      </div>
+      <div class="d-flex flex-column">
+        <div class="d-flex">
+          <input class="form-control" type="password" id="id_clave" name="clave" placeholder="********" />
+          <button type="button" class="btn btn-outline-secondary ms-2" id="toggleClave">Mostrar</button>
+        </div>
+          <small id="mensajeSeguridad" class="mt-2"></small>
+        </div>
     </div>
 
       <!--<div class="col-md-5">
@@ -91,7 +94,7 @@ include_once '../servicios/Sesion.php';
 
 <table class="table table-bordered align-middle" id="tabla-GestionEvaluados">
   <thead class="table-dark">
-    <tr><th>Clave</th><th>Cédula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Acciones</th></tr>
+    <tr><th>Clave</th><th>Cédula</th><th>Apellidos y nombres</th><th>Estatus</th><th>Acciones</th></tr>
   </thead>
   <tbody></tbody>
 </table>

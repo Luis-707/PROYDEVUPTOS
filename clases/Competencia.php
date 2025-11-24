@@ -13,7 +13,7 @@ class Competencia {
   }
 
   public static function sql_listar(): string {
-    return "SELECT id_competencia, nombre_competencia, peso_competencia FROM competencias;";
+    return "SELECT id_competencia, nombre_competencia, peso_competencia FROM competencias where estado_competencia = 'Activo';";
   }
 
 
