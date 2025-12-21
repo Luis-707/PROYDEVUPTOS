@@ -3,33 +3,6 @@
 include_once '../servicios/Sesion.php';
 ?>
 
-<!--<form id="formulario_usuario" onsubmit="event.preventDefault(); validar_form(1);">
-    <label for="id_clave">Clave:</label>
-    <input type="text" id="id_clave" name="clave" required />
-
-    <label for="id_cedula_usuario">Cédula Usuario (solo números):</label>
-    <input type="text" id="id_cedula_usuario" name="cedula_usuario" required />
-
-    <select id="id_cargo_supervisor" name="cargo_supervisor">
-
-    </select>
-
-    <select id="id_jefe_superior" name="jefe_superior">
-
-    </select>
-
-    <button type="submit">Guardar</button>
-</form>
-
-
-<table id="tabla-usuarios">
-    <thead>
-        <tr><th>Clave</th><th>Cédula Usuario</th><th>Acciones</th></tr>
-    </thead>
-    <tbody></tbody>
-</table>
--->
-
 <style>
     /* Poner Poppins solo para el título h2 */
     h2 {
@@ -66,12 +39,14 @@ td.acciones {
 <h2>Registro de usuarios en el sistema</h2>
 <div class="container py-4">
     <form id="formulario_usuario" onsubmit="event.preventDefault(); validar_form(1);">
-  
+    <!-- Campo oculto: cédula -->
+    <!--<input type="hidden" id="cedula_modal" name="cedula_usuario">-->
   <div class="mb-4 row">
     <div class="col-md-2">
       <label for="id_cedula_usuario" class="form-label">Cédula</label>
       <input class="form-control" type="search" id="id_cedula_usuario" name="cedula_usuario" placeholder="25101172" />
       <button type="button" class="btn btn-primary ms-2" id="btn_buscar_cedula">Buscar</button>
+      <small id="mensajeEditar" class="form-text text-muted" style="display: none; white-space: nowrap;">Se debe buscar nuevamente los datos del usuario para actualizarlos.</small>
     </div>
   </div>
 
@@ -112,11 +87,28 @@ td.acciones {
     </div>
   </div>
 
-  <div class="row">
+  <!--<div class="row">
     <div class="col text-center">
       <button type="submit" class="btn btn-primary">Guardar</button>
     </div>
   </div>
+
+  <div class="mb-4 row">
+  <div class="col-md-12 text-end">
+    <button type="button" class="btn btn-warning" id="btnEditar" disabled>Editar</button>
+  </div>
+  </div>-->
+
+  <div class="row">
+  <div class="col-md-12">
+    <div class="d-flex justify-content-start">
+      <button type="submit" class="btn btn-primary me-2">Guardar</button>
+      <button type="button" class="btn btn-warning" id="btnEditar" onclick="event.preventDefault(); validar_form(2);" disabled>Editar</button>
+    </div>
+  </div>
+  </div>
+
+
 </form>
 
 
@@ -128,7 +120,6 @@ td.acciones {
     </thead>
     <tbody></tbody>
 </table>
-
 
 <!-- Modal Editar Usuario -->
 <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
@@ -165,7 +156,6 @@ td.acciones {
     </div>
   </div>
 </div>
-
 
 <!-- Modal Permisos -->
 <div class="modal fade" id="modalPermisos" tabindex="-1" aria-hidden="true">

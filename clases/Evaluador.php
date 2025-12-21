@@ -33,6 +33,8 @@ class Evaluador {
             SELECT 
                 e.id_usuario,
                 u.cedula_usuario,
+                u.nombre_completo,
+                u.ubicacion_administrativa,
                 c.cargo_evaluador
             FROM evaluadores e
             INNER JOIN usuarios u 

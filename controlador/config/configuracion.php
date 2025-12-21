@@ -11,7 +11,7 @@
      * @var string DESCRIP_SISTEMA: Descripcion del sistema o nombre del sistema 
      */
 
-    define("DESCRIP_SISTEMA",'Sistema Para la Evaluacion de personal Administrativo y Obrero');
+    define("DESCRIP_SISTEMA",'Sistema Integral Para La Gestion de Laboratorio');
 
 
     /**

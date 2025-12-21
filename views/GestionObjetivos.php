@@ -27,21 +27,7 @@ include_once '../servicios/Sesion.php';
 
 <h2>Gestion de objetivos de desempeño individual</h2>
 
-<div class="container py-4">
-    <form id="formulario_objetivo" onsubmit="event.preventDefault(); validar_form_objetivos(1);">
-        <div class="col-md-4 mb-3">
-          <label for="nombre_objetivo" class="form-label">Ingrese un objetivo</label>
-            <input class="form-control" type="text" id="nombre_objetivo" name="nombre_objetivo" placeholder="Realizar reportes">
-        </div>
-        <div class="col-md-4 mb-3">
-          <label for="peso_objetivo" class="form-label">Ingrese el peso del objetivo que desea ingresar</label>
-            <input class="form-control" type="number" id="peso_objetivo" name="peso_objetivo" placeholder="10">
-        </div>
-        <button type="submit" class="btn btn-primary mb-3">Guardar</button>
-    </form>
-</div>
-
-
+<button type="button" class="btn btn-primary mb-3" title="Agregar nuevo objetivo" onclick="abrirModalObjetivo()"><i class="bx bx-plus"></i></button>
 
 <table class="table table-bordered align-middle" id="tabla-odi">
     <thead class="table-dark">
@@ -55,7 +41,7 @@ include_once '../servicios/Sesion.php';
   <div class="modal-dialog">
     <form id="form-modal-editar-objetivo" class="modal-content" onsubmit="event.preventDefault(); validar_form_objetivos(2);">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalEditarObjetivoLabel">Editar Objetivo</h5>
+        <h5 class="modal-title" id="modalEditarObjetivoLabel">Editar objetivo</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">

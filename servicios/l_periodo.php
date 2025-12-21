@@ -8,11 +8,17 @@ header('Content-Type: application/json; charset=utf-8');
 include_once "../clases/PlanillaAdministrativos.php";
 
 try {
+    // Instanciar la clase con los datos recibidos
     $planilla = new PlanillaAdministrativos($dataCliente['_post'], $this->conexion);
 
-    // 1) Buscar evaluación existente y obtener id_eval_admin
-    $sql = $planilla->sql_buscar();
-    $respuesta = $this->ejecutarConsultaBdds($sql);
+    // 1) Buscar evaluación existente con sql_buscar
+    // 👇 aquí debes pasar el id_eval_admin que venga del cliente
+    $idEvalAdmin = isset($dataCliente['_post']['id_eval_admin']) 
+        ? (int)$dataCliente['_post']['id_eval_admin'] 
+        : 0;
+
+    $sqlEval = $planilla->sql_buscar($idEvalAdmin);
+    $respuesta = $this->ejecutarConsultaBdds($sqlEval);
 
     if (empty($respuesta) || empty($respuesta[0])) {
         echo json_encode([
@@ -22,10 +28,11 @@ try {
         exit;
     }
 
-    $idEvalAdmin = (int)$respuesta[0][0]['id_eval_admin'];
+    // Normalizar resultado
+    $evalData = isset($respuesta[0][0]) ? $respuesta[0][0] : $respuesta[0];
 
     // 2) Obtener periodo y fechas con ese id_eval_admin
-    $sqlPeriodo = $planilla->sql_listar_periodo_por_id($idEvalAdmin);
+    $sqlPeriodo = $planilla->sql_listar_periodo_por_id((int)$evalData['id_eval_admin']);
     $resPeriodo = $this->ejecutarConsultaBdds($sqlPeriodo);
 
     if (empty($resPeriodo) || empty($resPeriodo[0])) {
@@ -40,7 +47,7 @@ try {
         'success' => true,
         'message' => '✅ Periodo cargado',
         'data' => $resPeriodo[0][0],
-        'id_eval_admin' => $idEvalAdmin // 👈 también lo devuelves si quieres usarlo en JS
+        'id_eval_admin' => (int)$evalData['id_eval_admin']
     ]);
 
 } catch (Throwable $e) {

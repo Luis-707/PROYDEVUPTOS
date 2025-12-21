@@ -44,26 +44,31 @@ class Planilla_comentarios {
     public static function sql_relaciones_por_cedula(string $cedula): string {
         return sprintf(
             "SELECT 
-                e.id_evaluado AS id_evaluado,
-                u_evaluado.cedula_usuario AS cedula_usuario,
-                c_ev.cargo_evaluado AS cargo_evaluado,
-    
-                u_evaluador.id_usuario AS id_usuario_evaluador,
-                u_evaluador.cedula_usuario AS cedula_evaluador,
-                c_ee.cargo_evaluador AS cargo_evaluador,
-    
-                u_supervisor.cedula_usuario AS cedula_supervisor,
-                c_es.cargo_supervisor AS cargo_supervisor
-             FROM evaluados e
-             JOIN usuarios u_evaluado ON e.id_usuario = u_evaluado.id_usuario
-             JOIN cargos_evaluados c_ev ON e.id_cargo_evaluado = c_ev.id_cargo_evaluado
-             JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
-             JOIN usuarios u_evaluador ON ev.id_usuario = u_evaluador.id_usuario
-             JOIN cargos_evaluadores c_ee ON ev.id_cargo_evaluador = c_ee.id_cargo_evaluador
-             JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
-             JOIN usuarios u_supervisor ON s.id_usuario = u_supervisor.id_usuario
-             JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_supervisor
-             WHERE u_evaluado.cedula_usuario = '%s'
+            e.id_evaluado AS id_evaluado,
+            u_evaluado.cedula_usuario AS cedula_usuario,
+            u_evaluado.nombre_completo AS nombre_completo_evaluado,
+            u_evaluado.ubicacion_administrativa AS ubicacion_evaluado,
+            c_ev.cargo_evaluado AS cargo_evaluado,
+        
+            u_evaluador.id_usuario AS id_usuario_evaluador,
+            u_evaluador.cedula_usuario AS cedula_evaluador,
+            u_evaluador.nombre_completo AS nombre_completo_evaluador,
+            u_evaluador.ubicacion_administrativa AS ubicacion_evaluador,
+            c_ee.cargo_evaluador AS cargo_evaluador,
+        
+            u_supervisor.cedula_usuario AS cedula_supervisor,
+            u_supervisor.nombre_completo AS nombre_completo_supervisor,
+            c_es.cargo_supervisor AS cargo_supervisor
+        FROM evaluados e
+        JOIN usuarios u_evaluado ON e.id_usuario = u_evaluado.id_usuario
+        JOIN cargos_evaluados c_ev ON e.id_cargo_evaluado = c_ev.id_cargo_evaluado
+        JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+        JOIN usuarios u_evaluador ON ev.id_usuario = u_evaluador.id_usuario
+        JOIN cargos_evaluadores c_ee ON ev.id_cargo_evaluador = c_ee.id_cargo_evaluador
+        JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
+        JOIN usuarios u_supervisor ON s.id_usuario = u_supervisor.id_usuario
+        JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_supervisor
+        WHERE u_evaluado.cedula_usuario = '%s'
              LIMIT 1;",
             addslashes($cedula)
         );
@@ -90,9 +95,11 @@ class Planilla_comentarios {
              JOIN usuarios u_sup ON s.id_usuario = u_sup.id_usuario
              JOIN rango_actuacion r ON ea.id_rango = r.id_rango
              WHERE u_eval.cedula_usuario = '%s'
+             AND ea.id_eval_admin = %d
              ORDER BY ea.fecha_cierre DESC
              LIMIT 1;",
-            addslashes($this->cedula_usuario)
+            addslashes($this->cedula_usuario),
+            addslashes($this->id_eval_admin)
         );
     }
     public function buscarEvaluacion() {
@@ -148,7 +155,7 @@ public function sql_buscar_por_id_y_supervisor(string $cedula): string {
     // =============================
     // Objetivos
     // =============================
-    public static function sql_objetivos_por_cedula(string $cedula): string {
+    public static function sql_objetivos_por_cedula(string $cedula, string $idEvalAdmin): string {
         return sprintf(
             "SELECT 
                 odi.id_odi,
@@ -168,8 +175,10 @@ public function sql_buscar_por_id_y_supervisor(string $cedula): string {
              JOIN usuarios u 
                   ON e.id_usuario = u.id_usuario
              WHERE u.cedula_usuario = '%s'
+             AND ea.id_eval_admin = %d
              ORDER BY eo.id_obj_result ASC;",
-            addslashes($cedula)
+            addslashes($cedula),
+            addslashes($idEvalAdmin)
         );
     }
 

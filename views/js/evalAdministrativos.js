@@ -182,57 +182,56 @@ async function listarEvalAdmin(){
 //Listar las evaluaciones de personal administrativo en una tabla
 
 async function listarTablaEvalAdmin(datos) {
-    const tbody = document.querySelector("#tabla-EvalAdmin tbody");
-    tbody.innerHTML = "";
-  
-    // Cargar JSON con datos de empleados
-    const resp = await microApi('views/js/datos_empleado.json');
-    let empleados = [];
-  
-    if (Array.isArray(resp)) {
-      empleados = resp[0]?.data || resp[0] || [];
-    } else if (resp?.data) {
-      empleados = resp.data;
-    }
-  
-    // Aplanar si vienen anidados
-    const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-  
-    let html = "";
-  
-    registros.forEach(item => {
+  const tbody = document.querySelector("#tabla-EvalAdmin tbody");
+  tbody.innerHTML = "";
+
+  // Aplanar si vienen anidados
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+  let html = "";
+
+  registros.forEach(item => {
       const cedula = String(item.cedula_usuario).trim();
-      const empleado = empleados.find(emp =>
-        emp.pin_str === cedula || emp.pin === cedula
-      );
-  
-      const fullname = empleado ? empleado.fullname : "No encontrado";
-      const additional = empleado ? empleado.additional || "" : "";
+      const fullname = item.nombre_completo || "No encontrado";
+      const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
       const cargoTexto = item.cargo_evaluado || "Sin cargo";
       const periodoEvaluado = item.periodo_evaluado || "";
-  
+      const anioInicio = item.anio_inicio;
+      const estado_evaluacion = item.estado_eval_admin;
+
       html += `
-        <tr>
-          <td>${cedula}</td>
-          <td>${fullname}</td>
-          <td>${additional}</td>
-          <td>${cargoTexto}</td>
-          <td>${periodoEvaluado}</td>
-          <td>
-          <div class="dropdown">
-            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarPeriodo(${item.id_eval_admin})"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
-              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalObjetivosEvaluador(${item.id_eval_admin})"><i class="icon-base bx bx-target-lock me-1"></i>Objetivos</a>
-            </div>
-          </div>
-          </td>
-        </tr>
+          <tr>
+              <td>${cedula}</td>
+              <td>${fullname}</td>
+              <td>${ubicacion}</td>
+              <td>${cargoTexto}</td>
+              <td>${anioInicio}</td>
+              <td>${periodoEvaluado}</td>
+              <td>${estado_evaluacion}</td>
+              <td>
+                  <div class="dropdown">
+                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                          <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                          <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarPeriodo(${item.id_eval_admin})">
+                              <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                          </a>
+                          <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalObjetivosEvaluador(${item.id_eval_admin})">
+                              <i class="icon-base bx bx-target-lock me-1"></i>Objetivos
+                          </a>
+                          <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvalAdmin(${item.id_eval_admin},'${item.estado_eval_admin}')">
+                                <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
+                          </a>
+                      </div>
+                  </div>
+              </td>
+          </tr>
       `;
-    });
-  
-    tbody.innerHTML = html;
-  }
+  });
+
+  tbody.innerHTML = html;
+}
 
 //==============================================================//
 async function actualizarPeriodoEvaluacion() {
@@ -293,21 +292,11 @@ function valorFormEvalAdmin(evaluado=''){
   
 }
 
+//===============================================================//
+//Select de evaluados
+
 async function listarEvaluadosAdmin() {
   try {
-    // Cargar JSON con datos de empleados
-    const resp = await microApi('views/js/datos_empleado.json');
-
-    // Obtener empleados con robustez para varias estructuras
-    let empleados = [];
-    if (Array.isArray(resp)) {
-      empleados = resp[0]?.data || resp[0] || [];
-    } else if (resp?.data) {
-      empleados = resp.data;
-    } else {
-      empleados = resp;
-    }
-
     // Obtener lista de evaluados desde API
     const respEvaluados = await microApi('controlador/?listar_datos');
     if (typeof respEvaluados === 'string') {
@@ -315,14 +304,14 @@ async function listarEvaluadosAdmin() {
       return;
     }
 
-    llenarSelectEvaluadosA(respEvaluados, empleados);
+    llenarSelectEvaluadosA(respEvaluados);
   } catch (err) {
     console.error('La petición falló:', err);
   }
 }
 
-function llenarSelectEvaluadosA(datos, empleados) {
-  const select = document.getElementById('id_evaluado'); // 👈 este id deberías renombrarlo a 'id_evaluado'
+function llenarSelectEvaluadosA(datos) {
+  const select = document.getElementById('id_evaluado');
   if (!select) return;
 
   select.innerHTML = '<option value="">Seleccione a un usuario</option>';
@@ -331,15 +320,16 @@ function llenarSelectEvaluadosA(datos, empleados) {
   const evaluados = registros.filter(item => item.rol === 'Evaluado');
 
   evaluados.forEach(item => {
-    const empleado = empleados.find(emp => emp.pin_str === item.cedula_usuario || emp.pin === item.cedula_usuario);
-    const fullname = empleado ? empleado.fullname : item.cedula_usuario;
+    const fullname = item.nombre_completo || item.cedula_usuario;
 
     const opcion = document.createElement('option');
-    opcion.value = item.id_evaluado;   // 👈 ahora usamos id_evaluado
+    opcion.value = item.id_evaluado;
     opcion.textContent = fullname;
     select.appendChild(opcion);
   });
 }
+
+//===============================================================//
 
 function abrirModalEditarPeriodo(idEvalAdmin, periodo, fechaInicio, fechaCierre) {
   // Resetear formulario
@@ -438,3 +428,47 @@ async function toggleObjetivo(id_eval_admin, id_odi, checked) {
     await listarObjetivosEvaluador(id_eval_admin);
   }
 }
+
+//==========================================================//
+//Cambiar estado de la evaluacion (Iniciada, Finalizada)
+
+async function cambiarEstadoEvalAdmin(id_eval_admin, estado_eval_admin) {
+  // Determinar el estado opuesto
+  const nuevoEstadoEvalAdmin = estado_eval_admin === 'Iniciada' ? 'Finalizada' : 'Iniciada';
+
+  const result = await Swal.fire({
+    title: `¿Está seguro de cambiar el estado a "${nuevoEstadoEvalAdmin}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, cambiar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (result.isConfirmed) {
+    const formData = new FormData();
+    formData.append('id_eval_admin', id_eval_admin);
+    formData.append('estado_eval_admin', nuevoEstadoEvalAdmin); // Enviar el estado opuesto
+
+    try {
+      const resp = await microApi('controlador/?cambiar_estadoEvalAdmin', formData);
+      listarEvalAdmin();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Estado cambiado',
+        text: typeof resp === 'string' ? resp : 'El estado fue cambiado correctamente'
+      });
+    } catch (err) {
+      console.error("Error al cambiar estado:", err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al cambiar el estado'
+      });
+    }
+  }
+}
+
+//==========================================================//

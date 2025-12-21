@@ -7,6 +7,15 @@ header('Content-Type: application/json; charset=utf-8');
 
 include_once "../clases/Planilla_comentarios.php";
 
+function normalizarRespuesta($resp) {
+    if (isset($resp[0][0])) {
+        return $resp[0][0];
+    } elseif (isset($resp[0])) {
+        return $resp[0];
+    }
+    return [];
+}
+
 try {
     // Inicializar dataCliente
     if (!isset($dataCliente)) {
@@ -17,61 +26,53 @@ try {
         }
     }
 
-    // Validar cédula
-    if (empty($dataCliente['_post']['cedula_usuario'])) {
+    // Validar parámetros obligatorios
+    if (empty($dataCliente['_post']['id_eval_admin']) || empty($dataCliente['_post']['cedula_usuario'])) {
         echo json_encode([
             'success' => false,
-            'message' => 'No se recibió la cédula del evaluado'
+            'message' => 'Faltan parámetros: id_eval_admin y/o cedula_usuario'
         ]);
         exit;
     }
-    $cedula = $dataCliente['_post']['cedula_usuario'];
 
-    // Instanciar clase con conexión
-    $planilla = new Planilla_comentarios(['cedula_usuario' => $cedula], $this->conexion);
+    $idEvalAdmin = (int)$dataCliente['_post']['id_eval_admin'];
+    $cedula      = trim($dataCliente['_post']['cedula_usuario']);
+
+    // Instanciar clase con ambos valores
+    $planilla = new Planilla_comentarios([
+        'id_eval_admin'  => $idEvalAdmin,
+        'cedula_usuario' => $cedula
+    ], $this->conexion);
 
     // 1. Ejecutar consulta de evaluación
     $sqlEval = $planilla->sql_buscar();
     $evaluaciones = $this->ejecutarConsultaBdds($sqlEval);
+    $evalData = normalizarRespuesta($evaluaciones);
 
-    // Normalizar: tomar la primera fila directamente
-    if (isset($evaluaciones[0][0])) {
-        $evalData = $evaluaciones[0][0];
-    } else {
-        $evalData = $evaluaciones[0] ?? [];
-    }
-
-    if (empty($evalData)) {
+    if (empty($evalData['id_eval_admin'])) {
         echo json_encode([
             'success' => false,
-            'message' => 'No se encontró evaluación registrada para este usuario'
+            'message' => 'No se encontró evaluación registrada'
         ]);
         exit;
     }
 
-    // Usar setter en lugar de acceso directo
     $planilla->setIdEvalAdmin((int)$evalData['id_eval_admin']);
 
-    // 2. Objetivos (con tabla contiene)
-    $sqlObj = $planilla->sql_objetivos_por_cedula($cedula);
+    // 2. Objetivos (ahora con cedula + id_eval_admin)
+    $sqlObj = $planilla->sql_objetivos_por_cedula($cedula, $planilla->getIdEvalAdmin());
     $objetivos = $this->ejecutarConsultaBdds($sqlObj);
-    if (isset($objetivos[0][0])) $objetivos = $objetivos[0];
+    $objetivos = isset($objetivos[0][0]) ? $objetivos[0] : ($objetivos[0] ?? []);
 
-    // 3. Competencias (usando getter)
+    // 3. Competencias (por id_eval_admin)
     $sqlComp = $planilla->sql_competencias($planilla->getIdEvalAdmin());
     $competencias = $this->ejecutarConsultaBdds($sqlComp);
-    if (isset($competencias[0][0])) $competencias = $competencias[0];
+    $competencias = isset($competencias[0][0]) ? $competencias[0] : ($competencias[0] ?? []);
 
-    // 4. Relaciones (cargos + cédulas)
+    // 4. Relaciones (por cédula)
     $sqlRel = $planilla->sql_relaciones_por_cedula($cedula);
     $relaciones = $this->ejecutarConsultaBdds($sqlRel);
-
-    // Normalizar igual que evaluación
-    if (isset($relaciones[0][0])) {
-        $relacionData = $relaciones[0][0];
-    } else {
-        $relacionData = $relaciones[0] ?? null;
-    }
+    $relacionData = isset($relaciones[0][0]) ? $relaciones[0][0] : ($relaciones[0] ?? null);
 
     // 5. Fusionar cargos en evaluación
     if ($relacionData) {
@@ -80,7 +81,7 @@ try {
         $evalData['cargo_supervisor'] = $relacionData['cargo_supervisor'] ?? null;
     }
 
-    // 6. Respuesta
+    // 6. Respuesta final
     echo json_encode([
         'success' => true,
         'message' => 'Datos cargados correctamente',

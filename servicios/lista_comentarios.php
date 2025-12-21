@@ -19,7 +19,7 @@ switch ($rolUsuario) {
         $sql = Listados::sql_listar_por_evaluado($cedulaSesion);
         break;
     
-    case 'supervisor':
+    case 'supervisor del evaluador':
         $sql = Listados::sql_listar_por_supervisor($cedulaSesion);
         break;
    

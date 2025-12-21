@@ -94,6 +94,9 @@ async function ActualizarEvaluacionCompleta() {
     Swal.fire({ icon: 'error', title: 'Error', text: 'No se seleccionó evaluado' });
     return;
   }
+  const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
+  const idEvaluado = document.getElementById("id_evaluado")?.value;
+  const idUsuario = document.getElementById("id_usuario")?.value;
 
   // Capturar valores del formulario
   let datos = capturarValoresFormulario('formulario_planilla_editar');
@@ -107,6 +110,10 @@ async function ActualizarEvaluacionCompleta() {
   datos.append("competencias", JSON.stringify(competencias));
 
   try {
+    datos.append("cedula_usuario", cedula);
+    datos.append("id_evaluado", idEvaluado);
+    datos.append("id_usuario", idUsuario);
+    datos.append("id_eval_admin", idEvalAdmin);
     const resp = await microApi("controlador/?a_evaluacion", datos);
     console.log("Respuesta actualización:", resp);
 
@@ -146,17 +153,15 @@ function valorFormEvaluacion(evaluado='', evaluador='', RangoActuacion='', punta
   document.getElementById('puntaje_final').value = puntaje;
 }
 
+//=============================================================//
+//Funcion para cargar datos personales
+
 async function cargarPlanillaEditar() {
   const cedula = sessionStorage.getItem("cedula_planilla");
   if (!cedula) {
     alert("No se seleccionó evaluado");
     return;
   }
-
-  const empleadosResp = await microApi('views/js/datos_empleado.json');
-  const empleados = Array.isArray(empleadosResp)
-    ? (empleadosResp[0]?.data || empleadosResp[0] || [])
-    : (empleadosResp?.data || []);
 
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
@@ -172,45 +177,45 @@ async function cargarPlanillaEditar() {
   console.log("📦 Registro recibido:", registro);
 
   // Evaluado
-  const empEval = empleados.find(emp => emp.pin === registro.cedula_usuario || emp.pin_str === registro.cedula_usuario);
-  document.getElementById("evaluado_fullname").textContent = empEval?.fullname || "N/D";
+  document.getElementById("evaluado_fullname").textContent = registro.nombre_completo_evaluado || "N/D";
   document.getElementById("evaluado_cedula").textContent = registro.cedula_usuario || "N/D";
   document.getElementById("evaluado_cargo").textContent = registro.cargo_evaluado || "Sin cargo";
-  document.getElementById("evaluado_ubicacion").textContent = empEval?.additional || "N/D";
-  // 👇 Setear id_evaluado desde backend
+  document.getElementById("evaluado_ubicacion").textContent = registro.ubicacion_evaluado || "N/D";
   document.getElementById("id_evaluado").value = registro.id_evaluado;
 
   // Evaluador
-  const empEv = empleados.find(emp => emp.pin === registro.cedula_evaluador || emp.pin_str === registro.cedula_evaluador);
-  document.getElementById("evaluador_fullname").textContent = empEv?.fullname || "N/D";
+  document.getElementById("evaluador_fullname").textContent = registro.nombre_completo_evaluador || "N/D";
   document.getElementById("evaluador_cedula").textContent = registro.cedula_evaluador || "N/D";
   document.getElementById("evaluador_cargo").textContent = registro.cargo_evaluador || "Sin cargo";
-  document.getElementById("evaluador_ubicacion").textContent = empEv?.additional || "N/D";
-  // 👇 Setear id_usuario evaluador desde backend
+  document.getElementById("evaluador_ubicacion").textContent = registro.ubicacion_evaluador || "N/D";
   document.getElementById("id_usuario").value = registro.id_usuario_evaluador;
 
   // Supervisor
-  const empSup = empleados.find(emp => emp.pin === registro.cedula_supervisor || emp.pin_str === registro.cedula_supervisor);
-  document.getElementById("supervisor_fullname").textContent = empSup?.fullname || "N/D";
+  document.getElementById("supervisor_fullname").textContent = registro.nombre_completo_supervisor || "N/D";
   document.getElementById("supervisor_cedula").textContent = registro.cedula_supervisor || "N/D";
   document.getElementById("supervisor_cargo").textContent = registro.cargo_supervisor || "Sin cargo";
 }
+
+//=============================================================//
 
 async function cargarPeriodoEvaluacion() {
   const cedula = sessionStorage.getItem("cedula_planilla");
   const idEvaluado = document.getElementById("id_evaluado")?.value;
   const idUsuario = document.getElementById("id_usuario")?.value;
+  const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
 
   console.log("👉 Enviando al servicio l_periodo:", {
     cedula_usuario: cedula,
     id_evaluado: idEvaluado,
-    id_usuario: idUsuario
+    id_usuario: idUsuario,
+    id_eval_admin: idEvalAdmin
   });
 
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
   formData.append("id_evaluado", idEvaluado);
   formData.append("id_usuario", idUsuario);
+  formData.append("id_eval_admin", idEvalAdmin);
 
   const resp = await microApi('controlador/?l_periodo', formData);
   console.log("Respuesta periodo:", resp);
@@ -358,6 +363,7 @@ function renderTablaDinamicaEditar(datos, idTabla, idTotal, campoPeso, campoNomb
 // =============================
 async function cargarTablasPlanillaEditar() {
   const cedula = sessionStorage.getItem("cedula_planilla");
+  const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
   if (!cedula) {
     alert("No se seleccionó evaluado");
     return;
@@ -365,6 +371,7 @@ async function cargarTablasPlanillaEditar() {
 
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
+  formData.append("id_eval_admin", idEvalAdmin);
 
   // 👉 Cargar objetivos guardados
   const objResp = await microApi('controlador/?l_objetivos', formData);

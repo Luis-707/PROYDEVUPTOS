@@ -1,13 +1,29 @@
 <?php
+session_start();
+include_once "../clases/Listados.php";
 
-include_once "../clases/DatosEvaluados.php";
+$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
+$rolUsuario   = $_SESSION['usuario']['rol'] ?? null;
 
-// Crear instancia de la clase UsuariosSistema, pasando un array vacío y la conexión ($this)
-$evaluado = new DatosEvaluados([], $this);
+if (!$cedulaSesion || !$rolUsuario) {
+    echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
+    exit;
+}
 
-// Obtener el resultado de la consulta para listar usuarios con sus roles
-$respuesta = $evaluado->listarEvaluados();
+$Evaluado = new Listados($this);
+
+switch ($rolUsuario) {
+    case 'evaluador':
+        // Solo los evaluados asignados al evaluador en sesión
+        $respuesta = $Evaluado->listar_cargos_evaluados($cedulaSesion);
+        break;
+    /*case 'administrador':
+        // Todos los evaluados
+        $respuesta = $Evaluado->listaEvaluados(Listados::sql_listar_evaluados());
+        break;*/
+    default:
+        echo json_encode(["success" => false, "message" => "Rol no autorizado"]);
+        exit;
+}
 
 return $respuesta;
-
-?>

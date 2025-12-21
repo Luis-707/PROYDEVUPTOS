@@ -4,6 +4,7 @@ class PlanillaAdministrativos {
     private $conexion;
     private $id_usuario = 0;
     private $id_evaluado = 0;
+    private $id_eval_admin = 0;
     private $id_rango = 0;
     private $puntaje_final = 0;
     private $fecha_inicio = "";
@@ -12,13 +13,14 @@ class PlanillaAdministrativos {
 
     public function __construct($dataCliente=array(''),$conexion = NULL) {
         
-
-      
         if (isset($dataCliente['id_usuario'])) {
             $this->id_usuario = (int)$dataCliente['id_usuario'];
         }
         if (isset($dataCliente['id_evaluado'])) {
             $this->id_evaluado = (int)$dataCliente['id_evaluado'];
+        }
+        if (isset($dataCliente['id_eval_admin'])) {
+            $this->id_eval_admin = (int)$dataCliente['id_eval_admin'];
         }
         if (isset($dataCliente['id_rango'])) {
             $this->id_rango = (int)$dataCliente['id_rango'];
@@ -40,30 +42,39 @@ class PlanillaAdministrativos {
         }
     }
 
+    public function setIdEvalAdmin(int $id): void {
+        $this->id_eval_admin = $id;
+    }
+
     public static function sql_listar_relaciones(): string {
         return "
-            SELECT 
-    e.id_evaluado AS id_evaluado,                -- 👈 ID del evaluado
-    u_evaluado.cedula_usuario AS cedula_usuario,
-    c_ev.cargo_evaluado AS cargo_evaluado,
-
-    u_evaluador.id_usuario AS id_usuario_evaluador, -- 👈 ID del evaluador
-    u_evaluador.cedula_usuario AS cedula_evaluador,
-    c_ee.cargo_evaluador AS cargo_evaluador,
-
-    u_supervisor.cedula_usuario AS cedula_supervisor,
-    c_es.cargo_supervisor AS cargo_supervisor
-FROM evaluados e
-JOIN usuarios u_evaluado ON e.id_usuario = u_evaluado.id_usuario
-JOIN cargos_evaluados c_ev ON e.id_cargo_evaluado = c_ev.id_cargo_evaluado
-
-JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
-JOIN usuarios u_evaluador ON ev.id_usuario = u_evaluador.id_usuario
-JOIN cargos_evaluadores c_ee ON ev.id_cargo_evaluador = c_ee.id_cargo_evaluador
-
-JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
-JOIN usuarios u_supervisor ON s.id_usuario = u_supervisor.id_usuario
-JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_supervisor;
+        SELECT 
+        e.id_evaluado AS id_evaluado,
+        u_evaluado.cedula_usuario AS cedula_usuario,
+        u_evaluado.nombre_completo AS nombre_completo_evaluado,
+        u_evaluado.ubicacion_administrativa AS ubicacion_evaluado,
+        c_ev.cargo_evaluado AS cargo_evaluado,
+    
+        u_evaluador.id_usuario AS id_usuario_evaluador,
+        u_evaluador.cedula_usuario AS cedula_evaluador,
+        u_evaluador.nombre_completo AS nombre_completo_evaluador,
+        u_evaluador.ubicacion_administrativa AS ubicacion_evaluador,
+        c_ee.cargo_evaluador AS cargo_evaluador,
+    
+        u_supervisor.cedula_usuario AS cedula_supervisor,
+        u_supervisor.nombre_completo AS nombre_completo_supervisor,
+        c_es.cargo_supervisor AS cargo_supervisor
+    FROM evaluados e
+    JOIN usuarios u_evaluado ON e.id_usuario = u_evaluado.id_usuario
+    JOIN cargos_evaluados c_ev ON e.id_cargo_evaluado = c_ev.id_cargo_evaluado
+    
+    JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+    JOIN usuarios u_evaluador ON ev.id_usuario = u_evaluador.id_usuario
+    JOIN cargos_evaluadores c_ee ON ev.id_cargo_evaluador = c_ee.id_cargo_evaluador
+    
+    JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
+    JOIN usuarios u_supervisor ON s.id_usuario = u_supervisor.id_usuario
+    JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_supervisor;    
         ";
     }
     
@@ -95,11 +106,13 @@ JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_superviso
              puntaje_final = %d
          WHERE id_evaluado = %d
            AND id_usuario = %d
+           AND periodo_evaluado = '%s'
          RETURNING id_eval_admin;",
         $this->id_rango,
         $this->puntaje_final,
         $this->id_evaluado,
-        $this->id_usuario
+        $this->id_usuario,
+        $this->periodo_evaluado
     );
 }
 
@@ -111,11 +124,13 @@ public function sql_actualizar_evaluacion(): string {
              puntaje_final = %d
          WHERE id_evaluado = %d
            AND id_usuario = %d
+           AND id_eval_admin = %d
          RETURNING id_eval_admin;",
         $this->id_rango,
         $this->puntaje_final,
         $this->id_evaluado,
-        $this->id_usuario
+        $this->id_usuario,
+        $this->id_eval_admin
     );
 }
 
@@ -174,30 +189,6 @@ public function sql_obtener_periodo(): string {
     );
 }
 
-/*// Listar objetivos guardados con su rango y pesoXRango
-public function sql_listar_objetivos_guardados($idEvalAdmin): string {
-    return sprintf(
-        "SELECT eo.id_obj_result, eo.id_odi, o.nombre_objetivo, o.peso_objetivo,
-                eo.rango_obj, eo.pesoxrango_obj
-         FROM evaluacion_objetivos eo
-         JOIN objetivos_desempeno_individual o ON eo.id_odi = o.id_odi
-         WHERE eo.id_eval_admin = %d;",
-        (int)$idEvalAdmin
-    );
-}
-
-// Listar competencias guardadas con su rango y pesoXRango
-public function sql_listar_competencias_guardadas($idEvalAdmin): string {
-    return sprintf(
-        "SELECT ec.id_comp_result, ec.id_competencia, c.nombre_competencia, c.peso_competencia,
-                ec.rango_comp, ec.pesoxrango_comp
-         FROM evaluacion_competencias ec
-         JOIN competencias c ON ec.id_competencia = c.id_competencia
-         WHERE ec.id_eval_admin = %d;",
-        (int)$idEvalAdmin
-    );
-}*/
-
 public function sql_listar_periodo_por_id($idEvalAdmin): string {
     return sprintf(
         "SELECT fecha_inicio, fecha_cierre, periodo_evaluado
@@ -210,16 +201,19 @@ public function sql_listar_periodo_por_id($idEvalAdmin): string {
 
 
     // Buscar evaluación existente
-    public function sql_buscar(): string {
+    public function sql_buscar($idEvalAdmin): string {
         return sprintf(
-            "SELECT id_eval_admin
+            "SELECT id_eval_admin, periodo_evaluado
              FROM evaluacion_administrativos
              WHERE id_evaluado = %d
                AND id_usuario = %d
+               AND id_eval_admin = %d
              ORDER BY id_eval_admin DESC
              LIMIT 1;",
             $this->id_evaluado,
-            $this->id_usuario
+            $this->id_usuario,
+            (int)$idEvalAdmin
+
         );
     }
 
@@ -276,7 +270,9 @@ public function sql_listar_periodo_por_id($idEvalAdmin): string {
     }
 
 
-
+    public function getIdEvalAdmin(): int {
+        return $this->id_eval_admin;
+    }
     public function getCedulaUsuario(): string {
         return $this->cedula_usuario;
     }
@@ -305,8 +301,9 @@ public function sql_listar_periodo_por_id($idEvalAdmin): string {
         return $this->periodo_evaluado;
     }
 
-
 }
+
+
 
 
 ?>

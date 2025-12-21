@@ -19,64 +19,71 @@
                 </li> -->
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioUsuarios">
-                        <i class="menu-icon icon-base bx bx-user"></i>
-                        <div data-i18n="Gestion de Usuarios" >Gestion de Usuarios</div>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Gestion de Usuarios" >Usuarios</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluadores">
-                        <i class="menu-icon icon-base bx bx-user"></i>
-                        <div data-i18n="Gestión de Evaluadores" >Gestión de Evaluadores</div>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Gestión de Evaluadores" >Evaluadores</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioSupervisores">
-                        <i class="menu-icon icon-base bx bx-user"></i>
-                        <div data-i18n="Gestión de supervisores" >Gestión de Supervisores</div>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Gestión de supervisores" >Supervisores</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioGestionEvaluados">
-                        <i class="menu-icon icon-base bx bx-user"></i>
-                        <div data-i18n="Gestión de evaluados" >Gestión de evaluados</div>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Gestión de evaluados" >Evaluados</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioDatosEvaluados">
-                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
                         <div data-i18n="Cargos de Evaluados" >Cargos de Evaluados</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvalAdministrativos">
-                        <i class="menu-icon icon-base bx bx-pinsel"></i>
+                        <!--<i class="menu-icon icon-base bx bx-pinsel"></i>-->
                         <div data-i18n="Evaluacion administrativos" >Evaluacion administrativos</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacion">
-                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
                         <div data-i18n="Evaluaciones" >Evaluaciones</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioObjetivos">
-                        <i class="menu-icon icon-base bx bx-user"></i>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
                         <div data-i18n="Gestion de objetivos">Objetivos</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioCompetencias">
-                        <i class="menu-icon icon-base bx bx-user"></i>
-                        <div data-i18n="Gestion de competencias">Gestion de competencias</div>
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Gestion de competencias">Competencias</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioReportesDesemp">
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Reportes">Reportes</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioComentarios">
-                        <i class="menu-icon icon-base bx bx-comment-detail"></i>
+                        <!--<i class="menu-icon icon-base bx bx-comment-detail"></i>-->
                         <div data-i18n="Comentarios" >Comentarios</div>
                     </a>
 

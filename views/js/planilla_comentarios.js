@@ -1,6 +1,7 @@
 // =============================
 // Cargar planilla en modo solo lectura
 // =============================
+
 async function cargarPlanillaReadonly() {
   const cedula = sessionStorage.getItem("cedula_planilla");
   if (!cedula) {
@@ -8,15 +9,12 @@ async function cargarPlanillaReadonly() {
     return;
   }
 
-  // Cargar JSON de empleados
-  const empleadosResp = await microApi('views/js/datos_empleado.json');
-  const empleados = Array.isArray(empleadosResp)
-    ? (empleadosResp[0]?.data || empleadosResp[0] || [])
-    : (empleadosResp?.data || []);
+  const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
 
   // Llamar al servicio readonly
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
+  formData.append("id_eval_admin", idEvalAdmin || "");
   const resp = await microApi('controlador/?planilla_comentarios', formData);
 
   if (!resp?.success) {
@@ -29,35 +27,33 @@ async function cargarPlanillaReadonly() {
   console.log("DEBUG objetivos:", resp.data.objetivos);
   console.log("DEBUG competencias:", resp.data.competencias);
 
-  renderizarPlanillaReadonly(resp.data, empleados);
+  // Renderizar solo con los datos de la respuesta
+  renderizarPlanillaReadonly(resp.data);
 }
 
 // =============================
 // Renderizar datos en la interfaz
 // =============================
-function renderizarPlanillaReadonly(data, empleados) {
+function renderizarPlanillaReadonly(data) {
+  const relaciones = data.relaciones;
   const evalData = data.evaluacion;
 
   // Evaluado
-  const empEval = empleados.find(emp => emp.pin === evalData.cedula_evaluado || emp.pin_str === evalData.cedula_evaluado);
-  document.getElementById("evaluado_fullname").textContent = empEval?.fullname || "N/D";
-  document.getElementById("evaluado_cedula").textContent = evalData.cedula_evaluado || "N/D";
-  document.getElementById("evaluado_cargo").textContent = evalData.cargo_evaluado || "Sin cargo";
-  document.getElementById("evaluado_ubicacion").textContent = empEval?.additional || "N/D";
+  document.getElementById("evaluado_fullname").textContent = relaciones.nombre_completo_evaluado || "N/D";
+  document.getElementById("evaluado_cedula").textContent = relaciones.cedula_usuario || "N/D";
+  document.getElementById("evaluado_cargo").textContent = relaciones.cargo_evaluado || "Sin cargo";
+  document.getElementById("evaluado_ubicacion").textContent = relaciones.ubicacion_evaluado || "N/D";
 
   // Evaluador
-  const empEv = empleados.find(emp => emp.pin === evalData.cedula_evaluador || emp.pin_str === evalData.cedula_evaluador);
-  document.getElementById("evaluador_fullname").textContent = empEv?.fullname || "N/D";
-  document.getElementById("evaluador_cedula").textContent = evalData.cedula_evaluador || "N/D";
-  document.getElementById("evaluador_cargo").textContent = evalData.cargo_evaluador || "Sin cargo";
-  document.getElementById("evaluador_ubicacion").textContent = empEv?.additional || "N/D";
+  document.getElementById("evaluador_fullname").textContent = relaciones.nombre_completo_evaluador || "N/D";
+  document.getElementById("evaluador_cedula").textContent = relaciones.cedula_evaluador || "N/D";
+  document.getElementById("evaluador_cargo").textContent = relaciones.cargo_evaluador || "Sin cargo";
+  document.getElementById("evaluador_ubicacion").textContent = relaciones.ubicacion_evaluador || "N/D";
 
   // Supervisor
-  const empSup = empleados.find(emp => emp.pin === evalData.cedula_supervisor || emp.pin_str === evalData.cedula_supervisor);
-  document.getElementById("supervisor_fullname").textContent = empSup?.fullname || "N/D";
-  document.getElementById("supervisor_cedula").textContent = evalData.cedula_supervisor || "N/D";
-  document.getElementById("supervisor_cargo").textContent = evalData.cargo_supervisor || "Sin cargo";
-
+  document.getElementById("supervisor_fullname").textContent = relaciones.nombre_completo_supervisor || "N/D";
+  document.getElementById("supervisor_cedula").textContent = relaciones.cedula_supervisor || "N/D";
+  document.getElementById("supervisor_cargo").textContent = relaciones.cargo_supervisor || "Sin cargo";
   // Objetivos
   const tbodyObj = document.querySelector("#tabla-objetivos-readonly tbody");
   tbodyObj.innerHTML = "";
@@ -102,17 +98,18 @@ function renderizarPlanillaReadonly(data, empleados) {
   }
 
   // Setear conformidad si viene del backend
-if (evalData.conformidad) {
-  if (evalData.conformidad.toLowerCase() === "si") {
-    document.getElementById("conformidad_si").checked = true;
-  } else if (evalData.conformidad.toLowerCase() === "no") {
-    document.getElementById("conformidad_no").checked = true;
+  if (evalData.conformidad) {
+    if (evalData.conformidad.toLowerCase() === "si") {
+      document.getElementById("conformidad_si").checked = true;
+    } else if (evalData.conformidad.toLowerCase() === "no") {
+      document.getElementById("conformidad_no").checked = true;
+    }
   }
-}
-  
+
   // Habilitar según rol
   habilitarCamposPorRol();
 }
+
 
 // =============================
 // Permisos por rol

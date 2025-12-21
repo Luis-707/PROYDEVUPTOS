@@ -9,22 +9,23 @@ if (empty($dataCliente['_post'])) {
     $dataCliente['_post'] = json_decode($json, true) ?? [];
 }
 
-// Validar que venga la cédula
-if (empty($dataCliente['_post']['cedula_usuario'])) {
+// Validar que venga la cédula y el periodo
+if (empty($dataCliente['_post']['cedula_usuario']) || empty($dataCliente['_post']['id_eval_admin'])) {
     echo json_encode([
         'success' => false,
-        'message' => 'No se recibió la cédula del evaluado'
+        'message' => 'Faltan datos: cédula o periodo de evaluación'
     ]);
     exit;
 }
 
 $cedula = $dataCliente['_post']['cedula_usuario'];
+$idEvalAdmin = $dataCliente['_post']['id_eval_admin'];
 
-// Instanciar clase Objetivo con la conexión ($this debe tener la conexión definida)
+// Instanciar clase Objetivo con la conexión
 $objetivo = new Objetivo([], $this);
 
-// Obtener lista filtrada de objetivos para la cédula recibida
-$respuesta = $objetivo->listar_objetivos($cedula);
+// Obtener lista filtrada de objetivos
+$respuesta = $objetivo->listar_objetivos($cedula, $idEvalAdmin);
 
 // Responder en JSON
 echo json_encode([

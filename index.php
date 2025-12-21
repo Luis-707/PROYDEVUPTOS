@@ -1,4 +1,9 @@
 <?php
+
+session_start();
+$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
+$rolUsuario   = $_SESSION['usuario']['rol'] ?? null;
+
    include_once "controlador/config/configuracion.php";
 
 include_once "middleware/auth.php";
@@ -58,6 +63,8 @@ include_once "middleware/auth.php";
 
     <!--tipografia-->
     <link rel="stylesheet" href="views/tipografia.css">
+
+    <script src="jspdf.umd.min.js"></script>
     
   </head>
 
@@ -168,7 +175,7 @@ include_once "middleware/auth.php";
                         <div class="dropdown-divider my-1"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="pages-profile-user.html"> <i class="icon-base bx bx-user icon-md me-3"></i><span>Perfil</span> </a>
+                        <a class="dropdown-item" href="javascript:void(0)" onclick="abrirPerfilUsuario('<?php echo $_SESSION['usuario']['cedula']; ?>')"> <i class="icon-base bx bx-user icon-md me-3"></i><span>Perfil</span> </a>
                     </li>
                     <!--<li>
                         <a class="dropdown-item" href="pages-account-settings-account.html"> <i class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span> </a>
@@ -290,7 +297,7 @@ include_once "middleware/auth.php";
       
     <script src="assets/vendor/libs/pickr/pickr.js"></script>
     
-
+    
     
     <script src="assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
       
@@ -301,8 +308,7 @@ include_once "middleware/auth.php";
         
       
     <script src="assets/vendor/js/menu.js"></script>
-    
-    
+        
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -335,6 +341,8 @@ include_once "middleware/auth.php";
     <script src="views/js/Datos_Evaluados.js"></script>
     <script src="views/js/GestionObjetivos.js"></script>
     <script src="views/js/GestionCompetencias.js"></script>
+    <script src="views/js/cargarPerfil.js"></script>
+    <script src="views/js/reportes.js"></script>
 
     <script>
         var view = "";

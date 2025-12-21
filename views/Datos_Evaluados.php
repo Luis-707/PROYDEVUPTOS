@@ -31,23 +31,12 @@ td.acciones {
 <h2>Asignacion de cargos de evaluados</h2>
 
 <div class="container py-4">
-      <form id="formulario_DatosEvaluado" onsubmit="event.preventDefault(); validar_formDatosEvaluado(1);">
-        <div class="col-md-4 mb-3">
-        <input type="hidden" name="id_usuario_sesion" id="id_usuario_sesion" value="">
-          <label for="id_usuario" class="form-label">Seleccionar evaluado</label>
-          <select class="form-select" id="id_usuario" name="id_usuario">
-            <option selected disabled>Seleccione un evaluado</option>
-          </select>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label for="id_cargo_evaluado" class="form-label">Seleccionar Cargo</label>
-          <select class="form-select" id="id_cargo_evaluado" name="id_cargo_evaluado">
-            <option selected disabled>Seleccione un cargo</option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </form>
-      </div>
+<button type="button" class="btn btn-primary mb-3" onclick="abrirModalEditarCargoEvaluado('boton', '')" title="Asignar cargo a un evaluado">
+  <i class="bx bx-plus"></i>
+</button>
+
+</div>
+
 
 <div class="modal fade" id="modalEditarCargoDatosEval" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
@@ -58,8 +47,14 @@ td.acciones {
       </div>
       <form id="form-modal-editar-cargo-evaluado" onsubmit="event.preventDefault(); validar_formDatosEvaluado(2);">
       <div class="modal-body">
-
           <input type="hidden" id="id_usuario_modal" name="id_usuario">
+          <div class="col-md-4 mb-3" id="div_id_usuario_sesion" style="display: none;">
+        <input type="hidden" name="id_usuario_sesion" id="id_usuario_sesion" value="<?php echo $_SESSION['usuario']['id_usuario']; ?>">
+          <label for="id_usuario" class="form-label">Seleccionar evaluado</label>
+          <select class="form-select" id="id_usuario" name="id_usuario">
+            <option selected disabled>Seleccione un evaluado</option>
+          </select>
+        </div>
           <label for="cargoEvaluado_modal">Cargo:</label>
           <select id="cargoEvaluado_modal" name="id_cargo_evaluado" class="form-select"></select>
         </form>

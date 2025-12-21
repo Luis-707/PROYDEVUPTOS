@@ -4,11 +4,7 @@ async function listarEvaluados() {
   const datosPersonales = await obtenerDatosPersonales();
   if (!datosPersonales) return;
 
-  // 2) Obtener JSON de empleados
-  const empleados = await relacionarDatosEmpleados();
-  if (!empleados.length) return;
-
-  // 3) Preparar tabla
+  // 2) Preparar tabla
   const tbody = document.querySelector("#tabla-evaluados tbody");
   tbody.innerHTML = "";
 
@@ -17,20 +13,23 @@ async function listarEvaluados() {
   let html = "";
   registros.forEach(item => {
     const cedula = String(item.cedula_usuario).trim();
-    const empleado = empleados.find(emp => emp.pin_str === cedula || emp.pin === cedula);
-    const fullname = empleado ? empleado.fullname : "No encontrado";
+    const fullname = item.nombre_completo || "No encontrado";
     const cargoTexto = item.cargo_evaluado || "Sin cargo";
+    const periodoEvaluado = item.periodo_evaluado || "N/A";
+    const anioInicio = item.anio_inicio;
 
     html += `
       <tr>
         <td>${cedula}</td>
         <td>${fullname}</td>
         <td>${cargoTexto}</td>
+        <td>${anioInicio}</td>
+        <td>${periodoEvaluado}</td>
         <td>
-          <button type="button" class="btn btn-info btn-sm" onclick="abrirPlanilla('${cedula}')">
+          <button type="button" class="btn btn-info btn-sm" onclick="abrirPlanilla('${cedula}', '${item.id_eval_admin}')">
             Ver planilla
           </button>
-          <button type="button" class="btn btn-warning btn-sm" onclick="abrirPlanillaEditar('${cedula}')">
+          <button type="button" class="btn btn-warning btn-sm" onclick="abrirPlanillaEditar('${cedula}', '${item.id_eval_admin}')">
             Editar planilla
           </button>
         </td>
@@ -49,21 +48,5 @@ async function obtenerDatosPersonales() {
   } catch (error) {
     console.error('Error al obtener datos personales:', error);
     return null;
-  }
-}
-
-// Función para cargar JSON empleados y retornar array con fullname y additional
-async function relacionarDatosEmpleados() {
-  try {
-    const resp = await microApi('views/js/datos_empleado.json');
-    if (Array.isArray(resp)) {
-      return resp[0]?.data || resp[0] || [];
-    } else if (resp?.data) {
-      return resp.data;
-    }
-    return [];
-  } catch (error) {
-    console.error('Error al cargar datos empleados:', error);
-    return [];
   }
 }

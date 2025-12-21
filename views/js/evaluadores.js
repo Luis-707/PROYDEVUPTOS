@@ -17,11 +17,11 @@ function validarcaracter(cadena){
 }*/
 
    
-function validar_formEvaluador(opc) {
+function validar_formEvaluador() {
 
    
   // Obtener el formulario
-  var formulario = document.getElementById('formulario_evaluador');
+  var formulario = document.getElementById('form-modal-editar-cargo');
   //console.log(formulario);
   // Crear un objeto FormData
   var Data = new FormData(formulario);
@@ -32,38 +32,6 @@ function validar_formEvaluador(opc) {
       
       switch (key) {         
 
-          /*case 'login':
-              if (!validarcaracter(valor)) {
-                  alert("El loguin no debe tener caracteres Especiales diferentes a ( _  .  -  )");
-                  isValid = false; // Marca como inválido
-              }
-              break;*/
-          /*case 'clave':
-                  if (!validarcaracter(valor)) {
-                      alert("La clave no debe tener caracteres Especiales diferentes a ( _  .  -  ) ");
-                      isValid = false; // Marca como inválido
-                  }
-          break;*/
-          /*case 'cedula_usuario':
-              if (!validarnumero(valor)) {
-                  alert("La cedula solo debe contener numeros ");
-                  isValid = false; // Marca como inválido
-              }
-              break; */
-
-          /*case 'CargoSupervisor':
-              if (!validarCadena(valor)) {
-                  alert("Opcion Invalida. ");
-                  isValid = false; // Marca como inválido
-              }
-              break;*/
-
-          /*case 'JefeSuperior':
-              if (!validarCadena(valor)) {
-                  alert("Opcion Invalida. ");
-                  isValid = false; // Marca como inválido
-              }
-              break;*/
           case 'RolSistema':
               if (!validarCadena(valor)) {
                   alert("Opcion Invalida. ");
@@ -82,22 +50,24 @@ function validar_formEvaluador(opc) {
   }
 
   // Si todas las validaciones pasan
-  if (isValid) {        
-      
-     //formulario.submit(); // Enviar el formulario
-      if(opc==1)
-          guardarEvaluador();  
-      else
-      actualizarEvaluador();
-          
+  if (isValid) {
+    // Obtener el valor del campo id_competencia_modal
+    var idUsuarioModal = document.getElementById("id_usuario_modal").value;
+
+    // Comprobar si el campo está vacío
+    if (idUsuarioModal.trim() === '') {
+      guardarEvaluador(); // Llamar a guardarEvaluador si está vacío
+    } else {
+      actualizarEvaluador(); // Llamar a actualizarEvaluador si no está vacío
+    }
   }
 }
 async function guardarEvaluador() {
   // Capturar valores del formulario
-  let datosPersona = capturarValoresFormulario('formulario_evaluador');
+  let datosPersona = capturarValoresFormulario('form-modal-editar-cargo');
 
   // Agregar id_cargo_evaluador
-  let idCargoEval = document.getElementById('id_cargo_evaluador').value;
+  /*let idCargoEval = document.getElementById('id_cargo_evaluador').value;
   datosPersona.append('id_cargo_evaluador', idCargoEval);
 
   // Agregar id_usuario
@@ -107,7 +77,7 @@ async function guardarEvaluador() {
   // Agregar id_supervisor
   let idSupervisor = document.getElementById('id_supervisor').value;
   datosPersona.append('id_supervisor', idSupervisor);
-
+*/
   try {
       // Llamada al servicio
       const resp = await microApi('controlador/?g_cargoevaluador', datosPersona);
@@ -119,7 +89,7 @@ async function guardarEvaluador() {
             text: resp.message
         });
     } else {
-        valorFormEval();
+        //valorFormEval();
         listarEvaluadores();
         Swal.fire({
             icon: 'success',
@@ -157,19 +127,12 @@ return resp;
  
 }
 
+//=============================================================//
+//Funcion para crear las filas de la tabla
+
 async function listarTablaEvaluadores(datos) {
   const tbody = document.querySelector("#tabla-evaluadores tbody");
   tbody.innerHTML = "";
-
-  // Cargar JSON con datos de empleados
-  const resp = await microApi('views/js/datos_empleado.json');
-  let empleados = [];
-
-  if (Array.isArray(resp)) {
-    empleados = resp[0]?.data || resp[0] || [];
-  } else if (resp?.data) {
-    empleados = resp.data;
-  }
 
   // Aplanar si vienen anidados
   const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
@@ -177,36 +140,40 @@ async function listarTablaEvaluadores(datos) {
   let html = "";
 
   registros.forEach(item => {
-    const cedula = String(item.cedula_usuario).trim();
-    const empleado = empleados.find(emp =>
-      emp.pin_str === cedula || emp.pin === cedula
-    );
+      const cedula = String(item.cedula_usuario).trim();
+      const fullname = item.nombre_completo || "No encontrado";
+      const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
+      const cargoTexto = item.cargo_evaluador || "Sin cargo";
 
-    const fullname = empleado ? empleado.fullname : "No encontrado";
-    const additional = empleado ? empleado.additional || "" : "";
-    const cargoTexto = item.cargo_evaluador || "Sin cargo";
-
-    html += `
-      <tr>
-        <td>${cedula}</td>  
-        <td>${fullname}</td>
-        <td>${additional}</td>
-        <td>${cargoTexto}</td>
-        <td>
-          <div class="dropdown">
-            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarCargo(${item.id_usuario}, ${item.id_cargo_evaluador})"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
-              <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarEvaluador(${item.id_usuario})"><i class="icon-base bx bx-trash me-1"></i>Eliminar</a>
-            </div>
-          </div>
-        </td>
-      </tr>
-    `;
+      html += `
+          <tr>
+              <td>${cedula}</td>
+              <td>${fullname}</td>
+              <td>${ubicacion}</td>
+              <td>${cargoTexto}</td>
+              <td>
+                  <div class="dropdown">
+                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                          <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                          <a class="dropdown-item" href="javascript:void(0);" 
+                             onclick="abrirModalEditarCargo('tabla', ${item.id_usuario}, ${item.id_cargo_evaluador})">
+                              <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                          </a>
+                      </div>
+                  </div>
+              </td>
+          </tr>
+      `;
   });
 
   tbody.innerHTML = html;
 }
+
+
+//=============================================================//
+
 async function eliminarEvaluador(idUsuario) {
   const result = await Swal.fire({
     title: '¿Está seguro de eliminar este evaluador?',
@@ -245,6 +212,10 @@ async function eliminarEvaluador(idUsuario) {
 
 async function actualizarEvaluador() {
   let datosPersona = capturarValoresFormulario('form-modal-editar-cargo');
+  
+  // Agregar id_usuario
+  let idUsuarioEval = document.getElementById('id_usuario_modal').value;
+  datosPersona.append('id_usuario', idUsuarioEval);
 
   try {
     const resp = await microApi('controlador/?a_evaluadores', datosPersona);
@@ -256,7 +227,7 @@ async function actualizarEvaluador() {
         text: resp
       });
     } else {
-      valorFormEval();
+      //valorFormEval();
       listarEvaluadores();
 
       Swal.fire({
@@ -277,7 +248,7 @@ async function actualizarEvaluador() {
 function valorFormEval(usuarioevaluador='',cargoeval='',supervisoreval=''){
   // Asignar valores a los campos del formulario
   document.getElementById('id_usuario').value = usuarioevaluador;
-  document.getElementById('id_cargo_evaluador').value = cargoeval;
+  document.getElementById('cargo_modal').value = cargoeval;
   document.getElementById('id_supervisor').value = supervisoreval;
   
 
@@ -286,82 +257,43 @@ function valorFormEval(usuarioevaluador='',cargoeval='',supervisoreval=''){
 
 // Cerrar el modal al hacer clic
 
-
-/*async function actualizarCargoEvaluador(){
-
-          // antes de capturar los valores del formulario debes validarlos
-      let datosPersona = capturarValoresFormulario('formulario_evaluador');
-
-       // Obtener el valor del select 'id_cargo_evaluador'
-       let idCargoEval = document.getElementById('id_cargo_evaluador').value;
-       // Agregarlo a los datos que se enviarán
-       datosPersona.append('id_cargo_evaluador', idCargoEval);
-      
-      var resp = await microApi('controlador/?actualizar_cargoevaluador',datosPersona);
-           // limpia formulario
-          if (resp.includes(' No Exite')) {
-              alert(resp);
-          }else{
-              valorFormCargosEval();
-              listarEvaluadores();
-              alert('El Cargo se Actualizo con Exito');
-              // Cerrar el modal
-              const modal = document.getElementById('modalEditarEvaluador');
-              modal.style.display = 'none';
-          }
-
-}*/
-
   //Select para usuarios con el rol de evaluador
-  
+
   async function listarUsuariosEvaluador() {
     try {
-      // Cargar JSON con datos de empleados
-      const resp = await microApi('views/js/datos_empleado.json');
-  
-      // Obtener empleados con robustez para varias estructuras
-      let empleados = [];
-      if (Array.isArray(resp)) {
-        empleados = resp[0]?.data || resp[0] || [];
-      } else if (resp?.data) {
-        empleados = resp.data;
-      } else {
-        empleados = resp;
-      }
-  
-      // Obtener lista de evaluadores desde API
-      const respEvaluadores = await microApi('controlador/?listar_evaluadores');
-      if (typeof respEvaluadores === 'string') {
-        console.error('Error al listar usuarios:', respEvaluadores);
-        return;
-      }
-  
-      llenarSelectEvaluador(respEvaluadores, empleados);
+        // Obtener lista de evaluadores desde API
+        const respEvaluadores = await microApi('controlador/?listar_evaluadores');
+        if (typeof respEvaluadores === 'string') {
+            console.error('Error al listar usuarios:', respEvaluadores);
+            return;
+        }
+
+        llenarSelectEvaluador(respEvaluadores);
     } catch (err) {
-      console.error('La petición falló:', err);
+        console.error('La petición falló:', err);
     }
-  }
-  
-  function llenarSelectEvaluador(datos, empleados) {
-    const select = document.getElementById('id_usuario');
+}
+
+function llenarSelectEvaluador(datos) {
+    const select = document.getElementById('id_usuario_select');
     if (!select) return;
-  
+
     select.innerHTML = '<option value="">Seleccione a un usuario</option>';
-  
+
     const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
     const evaluadores = registros.filter(item => item.rol === 'Evaluador');
-  
+
     evaluadores.forEach(item => {
-      const empleado = empleados.find(emp => emp.pin_str === item.cedula_usuario || emp.pin === item.cedula_usuario);
-      const fullname = empleado ? empleado.fullname : item.cedula_usuario;
-  
-      const opcion = document.createElement('option');
-      opcion.value = item.id_usuario;
-      opcion.textContent = fullname;
-  
-      select.appendChild(opcion);
+        const fullname = item.nombre_completo || item.cedula_usuario;
+
+        const opcion = document.createElement('option');
+        opcion.value = item.id_usuario;
+        opcion.textContent = fullname;
+
+        select.appendChild(opcion);
     });
-  }
+}
+
   
 //Select de cargos de evaluadores
 
@@ -401,17 +333,31 @@ function llenarSelectCargosEvaluadores(datos) {
   });
 }
 
-function abrirModalEditarCargo(idUsuario, idCargoActual) {
-  // 1) Resetear el formulario del modal
+//Abrir modal con formulario (habra campos que solo apareceran dependiendo desde donde se llame a la funcion)
+function abrirModalEditarCargo(origen, idUsuario, idCargoActual) {
+  // Resetear el formulario
   document.getElementById("form-modal-editar-cargo").reset();
 
-  // 2) Guardar el id_usuario en un campo oculto
-  document.getElementById("id_usuario_modal").value = idUsuario;
+  // Mostrar u ocultar campos según el origen
+  if (origen === 'boton') {
+    document.getElementById('div_id_usuario').style.display = 'block';
+    document.getElementById('div_id_supervisor').style.display = 'block';
+  } else {
+    document.getElementById('div_id_usuario').style.display = 'none';
+    document.getElementById('div_id_supervisor').style.display = 'none';
+  }
 
-  // 3) Llenar el select de cargos y marcar el actual
+  // Asignar el valor recibido al campo oculto
+  if (idUsuario) {
+    document.getElementById("id_usuario_modal").value = idUsuario;
+  } else {
+    document.getElementById("id_usuario_modal").value = '';
+  }
+
+  // Llenar el select de cargos y marcar el actual
   listarCargosEvaluadoresModal(idCargoActual);
 
-  // 4) Mostrar el modal
+  // Mostrar el modal
   $("#modalEditarCargo").modal("show");
 }
 

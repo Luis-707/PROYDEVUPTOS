@@ -17,11 +17,11 @@ function validarCadena(cadena){
   }
 
      
-  function validar_form_objetivos(opc) {
+  function validar_form_objetivos() {
 
      
     // Obtener el formulario
-    var formulario = document.getElementById('formulario_objetivo');
+    var formulario = document.getElementById('form-modal-editar-objetivo');
     //console.log(formulario);
     // Crear un objeto FormData
     var Data = new FormData(formulario);
@@ -58,22 +58,6 @@ function validarCadena(cadena){
                 }
                 break;
 
-           /* case 'apellidos':
-                if (!validarCadena(valor)) {
-                    alert("El apellido solo debe contener letras y espacios. ");
-                    isValid = false; // Marca como inválido
-                }
-                break;
-               case 'correo':
-                    if (!validarcorreo(valor)) {
-                        alert("El Correo no es valido");
-                        isValid = false; // Marca como inválido
-                    }
-                break;*/
-             
-
-                 
-
             // Si hay un error, salimos del bucle
             if (!isValid) {
                 break;
@@ -82,13 +66,16 @@ function validarCadena(cadena){
     }
 
     // Si todas las validaciones pasan
-    if (isValid) {        
-    
-       //formulario.submit(); // Enviar el formulario
-        if(opc==1)
-            guardarObjetivo();  
-        else
-            actualizarObjetivo();
+    if (isValid) {
+      // Obtener el valor del campo id_odi_modal
+      var idObjetivo = document.getElementById("id_odi_modal").value;
+  
+      // Comprobar si el campo está vacío
+      if (idObjetivo.trim() === '') {
+        guardarObjetivo(); // Llamar a guardarObjetivo si está vacío
+      } else {
+        actualizarObjetivo(); // Llamar a actualizarObjetivo si no está vacío
+      }
     }
 }
 
@@ -97,7 +84,7 @@ function validarCadena(cadena){
 async function guardarObjetivo(){
 
 // antes de capturar los valores del formulario debes validarlos
-let datosPersona = capturarValoresFormulario('formulario_objetivo');
+let datosPersona = capturarValoresFormulario('form-modal-editar-objetivo');
 
 try {
   // Llamada al servicio
@@ -169,7 +156,7 @@ async function listarTablaObjetivos(datos) {
         <td>${item.peso_objetivo}</td>
         <td>
           <button class="btn btn-sm btn-primary"
-            onclick="abrirModalEditarObjetivo(${item.id_odi}, '${item.nombre_objetivo}', ${item.peso_objetivo})">
+            onclick="abrirModalObjetivo(${item.id_odi}, '${item.nombre_objetivo}', ${item.peso_objetivo})">
             Editar
           </button>
         </td>
@@ -185,8 +172,8 @@ async function listarTablaObjetivos(datos) {
 //Validar datos del formulario
 
 function valorFormObjetivo(nObj='',peso=''){ 
-    document.getElementById('nombre_objetivo').value = nObj;
-    document.getElementById('peso_objetivo').value = peso;
+    document.getElementById('nombre_objetivo_modal').value = nObj;
+    document.getElementById('peso_objetivo_modal').value = peso;
 }
 
 function valorFormObjetivoModal(idOdi = '', nObjM = '', pesoM = '') {
@@ -203,21 +190,22 @@ function valorFormObjetivoModal(idOdi = '', nObjM = '', pesoM = '') {
   }
 }
 
-// Función para abrir el modal y rellenar el formulario con datos de la fila
-function abrirModalEditarObjetivo(id_odi, nombre_objetivo, peso_objetivo) {
+//Abrir modal con el formulario para los objetivos
+function abrirModalObjetivo(id_odi = '', nombre_objetivo = '', peso_objetivo = '') {
   // Resetear formulario si es necesario
   const form = document.getElementById("form-modal-editar-objetivo");
   form.reset();
 
-  // Rellenar campos con datos de la fila
-  document.getElementById("id_odi_modal").value = id_odi;
-  document.getElementById("nombre_objetivo_modal").value = nombre_objetivo;
-  document.getElementById("peso_objetivo_modal").value = peso_objetivo;
+  // Rellenar campos con datos de la fila o dejar vacíos
+  document.getElementById("id_odi_modal").value = id_odi || '';
+  document.getElementById("nombre_objetivo_modal").value = nombre_objetivo || '';
+  document.getElementById("peso_objetivo_modal").value = peso_objetivo || '';
 
   // Mostrar el modal (Bootstrap 5)
   const modal = new bootstrap.Modal(document.getElementById('modalEditarObjetivo'));
   modal.show();
 }
+
 
 //Actualizar objetivos
 

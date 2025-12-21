@@ -45,6 +45,15 @@ td.acciones {
             <option selected disabled>Seleccione un evaluado</option>
           </select>
         </div>
+
+        <div class="col-md-4">
+          <label for="periodo_evaluado" class="form-label">Periodo</label>
+          <select class="form-select" id="periodo_evaluado" name="periodo_evaluado" required onchange="ajustarFechasPeriodo(this.value)">
+            <option selected disabled>Seleccione un periodo</option>
+            <option value="Enero-Junio">Enero-Junio</option>
+            <option value="Julio-Diciembre">Julio-Diciembre</option>
+          </select>
+        </div>
       
         <div class="col-md-4">
           <label for="fecha_inicio" class="form-label">fecha_inicio</label>
@@ -56,22 +65,13 @@ td.acciones {
           <input class="form-control" type="date" id="fecha_cierre" name="fecha_cierre" readonly />
         </div>
 
-        <div class="col-md-4">
-          <label for="periodo_evaluado" class="form-label">Periodo</label>
-          <select class="form-select" id="periodo_evaluado" name="periodo_evaluado" required onchange="ajustarFechasPeriodo(this.value)">
-            <option selected disabled>Seleccione un periodo</option>
-            <option value="Enero-Junio">Enero-Junio</option>
-            <option value="Julio-Diciembre">Julio-Diciembre</option>
-          </select>
-        </div>
-
       <button type="submit" class="btn btn-primary">Guardar</button>
       </form>
 </div>
 
 <table class="table table-bordered align-middle" id="tabla-EvalAdmin">
     <thead class="table-dark">
-        <tr><th>Cedula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Cargo</th><th>Periodo</th><th>Acciones</th></tr>
+        <tr><th>Cedula</th><th>Apellidos y nombres</th><th>Ubicacion</th><th>Cargo</th><th>Año</th><th>Periodo</th><th>Estado</th><th>Acciones</th></tr>
     </thead>
     <tbody></tbody>
 </table>

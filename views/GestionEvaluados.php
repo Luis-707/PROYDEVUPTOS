@@ -25,7 +25,7 @@ include_once '../servicios/Sesion.php';
   }
 </style>
 
-<h2>Registro de usuarios evaluados</h2>
+<h2>Gestion de evaluados</h2>
 <div class="container py-4">
   <form id="formulario_evaluado" onsubmit="event.preventDefault(); validar_form_evaluado(1);">
   <div class="mb-4 row">
@@ -33,6 +33,7 @@ include_once '../servicios/Sesion.php';
       <label for="id_cedula_usuario" class="form-label">Cédula</label>
       <input class="form-control" type="search" id="id_cedula_usuario" name="cedula_usuario" placeholder="25101172" />
       <button type="button" class="btn btn-primary ms-2" id="btn_buscar_cedula">Buscar</button>
+      <small id="mensajeEditarEvaluado" class="form-text text-muted" style="display: none; white-space: nowrap;">Se debe buscar nuevamente los datos del usuario para actualizarlos.</small>
     </div>
   </div>
 
@@ -74,21 +75,21 @@ include_once '../servicios/Sesion.php';
           <small id="mensajeSeguridad" class="mt-2"></small>
         </div>
     </div>
+  </div>
 
-      <!--<div class="col-md-5">
-        <label for="cargo_eval" class="form-label">Cargo</label>
-        <select class="form-select" id="id_cargo_evaluado" name="cargo_evaluado">
-          <option value="">Seleccione un cargo</option>
-        </select>
-      </div>-->
-
-    </div>
-
-    <div class="row">
+    <!--<div class="row">
       <div class="col text-center">
         <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
+    </div>-->
+    <div class="row">
+  <div class="col-md-12">
+    <div class="d-flex justify-content-start">
+      <button type="submit" class="btn btn-primary me-2">Guardar</button>
+      <button type="button" class="btn btn-warning" id="btnEditarEval" onclick="event.preventDefault(); validar_form_evaluado(2);" disabled>Editar</button>
     </div>
+  </div>
+  </div>
   </form>
 </div>
 
@@ -98,27 +99,5 @@ include_once '../servicios/Sesion.php';
   </thead>
   <tbody></tbody>
 </table>
-
-<!-- Modal Editar Evaluado -->
-<div class="modal fade" id="modalEditarEvaluado" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">Editar Evaluado</h5></div>
-      <form id="form-modal-editar-evaluado" onsubmit="event.preventDefault(); validar_form_evaluado(2);">
-        <div class="modal-body">
-          <input type="hidden" id="cedula_modal_eval" name="cedula_usuario">
-          <div class="form-group">
-              <label for="clave_modal_evaluado">Clave</label>
-              <input type="password" value="password" id="clave_modal_evaluado" class="form-control" name="clave" placeholder="Ingrese nueva clave o deje en blanco para no cambiar">
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 <script src="views/js/buscador.js"></script>

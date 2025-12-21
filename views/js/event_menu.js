@@ -46,7 +46,7 @@ $(document).on('click', '.menu-link', function() {
 
 
         $("#formularioEvaluadores").click(async function(){
-          if (await verificarAccesoMenu('Gestion de evaluadores', 'formularioEvaluadores')) {
+          if (await verificarAccesoMenu('Gestion de Evaluadores', 'formularioEvaluadores')) {
             mostrarVista('evaluadores');
             listarUsuariosEvaluador();
             listarCargosEvaluadores();
@@ -56,12 +56,12 @@ $(document).on('click', '.menu-link', function() {
         });
         
         $("#formularioSupervisores").click(async function(){
-          if (await verificarAccesoMenu('Gestion de supervisores', 'formularioSupervisores')) {
+          if (await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores')) {
             mostrarVista('supervisores');
             listarUsuariosSupervisor();
             listarCargosSupervisores();
             listarSupervisores();
-            listarSupervisor();
+            //listarSupervisor();
           }
         });
         
@@ -80,7 +80,7 @@ $(document).on('click', '.menu-link', function() {
         });
 
         $("#formularioGestionEvaluados").click(async function(){
-          if (await verificarAccesoMenu('Gestion de evaluados', 'formularioGestionEvaluados')) {
+          if (await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados')) {
            //Variable de control para identificar vista actual
            view = 'gestion_evaluados';
             // Cargar la vista evaluados.php
@@ -106,7 +106,7 @@ $(document).on('click', '.menu-link', function() {
         });
 
         $("#formularioEvalAdministrativos").click(async function(){
-          if (await verificarAccesoMenu('Evaluacion administrativos', 'formularioEvalAdministrativos')) {
+          if (await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvalAdministrativos')) {
             //Variable de control para identificar vista actual
             view = 'evaluacion_administrativos';
             // Cargar la vista evaluados.php
@@ -119,7 +119,7 @@ $(document).on('click', '.menu-link', function() {
         });
         
         $("#formularioUsuarios").click(async function(){
-          if (await verificarAccesoMenu('Gestion de usuarios', 'formularioUsuarios')) {
+          if (await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios')) {
             //Variable de control para identificar vista actual
             view = 'usuarios';
             mostrarVista('usuarios');
@@ -130,69 +130,96 @@ $(document).on('click', '.menu-link', function() {
         });
 
         $("#formularioObjetivos").click(async function(){
-          if (await verificarAccesoMenu('Gestion de objetivos', 'formularioObjetivos')) {
+          if (await verificarAccesoMenu('Gestion de Objetivos', 'formularioObjetivos')) {
             mostrarVista('gestion_objetivos');
             listarObjetivos();
           }
         });
 
         $("#formularioCompetencias").click(async function(){
-          if (await verificarAccesoMenu('Gestion de competencias', 'formularioCompetencias')) {
+          if (await verificarAccesoMenu('Gestion de Competencias', 'formularioCompetencias')) {
             mostrarVista('gestion_competencias');
             listarGCompetencias();
           }
         });
 
-    function abrirPlanilla(cedula){ 
-        // Guardamos la cédula seleccionada 
-        console.log("👉 abrirPlanilla() recibió:", cedula);
-        sessionStorage.setItem("cedula_planilla", cedula); 
-        // Cargamos la vista de la planilla en el cuerpo 
-        mostrarVista('planilla'); 
-        // Una vez cargada la vista, ejecutamos la carga de datos 
-        setTimeout(async () => { 
-            await cargarPlanilla();
-            cargarPeriodoEval(); // carga periodo evaluación
+        $("#formularioReportesDesemp").click(async function(){
+          if (await verificarAccesoMenu('Reportes', 'formularioReportesDesemp')) {
+            mostrarVista('reportes_despempeno');
+            listarReporte();
+          }
+        });
 
-            // Crea las tablas para objetivos y competencias
-            await cargarTablasPlanilla();
-
-           
-
-         }, 300); 
-    }
-
-    function abrirPlanillaReadonly(cedula){ 
-      console.log("👉 abrirPlanillaReadonly() recibió:", cedula);
-      sessionStorage.setItem("cedula_planilla", cedula); 
-      
+        function abrirPlanilla(cedula, idEvalAdmin){ 
+          // Guardamos la cédula seleccionada 
+          console.log("👉 abrirPlanilla() recibió:", cedula);
+          sessionStorage.setItem("cedula_planilla", cedula); 
+          sessionStorage.setItem("id_eval_admin", idEvalAdmin); 
+          // Cargamos la vista de la planilla en el cuerpo 
+          mostrarVista('planilla'); 
+          // Una vez cargada la vista, ejecutamos la carga de datos 
+          setTimeout(async () => { 
+              await cargarPlanilla();
+              cargarPeriodoEval(); // carga periodo evaluación
   
-      // Cargar la vista de la planilla en modo lectura
-      mostrarVista('planilla_comentario'); 
+              // Crea las tablas para objetivos y competencias
+              await cargarTablasPlanilla();
+  
+             
+  
+           }, 300); 
+      }
+  
+      function abrirPlanillaReadonly(cedula, idEvalAdmin){ 
+        console.log("👉 abrirPlanillaReadonly() recibió:", cedula);
+        sessionStorage.setItem("cedula_planilla", cedula); 
+        sessionStorage.setItem("id_eval_admin", idEvalAdmin);
+        
+    
+        // Cargar la vista de la planilla en modo lectura
+        mostrarVista('planilla_comentario'); 
+    
+        // Una vez cargada la vista, ejecutamos la carga de datos
+        setTimeout(async () => { 
+            await cargarPlanillaReadonly(); // 👈 función definida en el JS de la vista readonly
+        }, 300); 
+    }
+  
+    //====================================
+    function abrirPlanillaEditar(cedula, idEvalAdmin){ 
+      console.log("👉 abrirPlanillaEditar() recibió:", cedula);
+      sessionStorage.setItem("cedula_planilla", cedula); 
+      sessionStorage.setItem("id_eval_admin", idEvalAdmin);
+      // Cargar la vista de edición de la planilla
+      mostrarVista('planilla_editar'); 
   
       // Una vez cargada la vista, ejecutamos la carga de datos
       setTimeout(async () => { 
-          await cargarPlanillaReadonly(); // 👈 función definida en el JS de la vista readonly
+        
+          await cargarPlanillaEditar();   // 👈 función en planilla_editar.js
+          //debugIdsEvaluacion(); // muestra ids en consola para debug
+          cargarPeriodoEvaluacion(); // carga periodo evaluación
+          await cargarTablasPlanillaEditar(); // inicializa tablas con rangos guardados
       }, 300); 
   }
 
-  //====================================
-  function abrirPlanillaEditar(cedula){ 
-    console.log("👉 abrirPlanillaEditar() recibió:", cedula);
-    sessionStorage.setItem("cedula_planilla", cedula); 
+//======================================================//
+//Cargar la vista de perfil
 
-    // Cargar la vista de edición de la planilla
-    mostrarVista('planilla_editar'); 
-
-    // Una vez cargada la vista, ejecutamos la carga de datos
-    setTimeout(async () => { 
-      
-        await cargarPlanillaEditar();   // 👈 función en planilla_editar.js
-        //debugIdsEvaluacion(); // muestra ids en consola para debug
-        cargarPeriodoEvaluacion(); // carga periodo evaluación
-        await cargarTablasPlanillaEditar(); // inicializa tablas con rangos guardados
-    }, 300); 
+function abrirPerfilUsuario(cedula) { 
+  // Guardamos la cédula seleccionada 
+  console.log("👉 abrirPerfilUsuario() recibió:", cedula);
+  sessionStorage.setItem("cedula_perfil", cedula); 
+  // Cargamos la vista de perfilUsuario en el cuerpo
+  mostrarVista('perfilUsuario'); 
+  // Una vez cargada la vista, ejecutamos la carga de datos
+  setTimeout(async () => { 
+    await cargarPerfil();  // Función que obtiene el perfil y llama a listarPerfilUsuario
+  }, 300); 
 }
+
+
+//=====================================================//
     // Evento del botón
 /*document.querySelectorAll('.btn-detalles').forEach(btn => {
     btn.addEventListener('click', e => {
@@ -319,9 +346,8 @@ $(document).on('click', '#toggleClave', function() {
 
 //Validaciones para formulario de objetivos
 
-$(document).on('keypress', '#nombre_objetivo', function(event) {
+$(document).on('keypress', '#nombre_objetivo, #nombre_competencia, #nombre_competencia_modal, #nombre_objetivo_modal', function(event) {
   const charCode = event.which ? event.which : event.keyCode;
-  const valorActual = $(this).val();
 
   // Permitir solo letras (mayúsculas y minúsculas), espacios, backspace, flechas izquierda y derecha
   if (
@@ -336,7 +362,8 @@ $(document).on('keypress', '#nombre_objetivo', function(event) {
   }
 });
 
-$(document).on('keypress', '#peso_objetivo', function(event) {
+
+$(document).on('keypress', '#peso_objetivo, #peso_objetivo_modal, #peso_competencia, #peso_competencia_modal', function(event) {
   const charCode = event.which ? event.which : event.keyCode;
   const valorActual = $(this).val();
 
@@ -370,16 +397,17 @@ document.addEventListener("visibilitychange", () => {
 document.addEventListener('DOMContentLoaded', async () => {
  
   // 🔹 Al entrar a la sesión, verificar permisos y ocultar menús
-  await verificarAccesoMenu('Gestion de evaluadores', 'formularioEvaluadores');
-  await verificarAccesoMenu('Gestion de supervisores', 'formularioSupervisores');
-  await verificarAccesoMenu('Gestion de evaluados', 'formularioGestionEvaluados');
+  await verificarAccesoMenu('Gestion de Evaluadores', 'formularioEvaluadores');
+  await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores');
+  await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados');
   await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados');
   await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion');
   await verificarAccesoMenu('Comentarios', 'formularioComentarios');
-  await verificarAccesoMenu('Gestion de usuarios', 'formularioUsuarios');
-  await verificarAccesoMenu('Evaluacion administrativos', 'formularioEvalAdministrativos');
-  await verificarAccesoMenu('Gestion de objetivos', 'formularioObjetivos');
-  await verificarAccesoMenu('Gestion de competencias', 'formularioCompetencias');
+  await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios');
+  await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvalAdministrativos');
+  await verificarAccesoMenu('Gestion de Objetivos', 'formularioObjetivos');
+  await verificarAccesoMenu('Gestion de Competencias', 'formularioCompetencias');
+  await verificarAccesoMenu('Reportes', 'formularioReportesDesemp');
 });
 
 

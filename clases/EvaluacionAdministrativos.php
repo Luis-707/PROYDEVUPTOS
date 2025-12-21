@@ -9,6 +9,7 @@ class EvaluacionesAdministrativos {
     private $fecha_inicio = "";
     private $fecha_cierre = "";
     private $periodo_evaluado = "";
+    private $estado_eval_admin = "";
 
     // Constructor
     public function __construct($dataCliente=array(''), $conexion = NULL) {
@@ -29,6 +30,9 @@ class EvaluacionesAdministrativos {
         }
         if (isset($dataCliente['periodo_evaluado'])) {
             $this->periodo_evaluado = $dataCliente['periodo_evaluado'];
+        }
+        if (isset($dataCliente['estado_eval_admin'])) {
+            $this->estado_eval_admin = $dataCliente['estado_eval_admin'];
         }
         if ($conexion !== NULL) {
             $this->conexion = $conexion;
@@ -59,14 +63,15 @@ public function getIdUsuario(): int {
     public function sql_guardar_eval_administrativos(): string {
         return sprintf(
             "INSERT INTO evaluacion_administrativos 
-                (id_usuario, id_evaluado, fecha_inicio, fecha_cierre, periodo_evaluado) 
-             VALUES (%d, %d, '%s', '%s', '%s')
+                (id_usuario, id_evaluado, fecha_inicio, fecha_cierre, periodo_evaluado, estado_eval_admin) 
+             VALUES (%d, %d, '%s', '%s', '%s', '%s')
              RETURNING id_eval_admin;",
             $this->id_usuario,   // evaluador (de la sesión)
             $this->id_evaluado,  // evaluado (del formulario)
             addslashes($this->fecha_inicio),
             addslashes($this->fecha_cierre),
-            addslashes($this->periodo_evaluado)
+            addslashes($this->periodo_evaluado),
+            ('Iniciada')
         );
     }
 
@@ -89,6 +94,23 @@ public function sql_actualizar_periodo(): string {
     public function sql_eliminar_eval_administrativos(): string {
         return sprintf(
             "DELETE FROM evaluacion_administrativos WHERE id_eval_admin = %d;",
+            $this->id_eval_admin
+        );
+    }
+
+    // Método para actualizar el estado del usuario (Activo, Inactivo) según id_usuario
+    public function sql_actualizar_estado_evalAdmin(): string {
+        return sprintf(
+            "UPDATE evaluacion_administrativos SET estado_eval_admin = '%s' WHERE id_eval_admin = %d;",
+            $this->estado_eval_admin,
+            $this->id_eval_admin
+        );
+    }
+
+    // Método para buscar por id_competencia
+    public function sql_buscar_evalAdmin_id(): string {
+        return sprintf(
+            "SELECT * FROM evaluacion_administrativos WHERE id_eval_admin = %d;",
             $this->id_eval_admin
         );
     }
@@ -123,6 +145,30 @@ public function sql_actualizar_periodo(): string {
             $this->getIdEvalAdmin()
         );
     }*/
+
+    public function sql_existe_evaluacion(): string {
+        return sprintf(
+            "SELECT id_eval_admin 
+             FROM evaluacion_administrativos 
+             WHERE id_evaluado = %d
+               AND periodo_evaluado = '%s'
+               AND fecha_inicio = '%s'
+               AND fecha_cierre = '%s'
+             LIMIT 1;",
+            $this->id_evaluado,
+            addslashes($this->periodo_evaluado),
+            addslashes($this->fecha_inicio),
+            addslashes($this->fecha_cierre)
+        );
+    }
+    
+    public function existeEvaluacionDuplicada() {
+        if ($this->conexion !== NULL) {
+            return $this->conexion->ejecutarConsultaBdds($this->sql_existe_evaluacion());
+        }
+        return [];
+    }
+
    // Buscar evaluación por id_evaluado
    public function sql_buscarPorEvaluado(): string {
     return sprintf(
@@ -159,9 +205,19 @@ public static function sql_buscar_evaluador_por_usuario(int $idUsuario): string 
         );
     }
 
+    public function sql_buscarPorFechas(): string {
+        return sprintf(
+            "SELECT * FROM evaluacion_administrativos WHERE id_evaluado = %d AND periodo_evaluado = '%s' AND fecha_inicio = '%s' AND fecha_cierre = '%s';",
+            $this->periodo_evaluado,
+            $this->fecha_cierre,
+            $this->fecha_inicio,
+            $this->id_evaluado
+        );
+    }
+
     public function sql_listar_eval_administrativos(): string {
         return "
-            SELECT u.cedula_usuario, c.cargo_evaluado, ea.periodo_evaluado, ea.id_eval_admin, ea.id_evaluado, ea.id_usuario
+            SELECT u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado, ea.estado_eval_admin, ea.periodo_evaluado, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, ea.id_eval_admin, ea.id_evaluado, ea.id_usuario
             FROM evaluacion_administrativos ea
             JOIN evaluados e ON ea.id_evaluado = e.id_evaluado
             JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
@@ -217,7 +273,8 @@ public static function sql_buscar_evaluador_por_usuario(int $idUsuario): string 
         return "
             SELECT e.id_evaluado, 
                u.id_usuario, 
-               u.cedula_usuario, 
+               u.cedula_usuario,
+               u.nombre_completo, 
                r.rol
         FROM evaluados e
         INNER JOIN usuarios u ON e.id_usuario = u.id_usuario

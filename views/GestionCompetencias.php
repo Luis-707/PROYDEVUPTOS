@@ -27,30 +27,7 @@ include_once '../servicios/Sesion.php';
 
 <h2>Gestion de competencias</h2>
 
-<div class="container py-4">
-    <form id="formulario_competencia" onsubmit="event.preventDefault(); validar_form_competencia(1);">
-        <div class="col-md-4 mb-3">
-          <label for="nombre_competencia" class="form-label">Ingrese una competencia</label>
-            <input class="form-control" type="text" id="nombre_competencia" name="nombre_competencia" placeholder="Eficiencia laboral">
-        </div>
-        <div class="col-md-4 mb-3">
-          <label for="peso_competencia" class="form-label">Ingrese el peso de la competencia que desea ingresar</label>
-            <input class="form-control" type="number" id="peso_competencia" name="peso_competencia" placeholder="10">
-        </div>
-
-        <div class="col-md-4 mb-3">
-          <label for="estado_competencia" class="form-label">Seleccionar periodo a evaluar</label>
-          <select class="form-select" id="estado_competencia" name="estado_competencia">
-            <option selected disabled>Seleccione un estado</option>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-        </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary mb-3">Guardar</button>
-    </form>
-</div>
-
+<button type="button" class="btn btn-primary mb-3" title="Agregar nueva competencia" onclick="abrirModalCompetencia()"><i class="bx bx-plus"></i></button>
 
 
 <table class="table table-bordered align-middle" id="tabla-comp">
@@ -65,7 +42,7 @@ include_once '../servicios/Sesion.php';
   <div class="modal-dialog">
     <form id="form-modal-editar-competencia" class="modal-content" onsubmit="event.preventDefault(); validar_form_competencia(2);">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalEditarCompetenciaLabel">Editar Objetivo</h5>
+        <h5 class="modal-title" id="modalEditarCompetenciaLabel">Editar competencia</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
@@ -81,7 +58,7 @@ include_once '../servicios/Sesion.php';
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
     </form>
   </div>

@@ -28,6 +28,8 @@ class Supervisor {
             SELECT 
                 e.id_usuario,
                 u.cedula_usuario,
+                u.nombre_completo,
+                u.ubicacion_administrativa,
                 c.cargo_supervisor
             FROM supervisores e
             INNER JOIN usuarios u 

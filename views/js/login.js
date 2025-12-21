@@ -40,29 +40,37 @@ function validarcaracter(cadena){
   
   async function loginUsuario() {
     let datosLogin = capturarValoresFormulario('formLogin');
-  
+
     // Cargar JSON externo
     const resp = await microApi('views/js/datos_empleado.json');
     let pin = resp.pin || null;
-  
+
     // Añadir el JSON como string al formData
     datosLogin.append("extra", JSON.stringify({ pin: pin }));
-  
+
     // Llamar al servicio
     var respuesta = await microApi('controlador/?login', datosLogin);
-  
+
     if (respuesta.success) {
-      // Guardar datos en sessionStorage
-      sessionStorage.setItem("id_usuario", respuesta.id_usuario);
-      sessionStorage.setItem("cedula_usuario", respuesta.cedula);
-      sessionStorage.setItem("rol_id", respuesta.rol_id);
-  
-      // Redirigir a la vista principal
-      window.location.href = "index.php";
+        // Guardar datos en sessionStorage
+        sessionStorage.setItem("id_usuario", respuesta.id_usuario);
+        sessionStorage.setItem("cedula_usuario", respuesta.cedula);
+        sessionStorage.setItem("rol_id", respuesta.rol_id);
+        // Redirigir a la vista principal
+        window.location.href = "index.php";
     } else {
-      alert(respuesta.message);
+        if (respuesta.type === "inactive") {
+            Swal.fire({
+                title: 'Usuario inactivo',
+                text: respuesta.message,
+                icon: 'warning',
+                confirmButtonText: 'Aceptar'
+            });
+        } else {
+            alert(respuesta.message);
+        }
     }
-  }
+}
 
   function pa(cad){
     document.getElementById('id_clave').value = MD5(cad);

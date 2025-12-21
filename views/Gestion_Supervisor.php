@@ -31,22 +31,8 @@ td.acciones {
 <h2>Asignacion de cargos de supervisores</h2>
 
 <div class="container py-4">
-      <form id="formulario_supervisor" onsubmit="event.preventDefault(); validar_formSupervisor(1);">
-        <div class="col-md-4 mb-3">
-          <label for="id_usuario" class="form-label">Seleccionar supervisor</label>
-          <select class="form-select" id="id_usuario" name="id_usuario">
-            <option selected disabled>Seleccione un supervisor</option>
-          </select>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label for="id_cargo_supervisor" class="form-label">Seleccionar Cargo</label>
-          <select class="form-select" id="id_cargo_supervisor" name="id_cargo_supervisor">
-            <option selected disabled>Seleccione un cargo</option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary mb-3">Guardar</button>
-      </form>
-      </div>
+  <button type="button" class="btn btn-primary mb-3" title="Asignar cargo a un supervisor" onclick="abrirModalCargoSuperv('boton', '')"><i class="bx bx-plus"></i></button>
+</div>
 
 <div class="modal fade" id="modalEditarCargoSuperv" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
@@ -55,16 +41,22 @@ td.acciones {
         <h5 class="modal-title">Editar Cargo</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form id="form-modal-editar-cargo-superv" onsubmit="event.preventDefault(); validar_formSupervisor(2);">
+      <form id="form-modal-cargo-superv" onsubmit="event.preventDefault(); validar_formSupervisor(2);">
       <div class="modal-body">
 
           <input type="hidden" id="id_usuario_modal" name="id_usuario">
+          <div class="mb-3" id="div_id_usuario_supervisor" style="display: none;">
+          <label for="id_usuario" class="form-label">Seleccionar supervisor</label>
+          <select class="form-select" id="id_usuario" name="id_usuario">
+            <option selected disabled>Seleccione un supervisor</option>
+          </select>
+        </div>
           <label for="cargosuperv_modal">Cargo:</label>
           <select id="cargosuperv_modal" name="id_cargo_supervisor" class="form-select"></select>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="submit" form="form-modal-editar-cargo-superv" class="btn btn-primary">Guardar Cambios</button>
+        <button type="submit" form="form-modal-cargo-superv" class="btn btn-primary">Guardar Cambios</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
@@ -78,21 +70,3 @@ td.acciones {
     </thead>
     <tbody></tbody>
 </table>
-
-
-<!-- <form id="form_asignar_supervisores" onsubmit="event.preventDefault(); validar_form_asignar(1);">
-  
-  <label for="id_supervisor">Supervisores:</label>
-  <select id="id_supervisor" name="id_supervisor" required>
-      <option value="">Seleccione a un supervisor</option>
-  </select> 
-
-  <h4>Evaluadores:</h4>
-  <div id="listaEvaluadores" name="evaluadores[]">
-      
-  </div> 
-
- 
-</form>
-
-<button type="submit" form="form_asignar_supervisores">Guardar Asignación</button>-->

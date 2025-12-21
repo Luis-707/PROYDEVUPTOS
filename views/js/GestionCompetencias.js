@@ -17,87 +17,62 @@ function validarcorreo(cadena){
 }
 
    
-function validar_form_competencia(opc) {
-
-   
+function validar_form_competencia() {
   // Obtener el formulario
-  var formulario = document.getElementById('formulario_competencia');
-  //console.log(formulario);
+  var formulario = document.getElementById('form-modal-editar-competencia');
   // Crear un objeto FormData
   var Data = new FormData(formulario);
   let isValid = true; // Variable para controlar si el formulario es válido
-  console.log(Data);
+
   // Validar cada campo
   for (var [key, valor] of Data.entries()) {
-      
-      switch (key) {         
-
-          /*case 'login':
-              if (!validarcaracter(valor)) {
-                  alert("El loguin no debe tener caracteres Especiales diferentes a ( _  .  -  )");
-                  isValid = false; // Marca como inválido
-              }
-              break;*/
-          case 'idCompetencia':
-              if (!validarnumero(valor)) {
-                  alert("El id_odi solo debe contener numeros ");
-                  isValid = false; // Marca como inválido
-              }
-              break;
-          case 'pesoCompetencia':
-              if (!validarnumero(valor)) {
-                  alert("El peso solo debe contener numeros ");
-                  isValid = false; // Marca como inválido
-              }
-              break;
-
-          case 'nombreCompetencia':
-              if (!validarCadena(valor)) {
-                  alert("El nombre solo debe contener letras y espacios. ");
-                  isValid = false; // Marca como inválido
-              }
-              break;
-
-         /* case 'apellidos':
-              if (!validarCadena(valor)) {
-                  alert("El apellido solo debe contener letras y espacios. ");
-                  isValid = false; // Marca como inválido
-              }
-              break;
-             case 'correo':
-                  if (!validarcorreo(valor)) {
-                      alert("El Correo no es valido");
-                      isValid = false; // Marca como inválido
-                  }
-              break;*/
-           
-
-               
-
-          // Si hay un error, salimos del bucle
-          if (!isValid) {
-              break;
-          }
+    switch (key) {
+      case 'idCompetencia':
+        if (!validarnumero(valor)) {
+          alert("El id_odi solo debe contener numeros ");
+          isValid = false;
+        }
+        break;
+      case 'pesoCompetencia':
+        if (!validarnumero(valor)) {
+          alert("El peso solo debe contener numeros ");
+          isValid = false;
+        }
+        break;
+      case 'nombreCompetencia':
+        if (!validarCadena(valor)) {
+          alert("El nombre solo debe contener letras y espacios. ");
+          isValid = false;
+        }
+        break;
+      // Si hay un error, salimos del bucle
+      if (!isValid) {
+        break;
       }
+    }
   }
 
   // Si todas las validaciones pasan
-  if (isValid) {        
-  
-     //formulario.submit(); // Enviar el formulario
-      if(opc==1)
-          guardarCompetencia();  
-      else
-          actualizarCompetencia();
+  if (isValid) {
+    // Obtener el valor del campo id_competencia_modal
+    var idCompetencia = document.getElementById("id_competencia_modal").value;
+
+    // Comprobar si el campo está vacío
+    if (idCompetencia.trim() === '') {
+      guardarCompetencia(); // Llamar a guardarCompetencia si está vacío
+    } else {
+      actualizarCompetencia(); // Llamar a actualizarCompetencia si no está vacío
+    }
   }
 }
+
 
 //Guargar objetivo
 
 async function guardarCompetencia(){
 
 // antes de capturar los valores del formulario debes validarlos
-let datosPersona = capturarValoresFormulario('formulario_competencia');
+let datosPersona = capturarValoresFormulario('form-modal-editar-competencia');
 
 try {
 // Llamada al servicio
@@ -173,7 +148,7 @@ async function listarGCompetencias() {
             <div class="dropdown-menu">
               <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoComp(${item.id_competencia}, 'Activo')"><i class="icon-base bx bx-check-circle me-2"></i>Activo</a>
               <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoComp(${item.id_competencia}, 'Inactivo')"><i class="icon-base bx bx-x-circle me-2"></i>Inactivo</a>
-              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarCompetencia(${item.id_competencia}, '${item.nombre_competencia}', ${item.peso_competencia})"><i class="icon-base bx bx-edit me-2"></i>Editar</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalCompetencia(${item.id_competencia}, '${item.nombre_competencia}', ${item.peso_competencia})"><i class="icon-base bx bx-edit me-2"></i>Editar</a>
             </div>
           </div>
         </td>
@@ -188,10 +163,10 @@ async function listarGCompetencias() {
   
   //Validar datos del formulario
 
-function valorFormCompetencia(nComp='',peso='',estadoComp=''){ 
-  document.getElementById('nombre_competencia').value = nComp;
-  document.getElementById('peso_competencia').value = peso;
-  document.getElementById('estado_competencia').value = estadoComp;
+function valorFormCompetencia(nComp='',peso=''){ 
+  document.getElementById('nombre_competencia_modal').value = nComp;
+  document.getElementById('peso_competencia_modal').value = peso;
+  //document.getElementById('estado_competencia').value = estadoComp;
 }
 
 //Cambiar el estado de la competencia
@@ -235,17 +210,17 @@ async function cambiarEstadoComp(idCompetencia, estado_competencia) {
 }
 
 // Función para abrir el modal y rellenar el formulario con datos de la fila
-function abrirModalEditarCompetencia(id_competencia, nombre_competencia, peso_competencia) {
-  // Resetear formulario si es necesario
+function abrirModalCompetencia(id_competencia = '', nombre_competencia = '', peso_competencia = '') {
+  // Resetear formulario para asegurar que los campos estén vacíos
   const form = document.getElementById("form-modal-editar-competencia");
   form.reset();
 
-  // Rellenar campos con datos de la fila
-  document.getElementById("id_competencia_modal").value = id_competencia;
-  document.getElementById("nombre_competencia_modal").value = nombre_competencia;
-  document.getElementById("peso_competencia_modal").value = peso_competencia;
+  // Asignar los valores, pero si son undefined, asignar cadena vacía
+  document.getElementById("id_competencia_modal").value = id_competencia || '';
+  document.getElementById("nombre_competencia_modal").value = nombre_competencia || '';
+  document.getElementById("peso_competencia_modal").value = peso_competencia || '';
 
-  // Mostrar el modal (Bootstrap 5)
+  // Mostrar el modal
   const modal = new bootstrap.Modal(document.getElementById('modalEditarCompetencia'));
   modal.show();
 }

@@ -7,13 +7,45 @@ header('Content-Type: application/json; charset=utf-8');
 
 include_once "../clases/PlanillaAdministrativos.php";
 
+function normalizarRespuesta($resp) {
+    if (isset($resp[0][0])) {
+        return $resp[0][0];
+    } elseif (isset($resp[0])) {
+        return $resp[0];
+    }
+    return [];
+}
+
 try {
+    // Inicializar dataCliente
+    if (!isset($dataCliente)) {
+        $dataCliente = ['_post' => $_POST];
+        if (empty($dataCliente['_post'])) {
+            $json = file_get_contents("php://input");
+            $dataCliente['_post'] = json_decode($json, true) ?? [];
+        }
+    }
+
+    // Validar parámetros obligatorios
+    if (empty($dataCliente['_post']['id_eval_admin']) || empty($dataCliente['_post']['id_usuario']) || empty($dataCliente['_post']['id_evaluado'])) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Faltan parámetros obligatorios: id_eval_admin, id_usuario o id_evaluado'
+        ]);
+        exit;
+    }
+
+    $idEvalAdminPost = (int)$dataCliente['_post']['id_eval_admin'];
+
+    // Instanciar clase con los datos recibidos
     $planilla = new PlanillaAdministrativos($dataCliente['_post'], $this->conexion);
 
-    // 1) Buscar evaluación existente
-    $sql = $planilla->sql_buscar();
+    // 1) Buscar evaluación existente (pasando el argumento)
+    $sql = $planilla->sql_buscar($idEvalAdminPost);
     $respuesta = $this->ejecutarConsultaBdds($sql);
-    if (empty($respuesta) || empty($respuesta[0])) {
+    $evalData = normalizarRespuesta($respuesta);
+
+    if (empty($evalData['id_eval_admin'])) {
         echo json_encode([
             'success' => false,
             'message' => '❌ No existe evaluación previa para este evaluado'
@@ -21,13 +53,15 @@ try {
         exit;
     }
 
-    $idEvalAdmin = (int)$respuesta[0][0]['id_eval_admin'];
+    $idEvalAdmin = (int)$evalData['id_eval_admin'];
+    $planilla->setIdEvalAdmin($idEvalAdmin);
 
     // 2) Actualizar evaluación general (puntaje y rango)
     $sqlEval = $planilla->sql_actualizar_evaluacion();
     $resEval = $this->ejecutarConsultaBdds($sqlEval);
+    $rowEval = normalizarRespuesta($resEval);
 
-    if (empty($resEval) || empty($resEval[0])) {
+    if (empty($rowEval['id_eval_admin'])) {
         echo json_encode([
             'success' => false,
             'message' => '❌ No se pudo actualizar la evaluación general'
@@ -35,36 +69,46 @@ try {
         exit;
     }
 
-    $idEvalAdmin = (int)$resEval[0][0]['id_eval_admin'];
+    $idEvalAdmin = (int)$rowEval['id_eval_admin'];
 
     // 3) Actualizar objetivos
     if (!empty($dataCliente['_post']['objetivos'])) {
-        $objetivos = json_decode($dataCliente['_post']['objetivos'], true);
-        foreach ($objetivos as $obj) {
-            if (!empty($obj['id_odi'])) {
-                $sqlObj = $planilla->sql_actualizar_objetivo(
-                    $idEvalAdmin,
-                    (int)$obj['id_odi'],
-                    (int)$obj['rango'],
-                    (int)$obj['pesoXRango']
-                );
-                $this->ejecutarConsultaBdds($sqlObj);
+        $objetivos = is_string($dataCliente['_post']['objetivos'])
+            ? json_decode($dataCliente['_post']['objetivos'], true)
+            : $dataCliente['_post']['objetivos'];
+
+        if (is_array($objetivos)) {
+            foreach ($objetivos as $obj) {
+                if (!empty($obj['id_odi'])) {
+                    $sqlObj = $planilla->sql_actualizar_objetivo(
+                        $idEvalAdmin,
+                        (int)$obj['id_odi'],
+                        (int)$obj['rango'],
+                        (int)$obj['pesoXRango']
+                    );
+                    $this->ejecutarConsultaBdds($sqlObj);
+                }
             }
         }
     }
 
     // 4) Actualizar competencias
     if (!empty($dataCliente['_post']['competencias'])) {
-        $competencias = json_decode($dataCliente['_post']['competencias'], true);
-        foreach ($competencias as $comp) {
-            if (!empty($comp['id_competencia'])) {
-                $sqlComp = $planilla->sql_actualizar_competencia(
-                    $idEvalAdmin,
-                    (int)$comp['id_competencia'],
-                    (int)$comp['rango'],
-                    (int)$comp['pesoXRango']
-                );
-                $this->ejecutarConsultaBdds($sqlComp);
+        $competencias = is_string($dataCliente['_post']['competencias'])
+            ? json_decode($dataCliente['_post']['competencias'], true)
+            : $dataCliente['_post']['competencias'];
+
+        if (is_array($competencias)) {
+            foreach ($competencias as $comp) {
+                if (!empty($comp['id_competencia'])) {
+                    $sqlComp = $planilla->sql_actualizar_competencia(
+                        $idEvalAdmin,
+                        (int)$comp['id_competencia'],
+                        (int)$comp['rango'],
+                        (int)$comp['pesoXRango']
+                    );
+                    $this->ejecutarConsultaBdds($sqlComp);
+                }
             }
         }
     }

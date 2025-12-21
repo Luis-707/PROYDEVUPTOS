@@ -33,7 +33,7 @@ class GestionCompetencia {
             "INSERT INTO competencias (nombre_competencia, peso_competencia, estado_competencia) VALUES ('%s', %d, '%s');",
             $this->nombre_competencia,
             $this->peso_competencia,
-            $this->estado_competencia
+            ('Activo')
         );
     }
 

@@ -16,6 +16,7 @@ include_once '../servicios/Sesion.php';
       <th>Apellidos y nombres</th>
       <th>Cargo</th>
       <th>Unidad administrativa</th>
+      <th>Año</th>
       <th>Periodo evaluado</th>
       <th>Acciones</th>
     </tr>

@@ -20,7 +20,7 @@ class UsuariosSistema {
     // Método estático que devuelve la consulta SQL para listar usuarios con su rol
     public static function sql_listar_usuarios(): string {
         return "
-            SELECT u.id_usuario, u.cedula_usuario, r.rol
+            SELECT u.id_usuario, u.cedula_usuario, u.nombre_completo, r.rol
             FROM usuarios u
             INNER JOIN roles_sistema r ON u.rol_id = r.rol_id;
         ";

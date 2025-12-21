@@ -86,10 +86,31 @@ function validarCadena(cadena){
   async function guardarEvaluado() {
     let datos = capturarValoresFormulario('formulario_evaluado');
     
+    let clave = document.getElementById('id_clave').value;
+  
+  // Verificar si la longitud de clave está entre 10 y 16 caracteres
+  if (clave.length < 10) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Longitud inválida',
+      text: 'La clave debe tener entre 10 y 16 caracteres.'
+    });
+    return; // Impide continuar con el guardado
+  }
+
     // Agregar rol_id
   let idrolEvaluado = document.getElementById('id_rol_evaluado').value;
   datos.append('rol_id', idrolEvaluado);
-    
+  
+  let nombreCompleto = document.getElementById('fullname_input').value;
+  datos.append('nombre_completo', nombreCompleto);
+
+  let tipoEmpleado = document.getElementById('type_str_input').value;
+  datos.append('tipo_empleado', tipoEmpleado);
+
+  let ubicacion = document.getElementById('additional_input').value;
+  datos.append('ubicacion_administrativa', ubicacion);
+
     try {
       const resp = await microApi('controlador/?g_user_evaluado', datos);
       if (!resp.success) {
@@ -109,6 +130,34 @@ function validarCadena(cadena){
     listarTablaEvaluados(resp);
   }
   
+//==========================================================//
+//Funcion para rellenar el fomulario
+
+function editarUserEvaluado(cedula, clave, rolId, nombreCompleto, tipo, ubicacion) {
+  // Rellenar los campos del formulario con los datos del usuario
+  document.getElementById('id_cedula_usuario').value = cedula;
+  //document.getElementById('cedula_modal').value = cedula; // campo oculto
+  document.getElementById('id_clave').value = clave;
+  document.getElementById('id_rol_evaluado').value = rolId;
+  document.getElementById('fullname_input').value = nombreCompleto;
+  document.getElementById('type_str_input').value = tipo;
+  document.getElementById('additional_input').value = ubicacion;
+
+  // Mostrar el mensaje
+  document.getElementById('mensajeEditarEvaluado').style.display = 'block';
+
+  // Activar el botón Editar
+  const btnEditar = document.getElementById('btnEditarEval');
+  btnEditar.disabled = false;
+  btnEditar.classList.remove('btn-secondary');
+  btnEditar.classList.add('btn-warning');
+}
+
+//==========================================================//
+
+//===============================================================//
+//Funcion que crea las filas de la tabla
+/*
   async function listarTablaEvaluados(datos) {
     const tbody = document.querySelector("#tabla-GestionEvaluados tbody");
     tbody.innerHTML = "";
@@ -137,23 +186,25 @@ function validarCadena(cadena){
       );
   
       const fullname = empleado ? empleado.fullname : "No encontrado";
+      //const cargoTexto = item.cargo_evaluado || "Sin cargo";
       //const tipoEmpleado = empleado && empleado.type_str
         //? (Array.isArray(empleado.type_str) ? empleado.type_str.join(', ') : empleado.type_str)
         //: "Desconocido";
-      const status = empleado ? empleado.status_str : "Desconocido";
+      //const status = empleado ? empleado.status_str : "Desconocido";
   
       html += `
         <tr>
           <td>${item.clave ? "******" : ""}</td>
           <td>${cedula}</td>
           <td>${fullname}</td>
-          <td>${status}</td>
+          <td>${item.estado_usuario}</td>
         <td>
           <div class="dropdown">
             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarEvaluado(${cedula})"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
               <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarEvaluado(${item.cedula_usuario},${item.id_usuario})"><i class="icon-base bx bx-trash me-1"></i>Eliminar</a>
+              <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvaluado(${item.id_usuario},'${item.estado_usuario}')"><i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado</a>
             </div>
           </div>
         </td>
@@ -162,8 +213,51 @@ function validarCadena(cadena){
     });
   
     tbody.innerHTML = html;
-  }
-  
+  }*/
+
+    async function listarTablaEvaluados(datos) {
+    const tbody = document.querySelector("#tabla-GestionEvaluados tbody");
+    tbody.innerHTML = "";
+
+    // Aplanar si vienen anidados
+    const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+    let html = "";
+
+    registros.forEach(item => {
+        const cedula = String(item.cedula_usuario || item.cedula_evaluado).trim();
+        const fullname = item.nombre_completo || "No encontrado";
+
+        html += `
+            <tr>
+                <td>${item.clave ? "******" : ""}</td>
+                <td>${cedula}</td>
+                <td>${fullname}</td>
+                <td>${item.estado_usuario}</td>
+                <td>
+                    <div class="dropdown">
+                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                            <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="editarUserEvaluado('${item.cedula_usuario}', '${item.clave ? item.clave : ""}', '${item.rol_id}', '${item.nombre_completo}', '${item.tipo_empleado}', '${item.ubicacion_administrativa}')">
+                                <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                            </a>
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvaluado(${item.id_usuario},'${item.estado_usuario}')">
+                                <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+}
+
+//===============================================================//
+
   /*async function eliminarEvaluado(cedula) {
     const result = await Swal.fire({
       title: '¿Deseas eliminar este evaluado?',
@@ -214,6 +308,51 @@ function validarCadena(cadena){
 }
 */
 
+//==========================================================//
+//Cambiar estado del usuario
+
+async function cambiarEstadoEvaluado(id_usuario, estado_usuario) {
+  // Determinar el estado opuesto
+  const nuevoEstadoEvaluado = estado_usuario === 'Activo' ? 'Inactivo' : 'Activo';
+
+  const result = await Swal.fire({
+    title: `¿Está seguro de cambiar el estado a "${nuevoEstadoEvaluado}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, cambiar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (result.isConfirmed) {
+    const formData = new FormData();
+    formData.append('id_usuario', id_usuario);
+    formData.append('estado_usuario', nuevoEstadoEvaluado); // Enviar el estado opuesto
+
+    try {
+      const resp = await microApi('controlador/?cambioEstadoEvaluado', formData);
+      listarGestionEvaluados();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Estado cambiado',
+        text: typeof resp === 'string' ? resp : 'El estado fue cambiado correctamente'
+      });
+    } catch (err) {
+      console.error("Error al cambiar estado:", err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al cambiar el estado'
+      });
+    }
+  }
+}
+
+//==========================================================//
+
+
 async function eliminarEvaluado(cedula) {
   const result = await Swal.fire({
     title: '¿Deseas eliminar este evaluado?',
@@ -237,8 +376,24 @@ async function eliminarEvaluado(cedula) {
 
   
   async function actualizarEvaluado() {
-    let datos = capturarValoresFormulario('form-modal-editar-evaluado');
-    const resp = await microApi('controlador/?a_user_evaluado', datos);
+    let datos = capturarValoresFormulario('formulario_evaluado');
+
+    let NuevoRo = document.getElementById('id_rol_evaluado').value;
+    datos.append('rol_id', NuevoRo);
+
+    let cedulaEval = document.getElementById('id_cedula_usuario').value;
+    datos.append('cedula_usuario', cedulaEval);
+
+    let nombreEditar = document.getElementById('fullname_input').value;
+    datos.append('nombre_completo', nombreEditar);
+
+    let tipoEmpleadoEditar = document.getElementById('type_str_input').value;
+    datos.append('tipo_empleado', tipoEmpleadoEditar);
+
+    let ubicacionEditar = document.getElementById('additional_input').value;
+    datos.append('ubicacion_administrativa', ubicacionEditar);
+
+    var resp = await microApi('controlador/?a_user_evaluado', datos);
     listarTablaEvaluados(resp);
     Swal.fire({ icon: 'success', title: 'Actualización', text: 'Evaluado actualizado con éxito' });
   }

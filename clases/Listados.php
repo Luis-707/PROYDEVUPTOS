@@ -9,6 +9,45 @@ class Listados {
         }
     }
 
+    // Buscar id_evaluador asociado a un usuario
+    public static function sql_buscar_evaluador_por_usuario(int $idUsuario): string {
+        return sprintf("
+            SELECT ev.id_evaluador
+            FROM evaluadores ev
+            JOIN usuarios u ON ev.id_usuario = u.id_usuario
+            WHERE u.id_usuario = %d;
+        ", $idUsuario);
+    }
+
+    // Listar todos los evaluados (registrados + no registrados)
+    public static function sql_listar_todos_evaluados_union(string $cedula, int $idEvaluador): string {
+        return sprintf("
+            -- Evaluados ya registrados
+            SELECT u.*, e.id_evaluador
+            FROM usuarios u
+            JOIN evaluados e ON u.id_usuario = e.id_usuario
+            JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+            JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
+            WHERE u_ev.cedula_usuario = '%s'
+
+            UNION
+
+            -- Evaluados no registrados (se les asigna el evaluador en sesión)
+            SELECT u.*, %d AS id_evaluador
+            FROM usuarios u
+            JOIN roles_sistema r ON u.rol_id = r.rol_id
+            WHERE r.rol = 'Evaluado'
+              AND u.id_usuario NOT IN (SELECT id_usuario FROM evaluados);
+        ", addslashes($cedula), $idEvaluador);
+    }
+
+    public function ejecutarConsulta(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
     // 🔹 Listado general (solo para admins, si lo usas)
     public static function sql_listar_evaluados(): string {
         return "
@@ -27,19 +66,19 @@ class Listados {
     // 🔹 Listar solo el evaluado logueado
     public static function sql_listar_por_evaluado(string $cedula): string {
         return sprintf("
-            SELECT e.id_evaluado, u.cedula_usuario, c.cargo_evaluado, ea.periodo_evaluado
+            SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado, ea.periodo_evaluado
             FROM evaluados e
             JOIN usuarios u ON e.id_usuario = u.id_usuario
             JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
             LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
-            WHERE u.cedula_usuario = '%s';
+            WHERE u.cedula_usuario = '%s' AND ea.estado_eval_admin = 'Finalizada';
         ", addslashes($cedula));
     }
 
     // 🔹 Listar evaluados bajo un supervisor
     public static function sql_listar_por_supervisor(string $cedula): string {
         return sprintf("
-            SELECT e.id_evaluado, u.cedula_usuario, c.cargo_evaluado, ea.periodo_evaluado
+            SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado, ea.periodo_evaluado
             FROM evaluados e
             JOIN usuarios u ON e.id_usuario = u.id_usuario
             JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
@@ -47,18 +86,31 @@ class Listados {
             JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
             JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
             JOIN usuarios u_sup ON s.id_usuario = u_sup.id_usuario
-            WHERE u_sup.cedula_usuario = '%s';
+            WHERE u_sup.cedula_usuario = '%s' AND ea.estado_eval_admin = 'Finalizada';
         ", addslashes($cedula));
     }
 
     // 🔹 Listar evaluados bajo un evaluador (si manejas este rol)
     public static function sql_listar_por_evaluador(string $cedula): string {
         return sprintf("
-            SELECT e.id_evaluado, u.cedula_usuario, c.cargo_evaluado, ea.periodo_evaluado
+        SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, c.cargo_evaluado, ea.periodo_evaluado
+        FROM evaluados e
+        JOIN usuarios u ON e.id_usuario = u.id_usuario
+        JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+        LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
+        JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+        JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
+        WHERE u_ev.cedula_usuario = '%s';
+        ", addslashes($cedula));
+    }
+
+     // 🔹 Listar evaluados bajo un evaluador (si manejas este rol)
+     public static function sql_listar_cargos(string $cedula): string {
+        return sprintf("
+            SELECT u.id_usuario ,e.id_evaluado, u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado
             FROM evaluados e
             JOIN usuarios u ON e.id_usuario = u.id_usuario
             JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
-            LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
             JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
             JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
             WHERE u_ev.cedula_usuario = '%s';
@@ -68,20 +120,64 @@ class Listados {
     public static function sql_listar_evaluados_por_cedula(string $cedula): string {
         return sprintf("
             SELECT u.*
-            FROM evaluados e
-            JOIN usuarios u ON e.id_usuario = u.id_usuario
-            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
-            LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
+            FROM usuarios u
+            JOIN evaluados e ON e.id_usuario = u.id_usuario
             JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
             JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
             WHERE u_ev.cedula_usuario = '%s';
         ", addslashes($cedula));
     }
 
+    // 🔹 Listar evaluados bajo un evaluador (si manejas este rol)
+    public static function sql_listar_por_registro_evaluacion_Administrativos(string $cedula): string {
+        return sprintf("
+           SELECT ea.id_eval_admin,e.id_evaluado, u.cedula_usuario, c.cargo_evaluado, ea.periodo_evaluado
+            FROM evaluados e
+            JOIN usuarios u ON e.id_usuario = u.id_usuario
+            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+            JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
+            JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+            JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
+            WHERE u_ev.cedula_usuario = '%s';
+        ", addslashes($cedula));
+    }
+
+    // 🔹 Listar evaluaciones por usuario evaluador
+    public static function sql_reportes_por_evaluador(string $cedula): string {
+        return sprintf("
+           SELECT 
+            ea.id_eval_admin, 
+            EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, 
+            e.id_evaluado, 
+            u.cedula_usuario, 
+            u.nombre_completo, 
+            c.cargo_evaluado, 
+            ea.periodo_evaluado,
+            ea.puntaje_final,
+            ra.rango_actuacion
+        FROM evaluados e
+        JOIN usuarios u ON e.id_usuario = u.id_usuario
+        JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+        LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
+        LEFT JOIN rango_actuacion ra ON ea.id_rango = ra.id_rango
+        JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+        JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
+        WHERE u_ev.cedula_usuario = '%s';
+     ", addslashes($cedula));
+    }
+
     public function listar_user_evaluado(string $cedula) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds(
                 self::sql_listar_evaluados_por_cedula($cedula)
+            );
+        }
+        return "No se ha definido la conexión";
+    }
+    public function listar_cargos_evaluados(string $cedula) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds(
+                self::sql_listar_cargos($cedula)
             );
         }
         return "No se ha definido la conexión";
@@ -94,6 +190,22 @@ class Listados {
     }
 
     public function listaEvaluados(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
+    public function listarEvalAdministrativos(string $cedula) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds(
+                self::sql_listar_por_registro_evaluacion_Administrativos($cedula)
+            );
+        }
+        return "No se ha definido la conexión";
+    }
+
+    public function listarReportes(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
         }
