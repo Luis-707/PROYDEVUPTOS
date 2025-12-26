@@ -93,7 +93,7 @@ class Listados {
     // 🔹 Listar evaluados bajo un evaluador (si manejas este rol)
     public static function sql_listar_por_evaluador(string $cedula): string {
         return sprintf("
-        SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, c.cargo_evaluado, ea.periodo_evaluado
+        SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, c.cargo_evaluado, ea.periodo_evaluado, ea.comentario_evaluado, ea.comentario_supervisor
         FROM evaluados e
         JOIN usuarios u ON e.id_usuario = u.id_usuario
         JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
@@ -142,6 +142,17 @@ class Listados {
         ", addslashes($cedula));
     }
 
+    public static function sql_listar_eval_administrativos(string $idUser): string {
+        return sprintf("
+            SELECT u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado, ea.estado_eval_admin, ea.periodo_evaluado, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, ea.id_eval_admin, ea.id_evaluado, ea.id_usuario
+            FROM evaluacion_administrativos ea
+            JOIN evaluados e ON ea.id_evaluado = e.id_evaluado
+            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+            JOIN usuarios u ON e.id_usuario = u.id_usuario
+            WHERE ea.id_usuario = %d;
+        ", addslashes($idUser));
+    }
+
     // 🔹 Listar evaluaciones por usuario evaluador
     public static function sql_reportes_por_evaluador(string $cedula): string {
         return sprintf("
@@ -164,6 +175,22 @@ class Listados {
         JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
         WHERE u_ev.cedula_usuario = '%s';
      ", addslashes($cedula));
+    }
+
+     // Método estático que devuelve la consulta SQL para listar usuarios con su rol
+     public static function sql_listar_datos(string $idUsuario): string {
+        return sprintf("
+        SELECT e.id_evaluado, 
+            eu.id_usuario, 
+            eu.cedula_usuario,
+            eu.nombre_completo, 
+            r.rol
+            FROM evaluados e
+            INNER JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+            INNER JOIN usuarios eu ON e.id_usuario = eu.id_usuario
+            INNER JOIN roles_sistema r ON eu.rol_id = r.rol_id
+            WHERE ev.id_usuario = %d; -- Aquí pones el id_usuario del evaluador
+        ", addslashes($idUsuario));
     }
 
     public function listar_user_evaluado(string $cedula) {
@@ -189,6 +216,13 @@ class Listados {
         return "No se ha definido la conexión";
     }
 
+    public function listarEvaluadorResultados(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
     public function listaEvaluados(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
@@ -205,7 +239,21 @@ class Listados {
         return "No se ha definido la conexión";
     }
 
+    public function listarEvalAdmin(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
     public function listarReportes(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
+    public function listarDatos(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
         }

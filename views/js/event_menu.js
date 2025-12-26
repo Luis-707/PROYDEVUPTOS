@@ -79,6 +79,7 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
+
         $("#formularioGestionEvaluados").click(async function(){
           if (await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados')) {
            //Variable de control para identificar vista actual
@@ -125,7 +126,6 @@ $(document).on('click', '.menu-link', function() {
             mostrarVista('usuarios');
             listarUsuario();
             listarRolesSistema();
-            listarRolesSistemaModal();
           }
         });
 
@@ -147,6 +147,13 @@ $(document).on('click', '.menu-link', function() {
           if (await verificarAccesoMenu('Reportes', 'formularioReportesDesemp')) {
             mostrarVista('reportes_despempeno');
             listarReporte();
+          }
+        });
+
+        $("#formularioResultados").click(async function(){
+          if (await verificarAccesoMenu('Resultados', 'formularioResultados')) {
+            mostrarVista('resultados');
+            listarEvaluadosResultados();
           }
         });
 
@@ -184,6 +191,21 @@ $(document).on('click', '.menu-link', function() {
             await cargarPlanillaReadonly(); // 👈 función definida en el JS de la vista readonly
         }, 300); 
     }
+
+    function abrirPlanillaResultados(cedula, idEvalAdmin){ 
+      console.log("👉 abrirPlanillaResultados() recibió:", cedula);
+      sessionStorage.setItem("cedula_planilla", cedula); 
+      sessionStorage.setItem("id_eval_admin", idEvalAdmin);
+      
+  
+      // Cargar la vista de la planilla en modo lectura
+      mostrarVista('planilla_resultados'); 
+  
+      // Una vez cargada la vista, ejecutamos la carga de datos
+      setTimeout(async () => { 
+          await cargarPlanillaResultados(); // 👈 función definida en el JS de la vista readonly
+      }, 300); 
+  }
   
     //====================================
     function abrirPlanillaEditar(cedula, idEvalAdmin){ 
@@ -408,6 +430,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Gestion de Objetivos', 'formularioObjetivos');
   await verificarAccesoMenu('Gestion de Competencias', 'formularioCompetencias');
   await verificarAccesoMenu('Reportes', 'formularioReportesDesemp');
+  await verificarAccesoMenu('Resultados', 'formularioResultados');
+
 });
 
 

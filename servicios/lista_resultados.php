@@ -14,13 +14,9 @@ $Lista = new Listados($this);
 
 // Seleccionar SQL según rol
 switch ($rolUsuario) {
-
-    case 'evaluado':
-        $sql = Listados::sql_listar_por_evaluado($cedulaSesion);
-        break;
-    
-    case 'supervisor del evaluador':
-        $sql = Listados::sql_listar_por_supervisor($cedulaSesion);
+   
+    case 'evaluador':
+        $sql = Listados::sql_listar_por_evaluador($cedulaSesion);
         break;
    
     default:
@@ -28,5 +24,5 @@ switch ($rolUsuario) {
         exit;
 }
 
-$respuesta = $Lista->listarEvaluadosComentarios($sql);
+$respuesta = $Lista->listarEvaluadorResultados($sql);
 return $respuesta;

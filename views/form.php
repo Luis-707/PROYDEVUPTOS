@@ -121,42 +121,6 @@ td.acciones {
     <tbody></tbody>
 </table>
 
-<!-- Modal Editar Usuario -->
-<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title">Editar Usuario</h5>
-        
-      </div>
-
-      <form id="form-modal-editar" onsubmit="event.preventDefault(); validar_form(2);">
-          <div class="modal-body">
-            <!-- Campo oculto: cédula -->
-            <input type="hidden" id="cedula_modal" name="cedula_usuario">
-
-            <div class="form-group">
-              <label for="clave_modal">Clave</label>
-              <input type="password" value="password" id="clave_modal" class="form-control" name="clave" placeholder="Ingrese nueva clave o deje en blanco para no cambiar">
-            </div>
-
-            <div class="form-group">
-              <label for="rol_modal">Rol del Sistema</label>
-              <select id="rol_modal" class="form-control" name="rol_id"></select>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-primary">Guardar</button>
-          </div>
-      </form>
-     
-    </div>
-  </div>
-</div>
-
 <!-- Modal Permisos -->
 <div class="modal fade" id="modalPermisos" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">

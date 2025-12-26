@@ -175,7 +175,7 @@ function validarFechasPeriodo(fechaInicio, fechaCierre, periodo) {
 //Consultar evaluacines de personal administrativo
 
 async function listarEvalAdmin(){
-    var resp = await microApi('controlador/?l_evalAdministrativos');
+    var resp = await microApi('controlador/?listar_evalAdministrativo');
     listarTablaEvalAdmin(resp);
 }  
 

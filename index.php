@@ -335,6 +335,7 @@ include_once "middleware/auth.php";
     <!--<script src="views/js/asignar_evaluador.js"></script>-->
     <script src="views/js/evaluados.js"></script>
     <script src="views/js/evaluados_comentarios.js"></script>
+    <script src="views/js/evaluados_resultados.js"></script>
     <script src="views/js/logout.js"></script>
     <script src="views/js/GestionEvaluados.js"></script>
     <script src="views/js/evalAdministrativos.js"></script>

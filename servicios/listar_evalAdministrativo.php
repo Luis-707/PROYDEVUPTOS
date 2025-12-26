@@ -1,16 +1,4 @@
 <?php
-/*
-include_once "../clases/EvaluacionAdministrativos.php";
-
-// Crear instancia de la clase UsuariosSistema, pasando un array vacío y la conexión ($this)
-$Usuarios = new EvaluacionesAdministrativos([], $this);
-
-// Obtener el resultado de la consulta para listar usuarios con sus roles
-$respuesta = $Usuarios->listarDatos();
-
-return $respuesta;
-*/
-
 session_start();
 include_once '../clases/Listados.php';
 
@@ -28,8 +16,8 @@ $Lista = new Listados($this);
 // Seleccionar consulta según rol
 switch ($rolUsuario) {
     case 'evaluador':
-        // Usamos el método sql_listar_datos para traer datos por id_usuario del evaluador
-        $sql = Listados::sql_listar_datos($id_usuario);
+        // Usamos el método sql_listar_eval_administrativos para traer datos por id_usuario del evaluador
+        $sql = Listados::sql_listar_eval_administrativos($id_usuario);
         break;
    
     default:
@@ -38,5 +26,5 @@ switch ($rolUsuario) {
 }
 
 // Ejecutar la consulta usando listarEvalAdmin
-$respuesta = $Lista->listarDatos($sql);
+$respuesta = $Lista->listarEvalAdmin($sql);
 return $respuesta;

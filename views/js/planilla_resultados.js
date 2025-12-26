@@ -1,0 +1,93 @@
+// =============================
+// Cargar planilla en modo solo lectura
+// =============================
+async function cargarPlanillaResultados() {
+    const cedula = sessionStorage.getItem("cedula_planilla");
+    if (!cedula) {
+      alert("No se seleccionó evaluado");
+      return;
+    }
+  
+    const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
+  
+    // Llamar al servicio readonly
+    const formData = new FormData();
+    formData.append("cedula_usuario", cedula);
+    formData.append("id_eval_admin", idEvalAdmin || "");
+    const resp = await microApi('controlador/?planilla_resultados', formData);
+  
+    if (!resp?.success) {
+      alert(resp?.message || "Error cargando planilla readonly");
+      return;
+    }
+  
+    // Renderizar solo con los datos de la respuesta
+    renderizarPlanillaResultados(resp.data);
+  }
+  
+  // =============================
+  // Renderizar datos en la interfaz
+  // =============================
+  function renderizarPlanillaResultados(data) {
+    const relaciones = data.relaciones;
+    const evalData = data.evaluacion;
+  
+    // Evaluado
+    document.getElementById("evaluado_fullname").textContent = relaciones.nombre_completo_evaluado || "N/D";
+    document.getElementById("evaluado_cedula").textContent = relaciones.cedula_usuario || "N/D";
+    document.getElementById("evaluado_cargo").textContent = relaciones.cargo_evaluado || "Sin cargo";
+    document.getElementById("evaluado_ubicacion").textContent = relaciones.ubicacion_evaluado || "N/D";
+  
+    // Evaluador
+    document.getElementById("evaluador_fullname").textContent = relaciones.nombre_completo_evaluador || "N/D";
+    document.getElementById("evaluador_cedula").textContent = relaciones.cedula_evaluador || "N/D";
+    document.getElementById("evaluador_cargo").textContent = relaciones.cargo_evaluador || "Sin cargo";
+    document.getElementById("evaluador_ubicacion").textContent = relaciones.ubicacion_evaluador || "N/D";
+  
+    // Supervisor
+    document.getElementById("supervisor_fullname").textContent = relaciones.nombre_completo_supervisor || "N/D";
+    document.getElementById("supervisor_cedula").textContent = relaciones.cedula_supervisor || "N/D";
+    document.getElementById("supervisor_cargo").textContent = relaciones.cargo_supervisor || "Sin cargo";
+  
+    // Objetivos
+    const tbodyObj = document.querySelector("#tabla-objetivos-readonly tbody");
+    tbodyObj.innerHTML = "";
+    data.objetivos.forEach(o => {
+      tbodyObj.innerHTML += `
+        <tr>
+          <td>${o.nombre_objetivo ?? "-"}</td>
+          <td>${o.peso_objetivo ?? "-"}</td>
+          <td>${o.rango_obj ?? "-"}</td>
+          <td>${o.pesoxrango_obj ?? "-"}</td>
+        </tr>`;
+    });
+  
+    // Competencias
+    const tbodyComp = document.querySelector("#tabla-competencias-readonly tbody");
+    tbodyComp.innerHTML = "";
+    data.competencias.forEach(c => {
+      tbodyComp.innerHTML += `
+        <tr>
+          <td>${c.nombre_competencia ?? "-"}</td>
+          <td>${c.peso_competencia ?? "-"}</td>
+          <td>${c.rango_comp ?? "-"}</td>
+          <td>${c.pesoxrango_comp ?? "-"}</td>
+        </tr>`;
+    });
+  
+    // Resultado final
+    document.getElementById("puntaje-total").textContent = evalData.puntaje_final || 0;
+    document.getElementById("rango-actuacion").textContent = evalData.rango_actuacion || "N/D";
+  
+    // Comentarios y conformidad (solo lectura)
+    document.getElementById("comentario_supervisor_text").textContent = evalData.comentario_supervisor || "Sin comentario";
+    document.getElementById("comentario_evaluado_text").textContent = evalData.comentario_evaluado || "Sin comentario";
+    document.getElementById("conformidad_text").textContent = evalData.conformidad ? evalData.conformidad.toUpperCase() : "N/D";
+  
+
+  }
+  
+  // =============================
+  // Inicialización
+  // =============================
+  cargarPlanillaResultados();
