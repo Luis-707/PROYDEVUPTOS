@@ -150,6 +150,13 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
+        $("#formularioReportesAdmin").click(async function(){
+          if (await verificarAccesoMenu('Reportes Administrativos', 'formularioReportesAdmin')) {
+            mostrarVista('reportes_administrativos');   // carga la vista reportes.php
+            listarReportesAdministrativos();           // función definida en reportes.js
+          }
+        });
+
         $("#formularioResultados").click(async function(){
           if (await verificarAccesoMenu('Resultados', 'formularioResultados')) {
             mostrarVista('resultados');

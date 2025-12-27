@@ -344,6 +344,7 @@ include_once "middleware/auth.php";
     <script src="views/js/GestionCompetencias.js"></script>
     <script src="views/js/cargarPerfil.js"></script>
     <script src="views/js/reportes.js"></script>
+    <script src="views/js/reportes_administrativos.js"></script>
 
     <script>
         var view = "";
