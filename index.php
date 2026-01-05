@@ -65,6 +65,7 @@ include_once "middleware/auth.php";
     <link rel="stylesheet" href="views/tipografia.css">
 
     <script src="jspdf.umd.min.js"></script>
+    <script src="jspdf.plugin.autotable.min.js"></script>
     
   </head>
 

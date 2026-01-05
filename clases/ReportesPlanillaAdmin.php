@@ -45,9 +45,11 @@ class ReportesPlanillaAdmin {
             SELECT ea.id_eval_admin, ea.periodo_evaluado, ea.fecha_inicio, ea.fecha_cierre,
                    ea.comentario_supervisor, ea.comentario_evaluado, ea.conformidad,
                    u_eval.cedula_usuario AS cedula_evaluado, u_eval.nombre_completo  AS nombre_evaluado,
-                   c_ev.cargo_evaluado,
+                   c_ev.cargo_evaluado, u_eval.ubicacion_administrativa AS ubicacion_evaluado,   -- 🔹 nueva columna
+
                    u_ev.cedula_usuario AS cedula_evaluador, u_ev.nombre_completo AS nombre_evaluador,
-                   c_ee.cargo_evaluador,
+                   c_ee.cargo_evaluador,  u_ev.ubicacion_administrativa AS ubicacion_evaluador,
+                   
                    u_sup.cedula_usuario AS cedula_supervisor, u_sup.nombre_completo AS nombre_supervisor,
                    c_es.cargo_supervisor,
                    r.rango_actuacion, ea.puntaje_final
