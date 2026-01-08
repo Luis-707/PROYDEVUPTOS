@@ -438,6 +438,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Gestion de Competencias', 'formularioCompetencias');
   await verificarAccesoMenu('Reportes', 'formularioReportesDesemp');
   await verificarAccesoMenu('Resultados', 'formularioResultados');
+  await verificarAccesoMenu('Reportes Administrativos', 'formularioReportesAdmin');
 
 });
 
