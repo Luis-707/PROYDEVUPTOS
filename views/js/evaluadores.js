@@ -130,46 +130,82 @@ return resp;
 //=============================================================//
 //Funcion para crear las filas de la tabla
 
+// Listar evaluadores en tabla DataTables
 async function listarTablaEvaluadores(datos) {
-  const tbody = document.querySelector("#tabla-evaluadores tbody");
-  tbody.innerHTML = "";
-
-  // Aplanar si vienen anidados
   const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-
-  let html = "";
-
-  registros.forEach(item => {
+  
+  // Destruir DataTable existente si existe
+  if ($.fn.DataTable.isDataTable('#tabla-evaluadores')) {
+      $('#tabla-evaluadores').DataTable().destroy();
+  }
+  
+  // Limpiar tbody
+  $('#tabla-evaluadores tbody').empty();
+  
+  // Preparar datos para DataTables
+  const tableData = registros.map(item => {
       const cedula = String(item.cedula_usuario).trim();
       const fullname = item.nombre_completo || "No encontrado";
       const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
       const cargoTexto = item.cargo_evaluador || "Sin cargo";
-
-      html += `
-          <tr>
-              <td>${cedula}</td>
-              <td>${fullname}</td>
-              <td>${ubicacion}</td>
-              <td>${cargoTexto}</td>
-              <td>
-                  <div class="dropdown">
-                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                          <i class="icon-base bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu">
-                          <a class="dropdown-item" href="javascript:void(0);" 
-                             onclick="abrirModalEditarCargo('tabla', ${item.id_usuario}, ${item.id_cargo_evaluador})">
-                              <i class="icon-base bx bx-edit-alt me-1"></i>Editar
-                          </a>
-                      </div>
-                  </div>
-              </td>
-          </tr>
+      
+      // Botón de acción
+      const acciones = `
+          <div class="dropdown">
+              <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                  <i class="icon-base bx bx-dots-vertical-rounded"></i>
+              </button>
+              <div class="dropdown-menu">
+                  <a class="dropdown-item" href="javascript:void(0);" 
+                     onclick="abrirModalEditarCargo('tabla', ${item.id_usuario}, ${item.id_cargo_evaluador})">
+                      <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                  </a>
+              </div>
+          </div>
       `;
+      
+      return [
+          cedula,
+          fullname,
+          ubicacion,
+          cargoTexto,
+          acciones
+      ];
   });
-
-  tbody.innerHTML = html;
+  
+  // Inicializar DataTable
+  $('#tabla-evaluadores').DataTable({
+      data: tableData,
+      columns: [
+          { title: "Cédula", width: "120px" },
+          { title: "Nombre Completo" },
+          { title: "Ubicación", width: "230px" },
+          { title: "Cargo Evaluador" },
+          { 
+              title: "Acciones", 
+              width: "120px",
+              orderable: false,
+              searchable: false
+          }
+      ],
+      pageLength: 25,
+      responsive: true,
+      order: [[0, 'asc']], // Ordenar por cédula por defecto
+      language: {
+          search: "Buscar:",
+          lengthMenu: "Mostrar _MENU_ registros por página",
+          info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty: "Mostrando 0 a 0 de 0 registros",
+          emptyTable: "No hay datos disponibles en la tabla",
+          zeroRecords: "No se encontraron registros coincidentes",
+          paginate: {
+              previous: "Anterior",
+              next: "Siguiente"
+          }
+      }
+  });
 }
+
 
 
 //=============================================================//

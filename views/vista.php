@@ -37,6 +37,7 @@ if (isset($_POST['file']) && isset($_POST['idElemento'])) {
         'perfilUsuario' => $DIR. 'perfilUsuario.php',
         'reportes_despempeno' => $DIR. 'reportes_desemp.php',
         'reportes_administrativos' => $DIR. 'ReportesPlanillasAdmin.php',
+        'planilla_excepcional' => $DIR. 'Planilla_Excepcional.php',
         //'Registro_Evaluados' => $DIR. 'Registro_Evaluados.php'
         /*'empleado' => $DIR. 'vempleado.php'*/
 

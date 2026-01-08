@@ -227,67 +227,113 @@ btnEditar.classList.add('btn-warning');
 
 //==========================================================//
 
+// Listar usuarios en tabla DataTables
 async function listarTablaUsuarios(datos) {
-const tbody = document.querySelector("#tabla-usuarios tbody");
-tbody.innerHTML = "";
-
-// Cargar lista de roles desde la API
-const rolesResp = await microApi('controlador/?listar_RolesSistema');
-const rolesList = Array.isArray(rolesResp[0]) ? rolesResp.flat() : rolesResp;
-
-let html = "";
-const ADMIN_ID = 1;
-
-for (let i = 0; i < datos.length; i++) {
-  const grupo = datos[i];
-  for (let j = 0; j < grupo.length; j++) {
-    const item = grupo[j];
-
-    // Buscar rol
-    const rolObj = rolesList.find(r => r.rol_id == item.rol_id || r.idrol == item.rol_id);
-    const rolTexto = rolObj ? (rolObj.rol || rolObj.nombrerol || "Desconocido") : "Desconocido";
-
-    // Fila
-    html += '<tr>';
-    html += '<td>' + (item.clave ? "******" : "") + '</td>';
-    html += '<td>' + item.cedula_usuario + '</td>';
-    html += '<td>' + item.nombre_completo + '</td>'; // Suponiendo que ahora 'datos' incluye nombre_usuario
-    html += '<td>' + rolTexto + '</td>';
-    html += '<td>' + item.estado_usuario + '</td>'; // Nueva columna con estado
-
-    // Acciones
-    if (item.rol_id == ADMIN_ID) {
-      html += `<td class="acciones">
-        <div class="acciones-icons">
-          <img src="img/iconos/Usuario Administrador.png" />
-        </div>
-      </td>`;
-    } else {
-      const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
-      //const editarFila = `abrirModalEditar('${item.cedula_usuario}','${item.clave ? "******" : ""}','${item.rol_id}')`;
-      const editarF = `editarUser('${item.cedula_usuario}', '${item.clave ? item.clave : ""}', '${item.rol_id}', '${item.nombre_completo}', '${item.tipo_empleado}', '${item.ubicacion_administrativa}')`;
-
-      const btnEstadoUsuario = `cambiarEstadoUsuario('${item.id_usuario}', '${item.estado_usuario}')`;
-
-      html += `
-      <td>
-        <div class="dropdown">
-          <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="javascript:void(0);" onclick="${editarF}"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
-            <a class="dropdown-item" href="javascript:void(0);" onclick="${btnPerm}"><i class="icon-base bx bx-lock-open me-1"></i>Permisos</a>
-            <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuario}"><i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado</a>
-          </div>
-        </div>
-      </td>`;
-    }
-
-    html += '</tr>';
+  // Cargar lista de roles desde la API
+  const rolesResp = await microApi('controlador/?listar_RolesSistema');
+  const rolesList = Array.isArray(rolesResp[0]) ? rolesResp.flat() : rolesResp;
+  
+  // Aplanar datos si vienen anidados
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+  
+  // Destruir DataTable existente si existe
+  if ($.fn.DataTable.isDataTable('#tabla-usuarios')) {
+      $('#tabla-usuarios').DataTable().destroy();
   }
+  
+  // Limpiar tbody
+  $('#tabla-usuarios tbody').empty();
+  
+  // Preparar datos para DataTables
+  const tableData = registros.map(item => {
+      const ADMIN_ID = 1;
+      
+      // Buscar rol
+      const rolObj = rolesList.find(r => r.rol_id == item.rol_id || r.idrol == item.rol_id);
+      const rolTexto = rolObj ? (rolObj.rol || rolObj.nombrerol || "Desconocido") : "Desconocido";
+      
+      // Columna clave (oculta si existe)
+      const claveCol = item.clave ? "******" : "";
+      
+      let acciones;
+      
+      if (item.rol_id == ADMIN_ID) {
+          // Admin solo icono
+          acciones = `
+              <div class="acciones-icons">
+                  <img src="img/iconos/Usuario Administrador.png" alt="Admin" />
+              </div>
+          `;
+      } else {
+          // Usuario normal con dropdown
+          const editarF = `editarUser('${item.cedula_usuario}', '${item.clave ? item.clave : ""}', '${item.rol_id}', '${item.nombre_completo}', '${item.tipo_empleado}', '${item.ubicacion_administrativa}')`;
+          const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
+          const btnEstadoUsuario = `cambiarEstadoUsuario('${item.id_usuario}', '${item.estado_usuario}')`;
+          
+          acciones = `
+              <div class="dropdown">
+                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                      <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                      <a class="dropdown-item" href="javascript:void(0);" onclick="${editarF}">
+                          <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                      </a>
+                      <a class="dropdown-item" href="javascript:void(0);" onclick="${btnPerm}">
+                          <i class="icon-base bx bx-lock-open me-1"></i>Permisos
+                      </a>
+                      <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuario}">
+                          <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
+                      </a>
+                  </div>
+              </div>
+          `;
+      }
+      
+      return [
+          claveCol,
+          item.cedula_usuario,
+          item.nombre_completo,
+          rolTexto,
+          item.estado_usuario,
+          acciones
+      ];
+  });
+  
+  // Inicializar DataTable
+  $('#tabla-usuarios').DataTable({
+      data: tableData,
+      columns: [
+          { title: "Clave", width: "80px" },
+          { title: "Cédula", width: "120px" },
+          { title: "Nombre Completo" },
+          { title: "Rol" },
+          { title: "Estado", width: "100px" },
+          { 
+              title: "Acciones", 
+              width: "120px",
+              orderable: false,
+              searchable: false
+          }
+      ],
+      pageLength: 25,
+      responsive: true,
+      order: [[1, 'asc']], // Ordenar por cédula por defecto
+      language: {
+          search: "Buscar:",
+          lengthMenu: "Mostrar _MENU_ registros por página",
+          info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty: "Mostrando 0 a 0 de 0 registros",
+          emptyTable: "No hay datos disponibles en la tabla",
+          zeroRecords: "No se encontraron registros coincidentes",
+          paginate: {
+              previous: "Anterior",
+              next: "Siguiente"
+          }
+      }
+  });
 }
 
-tbody.innerHTML = html;
-}
 
 
 //==========================================================//

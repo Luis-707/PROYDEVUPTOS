@@ -128,35 +128,76 @@ async function listarGCompetencias() {
   //Listar competencias
   
   async function listarTablaCompetencias(datos) {
-    const tbody = document.querySelector("#tabla-comp tbody");
-    tbody.innerHTML = "";
-  
-    // Aplanar si vienen anidados
     const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-  
-    let html = "";
-  
-    registros.forEach(item => {
-      html += `
-        <tr>
-          <td>${item.nombre_competencia}</td>
-          <td>${item.peso_competencia}</td>
-          <td>${item.estado_competencia}</td>
-          <td>
-          <div class="dropdown">
-            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoComp(${item.id_competencia}, 'Activo')"><i class="icon-base bx bx-check-circle me-2"></i>Activo</a>
-              <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoComp(${item.id_competencia}, 'Inactivo')"><i class="icon-base bx bx-x-circle me-2"></i>Inactivo</a>
-              <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalCompetencia(${item.id_competencia}, '${item.nombre_competencia}', ${item.peso_competencia})"><i class="icon-base bx bx-edit me-2"></i>Editar</a>
+    
+    // Destruir DataTable existente si existe
+    if ($.fn.DataTable.isDataTable('#tabla-comp')) {
+        $('#tabla-comp').DataTable().destroy();
+    }
+    
+    // Limpiar tbody
+    $('#tabla-comp tbody').empty();
+    
+    // Preparar datos para DataTables
+    const tableData = registros.map(item => {
+        // Botones de acción con opciones específicas de competencias
+        const acciones = `
+            <div class="dropdown">
+                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                    <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoComp(${item.id_competencia}, 'Activo')">
+                        <i class="icon-base bx bx-check-circle me-2"></i>Activo
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoComp(${item.id_competencia}, 'Inactivo')">
+                        <i class="icon-base bx bx-x-circle me-2"></i>Inactivo
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalCompetencia(${item.id_competencia}, '${item.nombre_competencia}', ${item.peso_competencia})">
+                        <i class="icon-base bx bx-edit me-2"></i>Editar
+                    </a>
+                </div>
             </div>
-          </div>
-        </td>
-        </tr>
-      `;
+        `;
+        
+        return [
+            item.nombre_competencia,
+            item.peso_competencia,
+            item.estado_competencia,
+            acciones
+        ];
     });
-  
-    tbody.innerHTML = html;
+    
+    // Inicializar DataTable
+    $('#tabla-comp').DataTable({
+        data: tableData,
+        columns: [
+            { title: "Competencia" },
+            { title: "Peso", width: "100px" },
+            { title: "Estado", width: "120px" },
+            { 
+                title: "Acciones", 
+                width: "140px",
+                orderable: false,
+                searchable: false
+            }
+        ],
+        pageLength: 25,
+        responsive: true,
+        order: [[0, 'asc']], // Ordenar por nombre de competencia por defecto
+        language: {
+            search: "Buscar:",
+            lengthMenu: "Mostrar _MENU_ registros por página",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0 a 0 de 0 registros",
+            emptyTable: "No hay datos disponibles en la tabla",
+            zeroRecords: "No se encontraron registros coincidentes",
+            paginate: {
+                previous: "Anterior",
+                next: "Siguiente"
+            }
+        }
+    });
   }
   
   //=============================================================//

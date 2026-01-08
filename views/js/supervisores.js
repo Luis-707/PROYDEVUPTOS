@@ -121,46 +121,81 @@ function validarCadena(cadena){
 //============================================================//
 //Funcion para crear las filas de la tabla
 
-  async function listarTablaSupervisores(datos) {
-    const tbody = document.querySelector("#tabla-supervisores tbody");
-    tbody.innerHTML = "";
-
-    // Aplanar si vienen anidados
-    const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-
-    let html = "";
-
-    registros.forEach(item => {
-        const cedula = String(item.cedula_usuario).trim();
-        const fullname = item.nombre_completo || "No encontrado";
-        const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
-        const cargoTexto = item.cargo_supervisor || "Sin cargo";
-
-        html += `
-            <tr>
-                <td>${cedula}</td>
-                <td>${fullname}</td>
-                <td>${ubicacion}</td>
-                <td>${cargoTexto}</td>
-                <td>
-                    <div class="dropdown">
-                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                            <i class="icon-base bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="javascript:void(0);" 
-                               onclick="abrirModalCargoSuperv('tabla', ${item.id_usuario}, ${item.id_cargo_supervisor})">
-                                <i class="icon-base bx bx-edit-alt me-1"></i>Editar
-                            </a>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        `;
-    });
-
-    tbody.innerHTML = html;
+async function listarTablaSupervisores(datos) {
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+  
+  // Destruir DataTable existente si existe
+  if ($.fn.DataTable.isDataTable('#tabla-supervisores')) {
+      $('#tabla-supervisores').DataTable().destroy();
+  }
+  
+  // Limpiar tbody
+  $('#tabla-supervisores tbody').empty();
+  
+  // Preparar datos para DataTables
+  const tableData = registros.map(item => {
+      const cedula = String(item.cedula_usuario).trim();
+      const fullname = item.nombre_completo || "No encontrado";
+      const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
+      const cargoTexto = item.cargo_supervisor || "Sin cargo";
+      
+      // Botón de acción
+      const acciones = `
+          <div class="dropdown">
+              <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                  <i class="icon-base bx bx-dots-vertical-rounded"></i>
+              </button>
+              <div class="dropdown-menu">
+                  <a class="dropdown-item" href="javascript:void(0);" 
+                     onclick="abrirModalCargoSuperv('tabla', ${item.id_usuario}, ${item.id_cargo_supervisor})">
+                      <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                  </a>
+              </div>
+          </div>
+      `;
+      
+      return [
+          cedula,
+          fullname,
+          ubicacion,
+          cargoTexto,
+          acciones
+      ];
+  });
+  
+  // Inicializar DataTable
+  $('#tabla-supervisores').DataTable({
+      data: tableData,
+      columns: [
+          { title: "Cédula", width: "120px" },
+          { title: "Nombre Completo" },
+          { title: "Ubicación", width: "220px" },
+          { title: "Cargo Supervisor" },
+          { 
+              title: "Acciones", 
+              width: "120px",
+              orderable: false,
+              searchable: false
+          }
+      ],
+      pageLength: 10,
+      responsive: true,
+      order: [[0, 'asc']], // Ordenar por cédula por defecto
+      language: {
+          search: "Buscar:",
+          lengthMenu: "Mostrar _MENU_ registros por página",
+          info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty: "Mostrando 0 a 0 de 0 registros",
+          emptyTable: "No hay datos disponibles en la tabla",
+          zeroRecords: "No se encontraron registros coincidentes",
+          paginate: {
+              previous: "Anterior",
+              next: "Siguiente"
+          }
+      }
+  });
 }
+
 
 //============================================================//
 
@@ -282,7 +317,7 @@ function validarCadena(cadena){
       select.innerHTML = '<option value="">Seleccione a un usuario</option>';
   
       const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-      const supervisores = registros.filter(item => item.rol === 'Supervisor del evaluador');
+      const supervisores = registros.filter(item => item.rol === 'Supervisor del Evaluador');
   
       supervisores.forEach(item => {
           const fullname = item.nombre_completo || item.cedula_usuario;

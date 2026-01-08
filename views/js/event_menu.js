@@ -232,6 +232,20 @@ $(document).on('click', '.menu-link', function() {
       }, 300); 
   }
 
+  function abrirPlanillaExcepcional(cedula, idEvalAdmin){ 
+    console.log("👉 abrirPlanillaExcepcional() recibió:", cedula);
+    sessionStorage.setItem("cedula_planilla", cedula); 
+    sessionStorage.setItem("id_eval_admin", idEvalAdmin);
+  
+    // Cargar la vista de la planilla excepcional
+    mostrarVista('planilla_excepcional'); 
+  
+    // Una vez cargada la vista, ejecutamos la carga de datos
+    setTimeout(async () => { 
+      await inicializarPlanillaExcepcional(); // función definida en planilla_excepcional.js
+    }, 300); 
+  }
+
 //======================================================//
 //Cargar la vista de perfil
 

@@ -185,12 +185,13 @@ async function listarTablaEvalAdmin(datos) {
   const tbody = document.querySelector("#tabla-EvalAdmin tbody");
   tbody.innerHTML = "";
 
-  // Aplanar si vienen anidados
   const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
 
-  let html = "";
+  if ($.fn.DataTable.isDataTable('#tabla-EvalAdmin')) {
+      $('#tabla-EvalAdmin').DataTable().destroy();
+  }
 
-  registros.forEach(item => {
+  const tableData = registros.map(item => {
       const cedula = String(item.cedula_usuario).trim();
       const fullname = item.nombre_completo || "No encontrado";
       const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
@@ -199,38 +200,70 @@ async function listarTablaEvalAdmin(datos) {
       const anioInicio = item.anio_inicio;
       const estado_evaluacion = item.estado_eval_admin;
 
-      html += `
-          <tr>
-              <td>${cedula}</td>
-              <td>${fullname}</td>
-              <td>${ubicacion}</td>
-              <td>${cargoTexto}</td>
-              <td>${anioInicio}</td>
-              <td>${periodoEvaluado}</td>
-              <td>${estado_evaluacion}</td>
-              <td>
-                  <div class="dropdown">
-                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                          <i class="icon-base bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu">
-                          <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarPeriodo(${item.id_eval_admin})">
-                              <i class="icon-base bx bx-edit-alt me-1"></i>Editar
-                          </a>
-                          <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalObjetivosEvaluador(${item.id_eval_admin})">
-                              <i class="icon-base bx bx-target-lock me-1"></i>Objetivos
-                          </a>
-                          <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvalAdmin(${item.id_eval_admin},'${item.estado_eval_admin}')">
-                                <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
-                          </a>
-                      </div>
-                  </div>
-              </td>
-          </tr>
+      const acciones = `
+          <div class="dropdown">
+              <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                  <i class="icon-base bx bx-dots-vertical-rounded"></i>
+              </button>
+              <div class="dropdown-menu">
+                  <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarPeriodo(${item.id_eval_admin})">
+                      <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                  </a>
+                  <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalObjetivosEvaluador(${item.id_eval_admin})">
+                      <i class="icon-base bx bx-target-lock me-1"></i>Objetivos
+                  </a>
+                  <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvalAdmin(${item.id_eval_admin},'${item.estado_eval_admin}')">
+                      <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
+                  </a>
+              </div>
+          </div>
       `;
+
+      return [
+          cedula,
+          fullname,
+          ubicacion,
+          cargoTexto,
+          anioInicio,
+          periodoEvaluado,
+          estado_evaluacion,
+          acciones
+      ];
   });
 
-  tbody.innerHTML = html;
+  $('#tabla-EvalAdmin').DataTable({
+      data: tableData,
+      columns: [
+          { title: "Cédula", width: "120px" },
+          { title: "Nombre Completo" },
+          { title: "Ubicación", width: "150px" },
+          { title: "Cargo" },
+          { title: "Año", width: "80px" },
+          { title: "Período", width: "100px" },
+          { title: "Estado", width: "100px" },
+          { 
+              title: "Acciones", 
+              width: "120px",
+              orderable: false,
+              searchable: false
+          }
+      ],
+      pageLength: 25,
+      responsive: true,
+      order: [[0, 'asc']],
+      language: {
+          search: "Buscar:",
+          lengthMenu: "Mostrar _MENU_ registros por página",
+          info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty: "Mostrando 0 a 0 de 0 registros",
+          emptyTable: "No hay datos disponibles en la tabla",
+          zeroRecords: "No se encontraron registros coincidentes",
+          paginate: {
+              previous: "Anterior",
+              next: "Siguiente"
+          }
+      }
+  });
 }
 
 //==============================================================//
