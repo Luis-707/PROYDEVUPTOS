@@ -48,8 +48,7 @@ async function listarReportesAdministrativos() {
     console.error("Error al listar reportes:", error);
   }
 }
-  
-  // Generar PDF con jsPDF
+
  // Generar PDF con jsPDF
 async function generarPDF(idEvalAdmin) {
   try {
@@ -231,6 +230,7 @@ async function generarPDF(idEvalAdmin) {
     const cargoEvaluado    = info.cargo_evaluado     || "N/A";
     const ubicacionEval    = info.ubicacion_evaluado || "N/A";
     const periodoEvaluado  = info.periodo_evaluado   || "N/A";
+    const fecha            = info.fecha_excep        || "N/A";
     const puntajeFinal     = info.puntaje_final      || "N/A";
     const rangoActuacion   = info.rango_actuacion    || "N/A";
   
@@ -238,46 +238,53 @@ async function generarPDF(idEvalAdmin) {
     doc.setFontSize(12);
     doc.text("PLANILLA DE DESEMPEÑO EXCEPCIONAL", 105, 15, { align: "center" });
   
-    // Sección A: Datos de identificación
+    // Sección A: Datos de identificación en tabla
     doc.setFontSize(10);
     doc.text('SECCION "A": DATOS DE IDENTIFICACION', 10, y); 
     y += 5;
-    doc.setFontSize(8);
   
-    doc.text(`Nombre: ${nombreEvaluado}`, 10, y); y += 4;
-    doc.text(`Cédula: ${cedulaEvaluado}`, 10, y); y += 4;
-    doc.text(`Cargo: ${cargoEvaluado}`, 10, y); y += 4;
-    doc.text(`Ubicación: ${ubicacionEval}`, 10, y); y += 4;
-    doc.text(`Periodo: ${periodoEvaluado}`, 10, y); y += 4;
-    doc.text(`Puntaje Final: ${puntajeFinal}`, 10, y); y += 4;
-    doc.text(`Rango de Actuación: ${rangoActuacion}`, 10, y); y += 8;
+    doc.autoTable({
+      startY: y,
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Nombre', nombreEvaluado],
+        ['Cédula', cedulaEvaluado],
+        ['Cargo', cargoEvaluado],
+        ['Ubicación', ubicacionEval],
+        ['Periodo', periodoEvaluado],
+        ['Puntaje Final', puntajeFinal],
+        ['Rango de Actuación', rangoActuacion]
+      ],
+      styles: { fontSize: 8, cellPadding: 1 },
+      margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
   
-    // Sección B: Exposición de motivos
+    // Sección B: Exposición de motivos en tabla
     doc.setFontSize(10);
     doc.text('SECCION "B": EXPOSICION DE MOTIVOS / ASIGNACION DE RANGO EXCEPCIONAL', 10, y); 
     y += 6;
-    doc.setFontSize(8);
   
-    motivos.forEach((m, idx) => {
-      const indicador = m.indicador || "N/A";
-      const motivo    = m.motivo    || "N/A";
-  
-      doc.text(`Indicador ${idx + 1}: ${indicador}`, 10, y); 
-      y += 4;
-      doc.text(`Motivo: ${motivo}`, 10, y); 
-      y += 8;
+    doc.autoTable({
+      startY: y,
+      head: [['Indicador', 'Motivo']],
+      body: motivos.map(m => [
+        m.indicador || "N/A",
+        m.motivo    || "N/A"
+      ]),
+      styles: { fontSize: 8, cellPadding: 1 },
+      margin: { left: 10, right: 10 }
     });
+    y = doc.lastAutoTable.finalY + 10;
   
-    // Sección C: Firmas
+    // Sección C: Firmas (solo Evaluador y Evaluado)
     doc.setFontSize(8);
-    let yFirmas = y + 10;
+    doc.text("Firma Evaluador", 30, y);
+    doc.line(20, y + 8, 60, y + 8);
   
-    doc.text("Firma Evaluador", 30, yFirmas);
-    doc.line(20, yFirmas + 8, 60, yFirmas + 8);
+    // En lugar de firma de supervisor → mostrar Fecha
+    doc.text(`Fecha: ${fecha}`, 95, y);
   
-    doc.text("Firma Supervisor", 95, yFirmas);
-    doc.line(85, yFirmas + 8, 145, yFirmas + 8);
-  
-    doc.text("Firma Evaluado", 160, yFirmas);
-    doc.line(150, yFirmas + 8, 200, yFirmas + 8);
+    doc.text("Firma Evaluado", 160, y);
+    doc.line(150, y + 8, 200, y + 8);
   }

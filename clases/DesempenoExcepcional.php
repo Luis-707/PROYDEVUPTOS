@@ -22,39 +22,6 @@ class DesempenoExcepcional {
         }
     }
 
-    public static function sql_datos_excepcional_completo(int $idEvalAdmin): string {
-        return sprintf("
-            SELECT de.id_desemp_excepcional, de.id_eval_admin, de.periodo, de.fecha,
-                   -- Evaluado
-                   u_eval.cedula_usuario AS cedula_evaluado, u_eval.nombre_completo AS nombre_evaluado,
-                   c_ev.cargo_evaluado, u_eval.ubicacion_administrativa AS ubicacion_evaluado,
-                   
-                   -- Evaluador
-                   u_ev.cedula_usuario AS cedula_evaluador, u_ev.nombre_completo AS nombre_evaluador,
-                   c_ee.cargo_evaluador, u_ev.ubicacion_administrativa AS ubicacion_evaluador,
-                   
-                   -- Supervisor
-                   u_sup.cedula_usuario AS cedula_supervisor, u_sup.nombre_completo AS nombre_supervisor,
-                   c_es.cargo_supervisor,
-                   
-                   -- Rango y puntaje
-                   r.rango_actuacion, ea.puntaje_final
-            FROM desempeno_excepcional de
-            JOIN evaluacion_administrativos ea ON de.id_eval_admin = ea.id_eval_admin
-            JOIN evaluados e ON ea.id_evaluado = e.id_evaluado
-            JOIN usuarios u_eval ON e.id_usuario = u_eval.id_usuario
-            JOIN cargos_evaluados c_ev ON e.id_cargo_evaluado = c_ev.id_cargo_evaluado
-            JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
-            JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
-            JOIN cargos_evaluadores c_ee ON ev.id_cargo_evaluador = c_ee.id_cargo_evaluador
-            JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
-            JOIN usuarios u_sup ON s.id_usuario = u_sup.id_usuario
-            JOIN cargos_supervisores c_es ON s.id_cargo_supervisor = c_es.id_cargo_supervisor
-            JOIN rango_actuacion r ON ea.id_rango = r.id_rango
-            WHERE de.id_eval_admin = %d;
-        ", $idEvalAdmin);
-    }
-
     // Crear registro principal en desempeno_excepcional
     public function sql_guardar_excepcional(): string {
         return sprintf(

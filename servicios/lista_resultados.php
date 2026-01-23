@@ -18,6 +18,11 @@ switch ($rolUsuario) {
     case 'evaluador':
         $sql = Listados::sql_listar_por_evaluador($cedulaSesion);
         break;
+
+        case 'supervisor del evaluador':
+            $sql = Listados::sql_listar_por_supervisor($cedulaSesion);
+            break;
+       
    
     default:
         echo json_encode(["success" => false, "message" => "Rol no autorizado"]);
