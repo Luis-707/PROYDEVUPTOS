@@ -93,11 +93,12 @@ class Listados {
     // 🔹 Listar evaluados bajo un evaluador (si manejas este rol)
     public static function sql_listar_por_evaluador(string $cedula): string {
         return sprintf("
-        SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, c.cargo_evaluado, ea.periodo_evaluado, ea.comentario_evaluado, ea.comentario_supervisor
+        SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,EXTRACT(YEAR FROM eo.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, c.cargo_evaluado, eo.periodo_evaluacion ,ea.periodo_evaluado, ea.comentario_evaluado, ea.comentario_supervisor
         FROM evaluados e
         JOIN usuarios u ON e.id_usuario = u.id_usuario
         JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
         LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
+        LEFT JOIN evaluacion_obreros eo ON eo.id_evaluado = e.id_evaluado
         JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
         JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
         WHERE u_ev.cedula_usuario = '%s';
@@ -136,6 +137,24 @@ class Listados {
             JOIN usuarios u ON e.id_usuario = u.id_usuario
             JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
             JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
+            JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+            JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
+            WHERE u_ev.cedula_usuario = '%s';
+        ", addslashes($cedula));
+    }
+
+    public static function sql_listar_por_registro_evaluacion_Obreros(string $cedula): string {
+        return sprintf("
+            SELECT 
+                eo.id_eval_obreros,
+                e.id_evaluado,
+                u.cedula_usuario,
+                c.cargo_evaluado,
+                eo.periodo_evaluacion
+            FROM evaluados e
+            JOIN usuarios u ON e.id_usuario = u.id_usuario
+            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+            JOIN evaluacion_obreros eo ON eo.id_evaluado = e.id_evaluado
             JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
             JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
             WHERE u_ev.cedula_usuario = '%s';
@@ -224,6 +243,13 @@ class Listados {
     }
 
     public function listaEvaluados(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
+    public function listaEvaluadosObreros(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
         }

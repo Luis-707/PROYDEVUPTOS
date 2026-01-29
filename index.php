@@ -64,11 +64,11 @@ include_once "middleware/auth.php";
     <!--tipografia-->
     <link rel="stylesheet" href="views/tipografia.css">
 
-    <script src="assets/vendor/libs/jspdf/jspdf.umd.min.js"></script>
-    <script src="assets/vendor/libs/jspdf/jspdf.plugin.autotable.min.js"></script>
+    <!--<script src="assets/vendor/libs/jspdf/jspdf.umd.min.js"></script>
+    <script src="assets/vendor/libs/jspdf/jspdf.plugin.autotable.min.js"></script>-->
 
-   <!-- <script src="jspdf.umd.min.js"></script>
-    <script src="jspdf.plugin.autotable.min.js"></script> -->
+   <script src="jspdf.umd.min.js"></script>
+    <script src="jspdf.plugin.autotable.min.js"></script> 
     
   </head>
 
@@ -338,6 +338,7 @@ include_once "middleware/auth.php";
     <script src="views/js/comentario_supervisor.js"></script> 
     <!--<script src="views/js/asignar_evaluador.js"></script>-->
     <script src="views/js/evaluados.js"></script>
+    <script src="views/js/evaluados_obreros.js"></script>
     <script src="views/js/evaluados_comentarios.js"></script>
     <script src="views/js/evaluados_resultados.js"></script>
     <script src="views/js/logout.js"></script>

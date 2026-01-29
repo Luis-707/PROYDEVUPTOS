@@ -61,6 +61,13 @@
                 </li>
 
                 <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacionObreros">
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Evaluaciones Obrero">Evaluaciones Obrero</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioObjetivos">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->
                         <div data-i18n="Gestion de objetivos">Objetivos</div>

@@ -246,6 +246,27 @@ $(document).on('click', '.menu-link', function() {
     }, 300); 
   }
 
+  // Hook de menú (event_menu.js)
+$("#formularioEvaluacionObreros").click(async function(){
+  if (await verificarAccesoMenu('Evaluaciones Obreros', 'formularioEvaluacionObreros')) {
+    mostrarVista('evaluacion_obreros');
+    listarEvaluacionesObreros();
+  }
+});
+
+// Abrir planilla de obrero
+function abrirPlanillaObrero(cedula, idEvalOb) {
+  console.log("👉 abrirPlanillaObrero() recibió:", cedula);
+  sessionStorage.setItem("cedula_planilla_obrero", cedula);
+  sessionStorage.setItem("id_eval_obreros", idEvalOb);
+  mostrarVista('planilla_obrero');
+  setTimeout(async () => {
+    await cargarPlanillaObrero();
+    await cargarFactoresYCriteriosObrero();
+    //actualizarCalificacionObrero(); // inicializa suma y rango
+  }, 300);
+}
+
 //======================================================//
 //Cargar la vista de perfil
 
@@ -260,39 +281,6 @@ function abrirPerfilUsuario(cedula) {
     await cargarPerfil();  // Función que obtiene el perfil y llama a listarPerfilUsuario
   }, 300); 
 }
-
-
-//=====================================================//
-    // Evento del botón
-/*document.querySelectorAll('.btn-detalles').forEach(btn => {
-    btn.addEventListener('click', e => {
-      const cedula = e.target.getAttribute('data-cedula');
-      sessionStorage.setItem("cedula_planilla", cedula);
-      mostrarVista('planilla'); // tu función que cambia de vista
-      setTimeout(() => {
-        cargarPlanilla(); // se ejecuta en planilla.js
-      }, 300);
-    });
-  });*/
-
-    //click menu seguridad usuario
-    /*$("#formularioUsuario").click(function(){
-        mostrarVista('usuario');
-        listarUsuario();
-    })*/
-
-    /*
-    // Evento para el botón de búsqueda en la vista de Evaluados
-$(document).on('click', '#btn_buscar_cedula_eval', async function() {
-  const valorCedula = $('#id_cedula_evaluado').val().trim();
-  if (valorCedula.length > 0) {
-    const datos = await obtenerDatosPorCedulaEvaluado(valorCedula);
-    llenarFormularioEvaluado(datos);
-  } else {
-    llenarFormularioEvaluado(null);
-  }
-});
-    */
 
         // Delegación de eventos: funciona aunque cambies de vista
 $(document).on('click', '#btn_buscar_cedula', async function() {
@@ -445,6 +433,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados');
   await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados');
   await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion');
+  await verificarAccesoMenu('Evaluaciones Obreros', 'formularioEvaluacionObreros');
   await verificarAccesoMenu('Comentarios', 'formularioComentarios');
   await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios');
   await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvalAdministrativos');
