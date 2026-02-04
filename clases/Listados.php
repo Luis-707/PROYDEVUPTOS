@@ -105,6 +105,45 @@ class Listados {
         ", addslashes($cedula));
     }
 
+    public static function sql_listar_comentarios_obrero_evaluado(string $cedula): string {
+        return sprintf("
+            SELECT 
+                eo.id_eval_obreros,
+                u.cedula_usuario,
+                u.nombre_completo,
+                c.cargo_evaluado,
+                EXTRACT(YEAR FROM eo.fecha_inicio) AS anio_inicio,
+                eo.periodo_evaluacion
+            FROM evaluacion_obreros eo
+            JOIN evaluados e ON eo.id_evaluado = e.id_evaluado
+            JOIN usuarios u ON e.id_usuario = u.id_usuario
+            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+            WHERE u.cedula_usuario = '%s'
+            AND eo.estado_eval_obreros = 'Finalizada';
+        ", addslashes($cedula));
+    }
+
+    public static function sql_listar_comentarios_obrero_supervisor(string $cedula): string {
+        return sprintf("
+            SELECT 
+                eo.id_eval_obreros,
+                u.cedula_usuario,
+                u.nombre_completo,
+                c.cargo_evaluado,
+                EXTRACT(YEAR FROM eo.fecha_inicio) AS anio_inicio,
+                eo.periodo_evaluacion
+            FROM evaluacion_obreros eo
+            JOIN evaluados e ON eo.id_evaluado = e.id_evaluado
+            JOIN usuarios u ON e.id_usuario = u.id_usuario
+            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+            JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
+            JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
+            JOIN usuarios u_sup ON s.id_usuario = u_sup.id_usuario
+            WHERE u_sup.cedula_usuario = '%s'
+            AND eo.estado_eval_obreros = 'Finalizada';
+        ", addslashes($cedula));
+    }
+
      // 🔹 Listar evaluados bajo un evaluador (si manejas este rol)
      public static function sql_listar_cargos(string $cedula): string {
         return sprintf("
@@ -235,6 +274,8 @@ class Listados {
         return "No se ha definido la conexión";
     }
 
+
+
     public function listarEvaluadorResultados(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
@@ -250,6 +291,13 @@ class Listados {
     }
 
     public function listaEvaluadosObreros(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
+    public function listarComentariosEvaluadosObreros(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
         }

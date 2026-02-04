@@ -4,6 +4,7 @@ class EvaluacionObreros {
     private $id_eval_obreros = 0;
     private $id_evaluado = 0;
     private $rango_id = 0;
+    private $tiempo_puesto = 0;
     private $id_usuario = 0;
     private $puntaje_total = 0;
 
@@ -22,6 +23,9 @@ class EvaluacionObreros {
 
         if (isset($data['rango_id'])) 
             $this->rango_id = (int)$data['rango_id'];
+
+        if (isset($data['tiempo_puesto'])) 
+            $this->tiempo_puesto = (int)$data['tiempo_puesto'];
 
         if (isset($data['id_usuario'])) 
             $this->id_usuario = (int)$data['id_usuario'];
@@ -79,11 +83,13 @@ class EvaluacionObreros {
         return sprintf(
             "UPDATE evaluacion_obreros
              SET rango_id = %d,
-                 puntaje_total = %d
+                 puntaje_total = %d,
+                 tiempo_puesto = %d
              WHERE id_evaluado = %d
              RETURNING id_eval_obreros;",
             $this->rango_id,
             $this->puntaje_total,
+            $this->tiempo_puesto,
             $this->id_evaluado
         );
     }

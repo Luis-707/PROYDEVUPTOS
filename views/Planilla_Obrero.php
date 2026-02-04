@@ -81,8 +81,8 @@
                         <input type="date" class="form-control" id="fecha_ingreso" readonly>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label mb-0">Tiempo en el puesto</label>
-                        <input type="text" class="form-control" id="tiempo_puesto" readonly>
+                        <label class="form-label mb-0">Años en el puesto</label>
+                        <input type="text" class="form-control" name="tiempo_puesto" id="tiempo_puesto" readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0">Ubicación administrativa</label>

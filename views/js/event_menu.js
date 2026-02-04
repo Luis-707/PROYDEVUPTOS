@@ -79,6 +79,15 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
+        $("#formularioComentariosObreros").click(async function(){
+          if (await verificarAccesoMenu('Comentarios Obreros', 'formularioComentariosObreros')) {
+            mostrarVista('comentarios_obreros');
+            listarEvaluadosComentariosObreros();
+          }
+        });
+
+        
+
 
         $("#formularioGestionEvaluados").click(async function(){
           if (await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados')) {
@@ -267,6 +276,20 @@ function abrirPlanillaObrero(cedula, idEvalOb) {
   }, 300);
 }
 
+function abrirPlanillaObreroReadonly(cedula, idEvalObrero) {
+  console.log("👉 abrirPlanillaObreroReadonly() recibió:", cedula, idEvalObrero);
+
+  sessionStorage.setItem("cedula_planilla_obrero", cedula);
+  sessionStorage.setItem("id_eval_obreros", idEvalObrero);
+
+  mostrarVista('planilla_comentario_obrero');
+
+  setTimeout(async () => {
+      await cargarPlanillaObreroReadonly();
+  }, 300);
+}
+
+
 //======================================================//
 //Cargar la vista de perfil
 
@@ -435,6 +458,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion');
   await verificarAccesoMenu('Evaluaciones Obreros', 'formularioEvaluacionObreros');
   await verificarAccesoMenu('Comentarios', 'formularioComentarios');
+  await verificarAccesoMenu('Comentarios Obreros', 'formularioComentariosObreros');
   await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios');
   await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvalAdministrativos');
   await verificarAccesoMenu('Gestion de Objetivos', 'formularioObjetivos');

@@ -1,0 +1,33 @@
+/* Fondo difuminado */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("img/fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(8px);
+    z-index: -2;
+  }
+  
+  /* Capa intermedia para evitar transparencia */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.65); /* Ajusta según tema */
+    z-index: -1;
+  }
+  
+  /* Mantener el contenido por encima */
+  body {
+    position: relative;
+    z-index: 1;
+  }

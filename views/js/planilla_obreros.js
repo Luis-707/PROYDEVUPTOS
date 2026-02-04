@@ -208,12 +208,13 @@ async function cargarPlanillaObrero() {
 // =============================
 // Resetear formulario
 // =============================
-function valorFormEvaluacionObrero(evaluado='', evaluador='', RangoCalificacion='', puntajeObrero='', periodo_evaluacion='') {
+function valorFormEvaluacionObrero(evaluado='', evaluador='', RangoCalificacion='', puntajeObrero='', periodo_evaluacion='',tiempo_puesto='') {
   document.getElementById('id_evaluado_obrero').value = evaluado;
   document.getElementById('id_usuario_evaluador').value = evaluador;
   document.getElementById('periodo-evaluacion').value = periodo_evaluacion;
   document.getElementById('rango_id').value = RangoCalificacion;
   document.getElementById('puntaje_final').value = puntajeObrero;
+  document.getElementById('tiempo_puesto').value = tiempo_puesto;
 }
 
 // =============================
@@ -258,7 +259,7 @@ async function calcularTiempoPuestoPorCedula(cedula) {
     const años = Math.floor(diffDias / 365);
     const meses = Math.floor((diffDias % 365) / 30);
 
-    return `${años} año(s) `;
+    return `${años}`;
 
   } catch (error) {
     console.error("Error calculando tiempo en el puesto:", error);

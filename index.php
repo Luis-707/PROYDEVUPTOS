@@ -39,6 +39,43 @@ include_once "middleware/auth.php";
     
     <link rel="stylesheet" href="assets/vendor/css/core.css" />
     <link rel="stylesheet" href="assets/css/demo.css" />
+    
+   <!-- <style>
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("img/fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(2px);
+    z-index: -2;
+  }
+  
+  /* Capa intermedia para evitar transparencia */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.65); /* Ajusta según tema */
+    z-index: -1;
+  }
+  
+  /* Mantener el contenido por encima */
+  body {
+    position: relative;
+    z-index: 1;
+  }
+
+    </style>-->
 
     
     <!-- Vendors CSS -->
@@ -63,6 +100,7 @@ include_once "middleware/auth.php";
 
     <!--tipografia-->
     <link rel="stylesheet" href="views/tipografia.css">
+
 
     <!--<script src="assets/vendor/libs/jspdf/jspdf.umd.min.js"></script>
     <script src="assets/vendor/libs/jspdf/jspdf.plugin.autotable.min.js"></script>-->
@@ -336,10 +374,13 @@ include_once "middleware/auth.php";
     <script src="views/js/supervisores.js"></script>
     <script src="views/js/comentario_evaluado.js"></script>
     <script src="views/js/comentario_supervisor.js"></script> 
+    <script src="views/js/comentario_evaluado_obreros.js"></script>
+    <script src="views/js/comentario_supervisor_obreros.js"></script>
     <!--<script src="views/js/asignar_evaluador.js"></script>-->
     <script src="views/js/evaluados.js"></script>
     <script src="views/js/evaluados_obreros.js"></script>
     <script src="views/js/evaluados_comentarios.js"></script>
+    <script src="views/js/evaluados_comentarios_obreros.js"></script>
     <script src="views/js/evaluados_resultados.js"></script>
     <script src="views/js/logout.js"></script>
     <script src="views/js/GestionEvaluados.js"></script>

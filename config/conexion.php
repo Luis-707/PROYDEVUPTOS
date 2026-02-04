@@ -1,7 +1,7 @@
 <?php 
 //$bdds=array();
 
-$bdds[0]['BD'] = 'odi11';
+$bdds[0]['BD'] = 'odi12';
 $bdds[0]['USUARIO'] = 'postgres';
 $bdds[0]['CLAVE'] = 'Limitronia';
 $bdds[0]['SERVIDOR'] = 'localhost';
