@@ -45,7 +45,7 @@ class Planilla_comentarios_obreros {
     }
 
     // ============================================================
-    // RELACIONES (Evaluado, Evaluador, Supervisor)
+    // RELACIONES (Evaluado, Evaluador)
     // ============================================================
     public static function sql_relaciones_por_cedula_obrero(string $cedula): string {
         return sprintf(
@@ -80,6 +80,7 @@ class Planilla_comentarios_obreros {
             addslashes($cedula)
         );
     }
+
     // ============================================================
     // BUSCAR EVALUACIÓN OBRERA
     // ============================================================
@@ -114,7 +115,7 @@ class Planilla_comentarios_obreros {
         return [];
     }
 
-    // ============================================================
+        // ============================================================
     // VALIDAR PERMISOS (Evaluado)
     // ============================================================
     public function sql_buscar_por_id_y_evaluado_obrero(string $cedula): string {
@@ -149,20 +150,35 @@ class Planilla_comentarios_obreros {
     }
 
     // ============================================================
-    // FACTORES Y CRITERIOS
+    // NUEVO: FACTORES COMPLETOS
     // ============================================================
-    public static function sql_factores_obrero(int $idEvalObrero): string {
+    public static function sql_factores_completos(): string {
         return "
-           SELECT 
-                f.nombre_factor,
-                c.descripcion_criterio,
-                deo.puntaje_obtenido
-            FROM detalles_evaluacion_obreros deo
-            JOIN criterios c ON deo.criterio_id = c.criterio_id
-            JOIN factores f ON c.factor_id = f.factor_id
-            WHERE deo.id_eval_obreros = $idEvalObrero
-            ORDER BY deo.puntaje_obtenido DESC
-            LIMIT 100
+            SELECT factor_id, nombre_factor, valor_factor
+            FROM factores
+            ORDER BY factor_id;
+        ";
+    }
+
+    // ============================================================
+    // NUEVO: CRITERIOS COMPLETOS
+    // ============================================================
+    public static function sql_criterios_completos(): string {
+        return "
+            SELECT criterio_id, factor_id, codigo_criterio, descripcion_criterio, valor_criterio
+            FROM criterios
+            ORDER BY factor_id, criterio_id;
+        ";
+    }
+
+    // ============================================================
+    // NUEVO: CRITERIOS SELECCIONADOS
+    // ============================================================
+    public static function sql_criterios_seleccionados(int $idEvalObrero): string {
+        return "
+            SELECT criterio_id, puntaje_obtenido
+            FROM detalles_evaluacion_obreros
+            WHERE id_eval_obreros = $idEvalObrero;
         ";
     }
 

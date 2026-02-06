@@ -22,12 +22,10 @@ async function cargarPlanillaObreroReadonly() {
         return;
     }
 
-    // Debug: ver qué llega del backend
     console.log("DEBUG evaluacion obrero:", resp.data.evaluacion);
-    console.log("DEBUG factores obrero:", resp.data.factores);
-    console.log("DEBUG relaciones obrero:", resp.data.relaciones);
-
-    // Renderizar solo con los datos de la respuesta
+    console.log("DEBUG factores completos:", resp.data.factores);
+    console.log("DEBUG criterios completos:", resp.data.criterios);
+    console.log("DEBUG criterios seleccionados:", resp.data.seleccionados);
 
     renderizarPlanillaObreroReadonly(resp.data);
 }
@@ -39,9 +37,22 @@ function renderizarPlanillaObreroReadonly(data) {
 
     const rel = data.relaciones;
     const evalData = data.evaluacion;
-    const factores = data.factores;
 
-    // Evaluado
+    const factores = data.factores;          
+    const criterios = data.criterios;        
+    const seleccionados = data.seleccionados;
+
+    // =============================
+    // MAPA DE CRITERIOS SELECCIONADOS
+    // =============================
+    const seleccionadosMap = {};
+    seleccionados.forEach(s => {
+        seleccionadosMap[s.criterio_id] = s.puntaje_obtenido;
+    });
+
+    // =============================
+    // DATOS DEL EVALUADO
+    // =============================
     document.getElementById("evaluado_fullname").value = rel.nombre_completo_evaluado || "N/D";
     document.getElementById("evaluado_cedula").value = rel.cedula_usuario || "N/D";
     document.getElementById("evaluado_cargo").value = rel.cargo_evaluado || "N/D";
@@ -50,49 +61,96 @@ function renderizarPlanillaObreroReadonly(data) {
     document.getElementById("evaluado_ubicacion_fisica").value = rel.nombre_uf || "N/D";
     document.getElementById("evaluado_anios_puesto").value = evalData.tiempo_puesto || "N/D";
 
-    // Evaluador
+    // =============================
+    // DATOS DEL EVALUADOR
+    // =============================
     document.getElementById("evaluador_fullname").value = rel.nombre_completo_evaluador || "N/D";
     document.getElementById("evaluador_cedula").value = rel.cedula_evaluador || "N/D";
     document.getElementById("evaluador_ubicacion").value = rel.ubicacion_evaluador || "N/D";
 
-    // Supervisor
-    /*document.getElementById("supervisor_fullname").textContent = rel.nombre_completo_supervisor || "N/D";
-    document.getElementById("supervisor_cedula").textContent = rel.cedula_supervisor || "N/D";*/
+// =============================
+// TABLA DE FACTORES Y CRITERIOS (CORREGIDA)
+// =============================
+const tbody = document.querySelector("#tabla-factores-readonly tbody");
+tbody.innerHTML = "";
 
-    // Factores y criterios
-    const tbody = document.querySelector("#tabla-factores-readonly tbody");
-    tbody.innerHTML = "";
+factores.forEach(factor => {
 
-    factores.forEach(f => {
+    // =============================
+    // ENCABEZADO DEL FACTOR (SEPARACIÓN VISUAL)
+    // =============================
+    tbody.innerHTML += `
+        <tr class="factor-title" style="border-top: 3px solid #adb5bd;">
+            <td colspan="4">
+                <strong>${factor.nombre_factor}</strong> (${factor.valor_factor}%)
+                - <span class="fw-normal">Puntaje factor:</span>
+                <span class="factor-score">${factor.puntaje_factor ?? 0}</span>
+            </td>
+        </tr>
+    `;
+
+    // =============================
+    // CRITERIOS DEL FACTOR
+    // =============================
+    let criteriosFactor = criterios.filter(c => c.factor_id == factor.factor_id);
+
+    criteriosFactor.sort((a, b) => a.codigo_criterio.localeCompare(b.codigo_criterio));
+
+    criteriosFactor.forEach((c, index) => {
+
+        const seleccionado = seleccionadosMap[c.criterio_id] !== undefined;
+
+        // Icono ✔️ visible
+        const icono = seleccionado
+            ? `<span style="font-size:1.2rem; color:#198754; font-weight:bold;">✔️</span>`
+            : "";
+
         tbody.innerHTML += `
             <tr>
-                <td>${f.nombre_factor}</td>
-                <td>${f.descripcion_criterio}</td>
-                <td>${f.puntaje_obtenido}</td>
+                <td><strong>${c.codigo_criterio}</strong> ${icono}</td>
+                <td>${c.descripcion_criterio}</td>
+
+                ${
+                    index === 0
+                    ? `<td rowspan="${criteriosFactor.length}" 
+                          class="factor-weight text-center align-middle" 
+                          style="background:#f8f9fa;">
+                            ${factor.valor_factor}%
+                       </td>`
+                    : ``
+                }
+
+                <td class="col-puntaje text-center">
+                    ${seleccionadosMap[c.criterio_id] ?? "-"}
+                </td>
             </tr>
         `;
     });
-
-    // Resultado final
+});
+    // =============================
+    // RESULTADO FINAL
+    // =============================
     document.getElementById("puntaje-total").value = evalData.puntaje_total || 0;
     document.getElementById("rango-calificacion").value = evalData.nombre_rango || "N/D";
 
-    // Comentarios
-    document.getElementById("comentario_evaluado").value = evalData.Comentario_evaluado || "";
-    document.getElementById("comentario_supervisor").value = evalData.Comentario_supervisor || "";
+    // =============================
+    // COMENTARIOS
+    // =============================
+    document.getElementById("comentario_evaluado").value = evalData.comentario_evaluado || "";
+    document.getElementById("comentario_supervisor").value = evalData.comentario_supervisor || "";
 
-    // Conformidad
+    // =============================
+    // CONFORMIDAD
+    // =============================
     if (evalData.conformidad === "si") {
         document.getElementById("conformidad_si").checked = true;
     } else if (evalData.conformidad === "no") {
         document.getElementById("conformidad_no").checked = true;
     }
 
-    // IDs ocultos
     document.getElementById("id_eval_obrero_eval").value = evalData.id_eval_obreros;
     document.getElementById("id_eval_obrero_sup").value = evalData.id_eval_obreros;
 
-    // Permisos por rol
     habilitarCamposPorRolObrero();
 }
 
@@ -121,4 +179,3 @@ function habilitarCamposPorRolObrero() {
 // Inicializar
 // =============================
 cargarPlanillaObreroReadonly();
-

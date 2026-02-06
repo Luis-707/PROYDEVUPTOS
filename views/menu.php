@@ -95,6 +95,13 @@
                         </a>
                     </li>
 
+                    <li class="menu-item">
+                        <a href="javascript:void(0)" class="menu-link" id="formularioReportesObreros">
+                            <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                            <div data-i18n="Reportes Obreros">Reportes Obreros</div>
+                        </a>
+                    </li>
+
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioComentarios">
                         <!--<i class="menu-icon icon-base bx bx-comment-detail"></i>-->

@@ -391,6 +391,7 @@ body::before {
     <script src="views/js/cargarPerfil.js"></script>
     <script src="views/js/reportes.js"></script>
     <script src="views/js/reportes_administrativos.js"></script>
+    <script src="views/js/reportes_obreros.js"></script>
 
     <script>
         var view = "";

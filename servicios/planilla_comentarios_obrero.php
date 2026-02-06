@@ -4,23 +4,14 @@ include_once "../clases/Planilla_comentarios_obreros.php";
 
 header('Content-Type: application/json; charset=utf-8');
 
-// =============================
-// Normalizar respuesta (igual que administrativos)
-// =============================
 function normalizarRespuesta($resp) {
-    if (isset($resp[0][0])) {
-        return $resp[0][0];
-    } elseif (isset($resp[0])) {
-        return $resp[0];
-    }
+    if (isset($resp[0][0])) return $resp[0][0];
+    if (isset($resp[0])) return $resp[0];
     return [];
 }
 
 try {
 
-    // =============================
-    // Inicializar dataCliente (POST o JSON)
-    // =============================
     if (!isset($dataCliente)) {
         $dataCliente = ['_post' => $_POST];
         if (empty($dataCliente['_post'])) {
@@ -29,9 +20,6 @@ try {
         }
     }
 
-    // =============================
-    // Validar parámetros obligatorios
-    // =============================
     if (empty($dataCliente['_post']['id_eval_obreros']) || empty($dataCliente['_post']['cedula_usuario'])) {
         echo json_encode([
             'success' => false,
@@ -43,17 +31,12 @@ try {
     $idEvalObreros = (int)$dataCliente['_post']['id_eval_obreros'];
     $cedula        = trim($dataCliente['_post']['cedula_usuario']);
 
-    // =============================
-    // Instanciar clase obrera
-    // =============================
     $planilla = new Planilla_comentarios_obreros([
         'id_eval_obreros' => $idEvalObreros,
         'cedula_usuario'  => $cedula
     ], $this->conexion);
 
-    // =============================
-    // 1. Ejecutar consulta de evaluación obrera
-    // =============================
+    // 1. Evaluación
     $sqlEval = $planilla->sql_buscar_obrero();
     $evaluaciones = $this->ejecutarConsultaBdds($sqlEval);
     $evalData = normalizarRespuesta($evaluaciones);
@@ -68,39 +51,35 @@ try {
 
     $planilla->setIdEvalObrero((int)$evalData['id_eval_obreros']);
 
-    // =============================
-    // 2. Relaciones obreras
-    // =============================
+    // 2. Relaciones
     $sqlRel = $planilla->sql_relaciones_por_cedula_obrero($cedula);
     $relaciones = $this->ejecutarConsultaBdds($sqlRel);
     $relacionData = normalizarRespuesta($relaciones);
 
-    // =============================
-    // 3. Factores y criterios
-    // =============================
-    $sqlFact = $planilla->sql_factores_obrero($planilla->getIdEvalObrero());
-    $factores = $this->ejecutarConsultaBdds($sqlFact);
-    $factores = isset($factores[0][0]) ? $factores[0] : ($factores[0] ?? []);
+    // 3. Factores completos
+    $sqlFactores = Planilla_comentarios_obreros::sql_factores_completos();
+    $factores = $this->ejecutarConsultaBdds($sqlFactores);
+    $factores = $factores[0] ?? [];
 
-    // =============================
-    // 4. Fusionar cargos en evaluación (igual que administrativos)
-    // =============================
-    if ($relacionData) {
-        $evalData['cargo_evaluado']   = $relacionData['cargo_evaluado'] ?? null;
-        $evalData['cargo_evaluador']  = $relacionData['cargo_evaluador'] ?? null;
-        $evalData['cargo_supervisor'] = $relacionData['cargo_supervisor'] ?? null;
-    }
+    // 4. Criterios completos
+    $sqlCriterios = Planilla_comentarios_obreros::sql_criterios_completos();
+    $criterios = $this->ejecutarConsultaBdds($sqlCriterios);
+    $criterios = $criterios[0] ?? [];
 
-    // =============================
-    // 5. Respuesta final (idéntica estructura al administrativo)
-    // =============================
+    // 5. Criterios seleccionados
+    $sqlSel = Planilla_comentarios_obreros::sql_criterios_seleccionados($idEvalObreros);
+    $seleccionados = $this->ejecutarConsultaBdds($sqlSel);
+    $seleccionados = $seleccionados[0] ?? [];
+
     echo json_encode([
         'success' => true,
         'message' => 'Datos cargados correctamente',
         'data' => [
-            'evaluacion' => $evalData,
-            'factores'   => $factores,
-            'relaciones' => $relacionData
+            'evaluacion'   => $evalData,
+            'relaciones'   => $relacionData,
+            'factores'     => $factores,
+            'criterios'    => $criterios,
+            'seleccionados'=> $seleccionados
         ]
     ]);
 

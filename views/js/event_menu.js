@@ -166,6 +166,13 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
+        $("#formularioReportesObreros").click(async function(){
+          if (await verificarAccesoMenu('Reportes Obreros', 'formularioReportesObreros')) {
+            mostrarVista('reportes_obreros');   // carga la vista reportes_obreros.php
+            listarReportesObreros();            // función definida en reportes_obreros.js
+          }
+        });
+
         $("#formularioResultados").click(async function(){
           if (await verificarAccesoMenu('Resultados', 'formularioResultados')) {
             mostrarVista('resultados');
@@ -288,6 +295,8 @@ function abrirPlanillaObreroReadonly(cedula, idEvalObrero) {
       await cargarPlanillaObreroReadonly();
   }, 300);
 }
+
+
 
 
 //======================================================//
@@ -466,6 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Reportes', 'formularioReportesDesemp');
   await verificarAccesoMenu('Resultados', 'formularioResultados');
   await verificarAccesoMenu('Reportes Administrativos', 'formularioReportesAdmin');
+  await verificarAccesoMenu('Reportes Obreros', 'formularioReportesObreros');
 
 });
 

@@ -13,6 +13,9 @@ include_once "Sesion.php";
 .table-eval th, .table-eval td {
     vertical-align: middle;
 }
+.table-success {
+    background-color: #d4edda !important;
+}
 </style>
 
 <div class="container my-4">
@@ -88,19 +91,19 @@ include_once "Sesion.php";
             <!-- ============================= -->
             <h6 class="section-title p-2 mb-2">Factores Evaluados</h6>
 
-            <div class="table-responsive mb-3">
-                <table class="table table-bordered table-sm table-eval" id="tabla-factores-readonly">
-                    <thead class="table-light text-center">
-                        <tr>
-                            <th>Factor</th>
-                            <th>Criterio</th>
-                            <th>Valor</th>
-                            <th>Puntaje</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+<div class="table-responsive mb-3 small-text">
+    <table class="table table-bordered table-sm table-eval" id="tabla-factores-readonly">
+    <thead class="table-light">
+    <tr>
+        <th style="width:60px;">Código</th>
+        <th>Descripción</th>
+        <th class="factor-weight">Peso</th>
+        <th class="col-puntaje">Puntaje</th>
+    </tr>
+</thead>
+        <tbody></tbody>
+    </table>
+</div>
 
             <!-- ============================= -->
             <!-- SECCIÓN D: RESULTADO FINAL -->
@@ -125,7 +128,6 @@ include_once "Sesion.php";
 
             <!-- Comentario Evaluado -->
             <div class="mb-4" id="contenedor-evaluado">
-                <label class="form-label">Comentario del Evaluado</label>
                 <form id="form_comentario_evaluado_obrero" onsubmit="event.preventDefault(); Validar_form_comentario_evaluado_obrero(1);">
                     <textarea id="comentario_evaluado" name="comentario_evaluado" class="form-control mb-3" rows="4"></textarea>
 
@@ -146,7 +148,6 @@ include_once "Sesion.php";
 
             <!-- Comentario Supervisor -->
             <div id="contenedor-supervisor">
-                <label class="form-label">Comentario del Supervisor</label>
                 <form id="form_comentario_supervisor_obrero" onsubmit="event.preventDefault(); Validar_form_comentario_supervisor_obrero(1);">
                     <textarea id="comentario_supervisor" name="comentario_supervisor" class="form-control mb-3" rows="4"></textarea>
 
