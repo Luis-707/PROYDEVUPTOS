@@ -17,6 +17,51 @@ function validarcaracter(cadena){
 }
 
 // =============================
+// Formatear fecha (DD/MM/YYYY)
+// =============================
+function formatearFecha(fechaStr) {
+    const fecha = new Date(fechaStr);
+    if (isNaN(fecha.getTime())) return "";
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+}
+
+// =============================
+// Obtener fecha de ingreso desde JSON (async)
+// =============================
+async function obtenerFechaIngresoPorCedula(cedula) {
+    try {
+        const resp = await microApi('views/js/datos_empleado.json');
+
+        if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
+            console.error("JSON con formato inesperado");
+            return "";
+        }
+
+        const datos = resp[0].data;
+        const cedulaBusqueda = cedula.toLowerCase();
+
+        const empleado = datos.find(emp =>
+            emp.pin && emp.pin.toLowerCase() === cedulaBusqueda
+        );
+
+        if (!empleado || !empleado.create) {
+            console.warn("Empleado no encontrado o sin fecha 'create'");
+            return "";
+        }
+
+        const soloFecha = empleado.create.split(" ")[0];
+        return formatearFecha(soloFecha);
+
+    } catch (error) {
+        console.error("Error obteniendo fecha de ingreso:", error);
+        return "";
+    }
+}
+
+// =============================
 // Validar formulario de evaluación
 // =============================
 function validar_form_evaluacion_obrero(opc) {
@@ -45,27 +90,15 @@ function validar_form_evaluacion_obrero(opc) {
       case 'fecha_inicio':
       case 'fecha_cierre':
       case 'periodo_evaluacion':
-        // Estos campos son gestionados automáticamente
         break;
       default:
         console.log(`Campo ${key} no requiere validación específica.`);
-
-        /*if (!isValid) {
-      break; // Salir del switch si ya es inválido
-        }*/
     }
   }
 
-  
-
-  if (isValid) {
-    if (opc === 1){ 
-      
+  if (isValid && opc === 1) {
       guardarEvaluacionObrero();
-    }
   }
-
-
 }
 
 // =============================
@@ -77,61 +110,10 @@ let rangosCalificacion = [];
 // =============================
 // Cargar datos del evaluado/evaluador
 // =============================
-/*async function cargarPlanillaObrero() {
-  const cedula = sessionStorage.getItem("cedula_planilla_obrero");
-  if (!cedula) {
-    alert("No se seleccionó evaluado");
-    return;
-  }
-// ============================ // 1. Cargar datos_empleado.json // ============================ 
-const datosEmpleadoResp = await fetch("views/js/datos_empleado.json"); 
-const datosEmpleado = await datosEmpleadoResp.json();
-  
-
-  const formData = new FormData();
-  formData.append("cedula_usuario", cedula);
-
-  const resp = await microApi('controlador/?planilla_obreros', formData);
-
-  if (!resp?.success) {
-    alert(resp?.message || "Error cargando planilla");
-    return;
-  }
-
-  const r = resp.data;
-
-  // ============================================
-  // 🔥 AGREGAR tiempo_puesto AL JSON DEL FRONTEND
-  // ============================================
-  r.tiempo_puesto = await calcularTiempoPuestoPorCedula(r.cedula_usuario);
-
-  console.log("JSON completo recibido (con tiempo_puesto):", r);
-
-
-  // =============================
-  // Evaluado
-  // =============================
-  document.getElementById("evaluado_nombre").value = r.nombre_completo || "N/D";
-  document.getElementById("evaluado_ci").value = r.cedula_usuario || "N/D";
-  document.getElementById("evaluado_cargo").value = r.cargo_evaluado || "Sin cargo";
-  document.getElementById("fecha_ingreso").value = r.fecha_inicio || "";
-  document.getElementById("tiempo_puesto").value = r.tiempo_puesto;
-  document.getElementById("ubicacion_admin").value = r.ubicacion_administrativa || "N/D";
-  document.getElementById("ubicacion_fisica").value = r.ubicacion_fisica || "N/D";
-  document.getElementById("periodo").value = r.periodo_evaluacion || "N/D";
-  document.getElementById("area_ocupacional").value = r.area_ocupacional || "N/D";
-
-  // =============================
-  // Evaluador
-  // =============================
-  document.getElementById("evaluador_nombre").value = r.nombre_completo_evaluador || "N/D";
-  document.getElementById("evaluador_cargo").value = r.cargo_evaluador || "Sin cargo";
-  document.getElementById("evaluador_ubicacion").value = r.ubicacion_evaluador || "N/D";
-}*/
-
 async function cargarPlanillaObrero() {
   const cedula = sessionStorage.getItem("cedula_planilla_obrero");
   const idEvalOb = sessionStorage.getItem("id_eval_obreros");
+
   if (!cedula) {
       alert("No se seleccionó evaluado");
       return;
@@ -139,17 +121,10 @@ async function cargarPlanillaObrero() {
 
   console.log("👉 Enviando al servicio :", {
     cedula_usuario: cedula
-   
   });
 
   // ============================
-  // 1. Cargar datos_empleado.json (solo para tiempo_puesto)
-  // ============================
-  const datosEmpleadoResp = await fetch("views/js/datos_empleado.json");
-  const datosEmpleado = await datosEmpleadoResp.json();
-
-  // ============================
-  // 2. Consultar datos de la planilla
+  // 1. Consultar datos de la planilla
   // ============================
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
@@ -165,11 +140,16 @@ async function cargarPlanillaObrero() {
   const r = resp.data;
 
   // ============================
+  // 2. Obtener fecha de ingreso (async)
+  // ============================
+  r.fecha_ingreso = await obtenerFechaIngresoPorCedula(r.cedula_usuario);
+
+  // ============================
   // 3. Calcular tiempo en el puesto
   // ============================
   r.tiempo_puesto = await calcularTiempoPuestoPorCedula(r.cedula_usuario);
 
-  console.log("📌 JSON recibido (con tiempo_puesto):", r);
+  console.log("📌 JSON recibido (con tiempo_puesto y fecha_ingreso):", r);
 
   // ============================
   // 4. Llenar campos visibles
@@ -177,7 +157,10 @@ async function cargarPlanillaObrero() {
   document.getElementById("evaluado_nombre").value = r.nombre_completo || "N/D";
   document.getElementById("evaluado_ci").value = r.cedula_usuario || "N/D";
   document.getElementById("evaluado_cargo").value = r.cargo_evaluado || "Sin cargo";
-  document.getElementById("fecha_ingreso").value = r.fecha_inicio || "";
+
+  // 👉 FECHA DE INGRESO FORMATEADA
+  document.getElementById("fecha_ingreso").value = r.fecha_ingreso;
+
   document.getElementById("tiempo_puesto").value = r.tiempo_puesto;
   document.getElementById("ubicacion_admin").value = r.ubicacion_administrativa || "N/D";
   document.getElementById("ubicacion_fisica").value = r.ubicacion_fisica || "N/D";
@@ -185,14 +168,14 @@ async function cargarPlanillaObrero() {
   document.getElementById("area_ocupacional").value = r.area_ocupacional || "N/D";
 
   // ============================
-  // 5. Llenar datos del evaluador
+  // 5. Datos del evaluador
   // ============================
   document.getElementById("evaluador_nombre").value = r.nombre_completo_evaluador || "N/D";
   document.getElementById("evaluador_cargo").value = r.cargo_evaluador || "Sin cargo";
   document.getElementById("evaluador_ubicacion").value = r.ubicacion_evaluador || "N/D";
 
   // ============================
-  // 6. Llenar campos ocultos (OBLIGATORIOS PARA GUARDAR)
+  // 6. Campos ocultos
   // ============================
   document.getElementById("id_evaluado").value = r.id_evaluado;
   document.getElementById("id_usuario").value = r.id_usuario_evaluador;
@@ -222,10 +205,8 @@ function valorFormEvaluacionObrero(evaluado='', evaluador='', RangoCalificacion=
 // =============================
 async function calcularTiempoPuestoPorCedula(cedula) {
   try {
-    // 1. Cargar JSON usando microApi
     const resp = await microApi('views/js/datos_empleado.json');
 
-    // Validar formato
     if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
       console.error("JSON con formato inesperado");
       return "";
@@ -234,7 +215,6 @@ async function calcularTiempoPuestoPorCedula(cedula) {
     const datos = resp[0].data;
     const cedulaBusqueda = cedula.toLowerCase();
 
-    // 2. Buscar empleado por PIN (cédula)
     const empleado = datos.find(emp => emp.pin && emp.pin.toLowerCase() === cedulaBusqueda);
 
     if (!empleado || !empleado.create) {
@@ -242,7 +222,6 @@ async function calcularTiempoPuestoPorCedula(cedula) {
       return "";
     }
 
-    // 3. Extraer solo la fecha (YYYY-MM-DD)
     const fechaStr = empleado.create.split(" ")[0];
     const ingreso = new Date(fechaStr);
     const hoy = new Date();
@@ -252,12 +231,10 @@ async function calcularTiempoPuestoPorCedula(cedula) {
       return "";
     }
 
-    // 4. Calcular diferencia
     const diffMs = hoy - ingreso;
     const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     const años = Math.floor(diffDias / 365);
-    const meses = Math.floor((diffDias % 365) / 30);
 
     return `${años}`;
 
@@ -280,7 +257,6 @@ async function cargarFactoresYCriteriosObrero() {
   factoresObrero = resp.data;
   renderFactoresObrero(factoresObrero);
 
-  // Cargar rangos de calificación
   const respRangos = await microApi('controlador/?l_rangos_calificacion');
   rangosCalificacion = respRangos?.data || [];
 }
@@ -294,9 +270,6 @@ function renderFactoresObrero(factores) {
 
   factores.forEach(f => {
 
-      // ============================
-      // Encabezado del factor
-      // ============================
       const trHeader = document.createElement("tr");
       trHeader.className = "factor-title";
       trHeader.innerHTML = `
@@ -308,9 +281,6 @@ function renderFactoresObrero(factores) {
       `;
       tbody.appendChild(trHeader);
 
-      // ============================
-      // Criterios del factor
-      // ============================
       f.criterios.forEach((c, index) => {
           const tr = document.createElement("tr");
 
@@ -347,7 +317,6 @@ function renderFactoresObrero(factores) {
       });
   });
 
-  // Eventos
   document.querySelectorAll('.factor-option').forEach(opt => {
       opt.addEventListener('change', () => {
           const factor = opt.dataset.factor;
@@ -358,7 +327,6 @@ function renderFactoresObrero(factores) {
       });
   });
 }
-
 
 // =============================
 // Recalcular puntajes y calificación
@@ -373,18 +341,15 @@ function recalculateScores() {
       if (opt.checked) factorScores[factor] = score;
   });
 
-  // Puntaje por factor
   document.querySelectorAll('.factor-score').forEach(span => {
       const factorId = span.id.replace('score-', '');
       span.textContent = factorScores[factorId] || 0;
   });
 
-  // Total
   let total = 0;
   Object.values(factorScores).forEach(v => total += v);
   document.getElementById('total-score').value = total;
 
-  // Rango
   let rangoId = 0;
   let rangoNombre = "Sin calificación";
 
@@ -421,7 +386,6 @@ function validarFactoresCompletos() {
   return valido;
 }
 
-
 // =============================
 // Guardar evaluación
 // =============================
@@ -436,36 +400,24 @@ async function guardarEvaluacionObrero() {
       return;
   }
 
-  // =============================
-  // Capturar valores del formulario (USANDO TU FUNCIÓN)
-  // =============================
   let datos = capturarValoresFormulario("formulario_planilla_obrero");
 
-  // =============================
-  // Capturar criterios seleccionados
-  // =============================
   const seleccion = [];
   document.querySelectorAll('.factor-option:checked').forEach(opt => {
     seleccion.push({
       criterio_id: parseInt(opt.dataset.criterio),
       puntaje_obtenido: parseInt(opt.dataset.score)
-  });
+    });
   });
 
   datos.append("seleccion", JSON.stringify(seleccion));
 
-  // =============================
-  // Depuración: ver qué se está enviando
-  // =============================
   console.group("📤 Datos enviados al backend (g_evaluacion_obrero)");
   for (let pair of datos.entries()) {
       console.log(pair[0] + ": ", pair[1]);
   }
   console.groupEnd();
 
-  // =============================
-  // Enviar al backend
-  // =============================
   const resp = await microApi('controlador/?g_evaluacion_obreros', datos);
 
   console.log("ID de evaluación recibido del backend:", resp.id_eval_obreros);

@@ -53,7 +53,6 @@ class EvaluacionObreros {
                 u.cedula_usuario,
                 u.nombre_completo,
                 c.cargo_evaluado,
-                eo.fecha_inicio,
                 ao.nombre_ao AS area_ocupacional,
                 uf.nombre_uf AS ubicacion_fisica,
                 u.ubicacion_administrativa,

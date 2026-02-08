@@ -385,6 +385,7 @@ body::before {
     <script src="views/js/logout.js"></script>
     <script src="views/js/GestionEvaluados.js"></script>
     <script src="views/js/evalAdministrativos.js"></script>
+    <script src="views/js/evalObreros.js"></script>
     <script src="views/js/Datos_Evaluados.js"></script>
     <script src="views/js/GestionObjetivos.js"></script>
     <script src="views/js/GestionCompetencias.js"></script>

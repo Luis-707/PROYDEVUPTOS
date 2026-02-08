@@ -200,6 +200,31 @@ class Listados {
         ", addslashes($cedula));
     }
 
+    public static function sql_listar_por_registro_Obreros(string $cedula) {
+
+        return "
+            SELECT 
+                u.cedula_usuario,
+                u.nombre_completo,
+                u.ubicacion_administrativa,
+                c.cargo_evaluado,
+                eo.estado_eval_obreros,
+                eo.periodo_evaluacion,
+                EXTRACT(YEAR FROM eo.fecha_inicio) AS anio_inicio,
+                eo.id_eval_obreros,
+                eo.id_evaluado,
+                eo.id_usuario
+            FROM evaluacion_obreros eo
+            JOIN evaluados e ON eo.id_evaluado = e.id_evaluado
+            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
+            JOIN usuarios u ON e.id_usuario = u.id_usuario
+            WHERE eo.id_usuario = (
+                SELECT id_usuario FROM usuarios WHERE cedula_usuario = '$cedula'
+            )
+            ORDER BY u.cedula_usuario;
+        ";
+    }
+
     public static function sql_listar_eval_administrativos(string $idUser): string {
         return sprintf("
             SELECT u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado, ea.estado_eval_admin, ea.periodo_evaluado, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, ea.id_eval_admin, ea.id_evaluado, ea.id_usuario
@@ -291,6 +316,13 @@ class Listados {
     }
 
     public function listaEvaluadosObreros(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
+    public function listaObreros(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
         }

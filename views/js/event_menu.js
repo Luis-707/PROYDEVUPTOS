@@ -127,6 +127,22 @@ $(document).on('click', '.menu-link', function() {
             //listarCargosEvaluados();    // Poblar select de cargos
           }
         });
+
+        // Hook de menú (event_menu.js)
+        $("#formularioRegistroObreros").click(async function(){
+           if (await verificarAccesoMenu('Registros Obreros', 'formularioRegistroObreros')) {
+
+        // Variable de control para identificar vista actual
+          view = 'registro_obreros';
+
+        // Cargar la vista
+           mostrarVista('registro_obreros');
+
+            // Inicializar funciones específicas del módulo
+             listarEvalObrero();        // Poblar tabla de evaluaciones obreros
+            listarEvaluadosObrero();   // Poblar select de evaluados
+          }
+       });
         
         $("#formularioUsuarios").click(async function(){
           if (await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios')) {
@@ -476,6 +492,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Resultados', 'formularioResultados');
   await verificarAccesoMenu('Reportes Administrativos', 'formularioReportesAdmin');
   await verificarAccesoMenu('Reportes Obreros', 'formularioReportesObreros');
+  await verificarAccesoMenu('Registros Obreros', 'formularioRegistroObreros');
 
 });
 

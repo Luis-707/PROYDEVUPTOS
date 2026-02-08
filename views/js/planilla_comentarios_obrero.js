@@ -1,4 +1,49 @@
 // =============================
+// Formatear fecha (DD/MM/YYYY)
+// =============================
+function formatearFecha(fechaStr) {
+    const fecha = new Date(fechaStr);
+    if (isNaN(fecha.getTime())) return "";
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+}
+
+// =============================
+// Obtener fecha de ingreso desde JSON (async)
+// =============================
+async function obtenerFechaIngresoPorCedula(cedula) {
+    try {
+        const resp = await microApi('views/js/datos_empleado.json');
+
+        if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
+            console.error("JSON con formato inesperado");
+            return "";
+        }
+
+        const datos = resp[0].data;
+        const cedulaBusqueda = cedula.toLowerCase();
+
+        const empleado = datos.find(emp =>
+            emp.pin && emp.pin.toLowerCase() === cedulaBusqueda
+        );
+
+        if (!empleado || !empleado.create) {
+            console.warn("Empleado no encontrado o sin fecha 'create'");
+            return "";
+        }
+
+        const soloFecha = empleado.create.split(" ")[0];
+        return formatearFecha(soloFecha);
+
+    } catch (error) {
+        console.error("Error obteniendo fecha de ingreso:", error);
+        return "";
+    }
+}
+
+// =============================
 // Cargar planilla obrera readonly
 // =============================
 async function cargarPlanillaObreroReadonly() {
@@ -16,6 +61,10 @@ async function cargarPlanillaObreroReadonly() {
     formData.append("id_eval_obreros", idEval);
 
     const resp = await microApi('controlador/?planilla_comentarios_obrero', formData);
+
+    // Obtener fecha de ingreso desde JSON
+resp.data.evaluacion.fecha_ingreso = await obtenerFechaIngresoPorCedula(cedula);
+
 
     if (!resp?.success) {
         alert(resp?.message || "Error cargando planilla obrera");
@@ -56,6 +105,7 @@ function renderizarPlanillaObreroReadonly(data) {
     document.getElementById("evaluado_fullname").value = rel.nombre_completo_evaluado || "N/D";
     document.getElementById("evaluado_cedula").value = rel.cedula_usuario || "N/D";
     document.getElementById("evaluado_cargo").value = rel.cargo_evaluado || "N/D";
+    document.getElementById("evaluado_fecha_ingreso").value = evalData.fecha_ingreso || "N/D";
     document.getElementById("evaluado_ubicacion").value = rel.ubicacion_evaluado || "N/D";
     document.getElementById("evaluado_area_ocupacional").value = rel.nombre_ao || "N/D";
     document.getElementById("evaluado_ubicacion_fisica").value = rel.nombre_uf || "N/D";

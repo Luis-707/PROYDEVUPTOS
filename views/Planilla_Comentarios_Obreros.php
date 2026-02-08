@@ -48,6 +48,11 @@ include_once "Sesion.php";
                 </div>
 
                 <div class="col-md-4">
+                    <label class="form-label mb-0">Fecha de Ingreso</label>
+                    <input type="text" class="form-control" id="evaluado_fecha_ingreso" name="evaluado_fecha_ingreso" readonly>
+                </div>
+
+                <div class="col-md-4">
                     <label class="form-label mb-0">Años en el puesto</label>
                     <input type="text" class="form-control" id="evaluado_anios_puesto" name="evaluado_anios_puesto" readonly>
                 </div>

@@ -1,4 +1,50 @@
 // =============================
+// Formatear fecha (DD/MM/YYYY)
+// =============================
+function formatearFecha(fechaStr) {
+    const fecha = new Date(fechaStr);
+    if (isNaN(fecha.getTime())) return "";
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+}
+
+// =============================
+// Obtener fecha de ingreso desde JSON (async)
+// =============================
+async function obtenerFechaIngresoPorCedula(cedula) {
+    try {
+        const resp = await microApi('views/js/datos_empleado.json');
+
+        if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
+            console.error("JSON con formato inesperado");
+            return "";
+        }
+
+        const datos = resp[0].data;
+        const cedulaBusqueda = cedula.toLowerCase();
+
+        const empleado = datos.find(emp =>
+            emp.pin && emp.pin.toLowerCase() === cedulaBusqueda
+        );
+
+        if (!empleado || !empleado.create) {
+            console.warn("Empleado no encontrado o sin fecha 'create'");
+            return "";
+        }
+
+        const soloFecha = empleado.create.split(" ")[0];
+        return formatearFecha(soloFecha);
+
+    } catch (error) {
+        console.error("Error obteniendo fecha de ingreso:", error);
+        return "";
+    }
+
+}
+
+// =============================
 // LISTAR REPORTES OBREROS
 // =============================
 async function listarReportesObreros() {
@@ -68,6 +114,8 @@ async function generarPDFObrero(idEvalObrero) {
         }
 
         const info = resp.data || {};
+        // Obtener fecha de ingreso desde JSON
+info.fecha_ingreso = await obtenerFechaIngresoPorCedula(info.cedula_evaluado);
         const factores = Array.isArray(resp.factores) ? resp.factores : [];
         const criterios = Array.isArray(resp.criterios) ? resp.criterios : [];
         const seleccionados = Array.isArray(resp.seleccionados) ? resp.seleccionados : [];
@@ -101,35 +149,110 @@ function generarPlanillaObrera(doc, info, factores, criterios, seleccionados) {
     doc.text("EVALUACION DEL DESEMPEÑO - NIVEL OBRERO", 105, y, { align: "center" });
     y += 10;
 
-    // =============================
-    // SECCIÓN A: DATOS DEL EVALUADO
-    // =============================
-    doc.setFontSize(10);
-    doc.text('SECCION "A": DATOS DEL EVALUADO', 10, y);
-    y += 5;
+   // =============================
+// SECCIÓN A: DATOS DEL EVALUADO
+// =============================
+doc.setFontSize(10);
+doc.text('SECCION "A": DATOS DEL EVALUADO', 10, y);
+y += 6;
 
-    doc.setFontSize(8);
-    doc.text(`Evaluado: ${info.nombre_evaluado}`, 10, y); y += 4;
-    doc.text(`Cédula: ${info.cedula_evaluado}`, 10, y); y += 4;
-    doc.text(`Cargo: ${info.cargo_evaluado}`, 10, y); y += 4;
-    doc.text(`Ubicación Administrativa: ${info.ubicacion_evaluado}`, 10, y); y += 4;
-    doc.text(`Área Ocupacional: ${info.area_ocupacional}`, 10, y); y += 4;
-    doc.text(`Ubicación Física: ${info.ubicacion_fisica}`, 10, y); y += 4;
-    doc.text(`Años en el Puesto: ${info.tiempo_puesto}`, 10, y); y += 8;
+// Línea 1: Apellidos y Nombres / Cédula
+doc.autoTable({
+    startY: y,
+    head: [[
+        { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cédula', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[info.nombre_evaluado, info.cedula_evaluado]],
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+y = doc.lastAutoTable.finalY + 4;
 
-    // =============================
-    // SECCIÓN B: DATOS DEL EVALUADOR
-    // =============================
-    doc.setFontSize(10);
-    doc.text('SECCION "B": DATOS DEL EVALUADOR', 10, y);
-    y += 5;
+// Línea 2: Cargo / Fecha ingreso / Años en el puesto
+doc.autoTable({
+    startY: y,
+    head: [[
+        { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Fecha de Ingreso', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Años en el Puesto', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[info.cargo_evaluado, info.fecha_ingreso, info.tiempo_puesto]],
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+y = doc.lastAutoTable.finalY + 4;
 
-    doc.setFontSize(8);
-    doc.text(`Evaluador: ${info.nombre_evaluador}`, 10, y); y += 4;
-    doc.text(`Cédula: ${info.cedula_evaluador}`, 10, y); y += 4;
-    doc.text(`Cargo: ${info.cargo_evaluador}`, 10, y); y += 4;
-    doc.text(`Ubicación Administrativa: ${info.ubicacion_evaluador}`, 10, y); y += 8;
+// Línea 3: Ubicación Administrativa / Ubicación Física
+doc.autoTable({
+    startY: y,
+    head: [[
+        { content: 'Ubicación Administrativa', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Ubicación Física', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[info.ubicacion_evaluado, info.ubicacion_fisica]],
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+y = doc.lastAutoTable.finalY + 4;
 
+// Línea 4: Periodo Evaluado / Área Ocupacional
+doc.autoTable({
+    startY: y,
+    head: [[
+        { content: 'Periodo Evaluado', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Área Ocupacional', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[info.periodo_evaluacion, info.area_ocupacional]],
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+y = doc.lastAutoTable.finalY + 10;
+
+// =============================
+// SECCIÓN B: DATOS DEL EVALUADOR
+// =============================
+doc.setFontSize(10);
+doc.text('SECCION "B": DATOS DEL EVALUADOR', 10, y);
+y += 6;
+
+// Línea 1: Apellidos y Nombres / Cargo
+doc.autoTable({
+    startY: y,
+    head: [[
+        { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[info.nombre_evaluador, info.cargo_evaluador]],
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+y = doc.lastAutoTable.finalY + 4;
+
+// Línea 2: Ubicación Administrativa
+doc.autoTable({
+    startY: y,
+    head: [[
+        { content: 'Ubicación Administrativa', colSpan: 2, styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[info.ubicacion_evaluador, '']],
+    theme: 'grid',
+    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+y = doc.lastAutoTable.finalY + 10;
+    
     // =============================
     // SECCIÓN C: FACTORES Y CRITERIOS
     // =============================

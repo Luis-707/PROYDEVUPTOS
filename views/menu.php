@@ -53,6 +53,14 @@
                         <div data-i18n="Evaluacion administrativos" >Evaluacion administrativos</div>
                     </a>
                 </li>
+
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioRegistroObreros">
+                        <!--<i class="menu-icon icon-base bx bx-pinsel"></i>-->
+                        <div data-i18n="Evaluacion obreros" >Evaluacion obreros</div>
+                    </a>
+                </li>
+
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacion">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->

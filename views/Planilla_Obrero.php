@@ -78,7 +78,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0">Fecha de Ingreso</label>
-                        <input type="date" class="form-control" id="fecha_ingreso" readonly>
+                        <input type="text" class="form-control" id="fecha_ingreso" readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0">Años en el puesto</label>
