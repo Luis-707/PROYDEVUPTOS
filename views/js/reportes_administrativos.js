@@ -147,21 +147,113 @@ async function generarPDF(idEvalAdmin) {
     doc.setFontSize(10);
     doc.text('SECCION "A": DATOS DE IDENTIFICACION', 10, y); y += 5;
     doc.setFontSize(8);
+    y += 6;
   
-    doc.text(`Evaluado: ${nombreEvaluado}`, 10, y); y += 4;
-    doc.text(`Cédula: ${cedulaEvaluado}`, 10, y); y += 4;
-    doc.text(`Cargo: ${cargoEvaluado}`, 10, y); y += 4;
-    doc.text(`Ubicación: ${ubicacionEval}`, 10, y); y += 6;
-  
-    doc.text(`Evaluador: ${nombreEvaluador}`, 10, y); y += 4;
-    doc.text(`Cédula: ${cedulaEvaluador}`, 10, y); y += 4;
-    doc.text(`Cargo: ${cargoEvaluador}`, 10, y); y += 4;
-    doc.text(`Ubicación: ${ubicacionEvaluador}`, 10, y); y += 6;
-  
-    doc.text(`Supervisor: ${nombreSupervisor}`, 10, y); y += 4;
-    doc.text(`Cédula: ${cedulaSupervisor}`, 10, y); y += 4;
-    doc.text(`Cargo: ${cargoSupervisor}`, 10, y); y += 8;
-  
+   // ============================================================
+// TABLA 1 — DATOS DEL EVALUADO (UNA SOLA FILA)
+// ============================================================
+
+doc.setFontSize(10);
+doc.text('DATOS DEL EVALUADO', 10, y);
+y += 6;
+
+doc.autoTable({
+    startY: y,
+    theme: 'grid',
+    head: [[
+        { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cédula', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Ubicación Administrativa', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[
+        ` ${info.nombre_evaluado}`,
+        `${info.cedula_evaluado}`,
+        `${info.cargo_evaluado}`,
+        `${info.ubicacion_evaluado}`
+    ]],
+    styles: {
+        fontSize: 7.5,
+        cellPadding: 1,
+        halign: 'center',
+        lineWidth: 0.3
+    },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+
+y = doc.lastAutoTable.finalY + 10;
+
+
+// ============================================================
+// TABLA 2 — DATOS DEL EVALUADOR (UNA SOLA FILA)
+// ============================================================
+
+doc.setFontSize(10);
+doc.text('DATOS DEL EVALUADOR', 10, y);
+y += 6;
+
+doc.autoTable({
+    startY: y,
+    theme: 'grid',
+    head: [[
+        { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cédula', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Ubicación Administrativa', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[
+        `${info.nombre_evaluador}`,
+        `${info.cedula_evaluador}`,
+        `${info.cargo_evaluador}`,
+        `${info.ubicacion_evaluador}`
+    ]],
+    styles: {
+        fontSize: 7.5,
+        cellPadding: 1,
+        halign: 'center',
+        lineWidth: 0.3
+    },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+
+y = doc.lastAutoTable.finalY + 10;
+
+
+// ============================================================
+// TABLA 3 — DATOS DEL SUPERVISOR (UNA SOLA FILA)
+// ============================================================
+
+doc.setFontSize(10);
+doc.text('DATOS DEL SUPERVISOR', 10, y);
+y += 6;
+
+doc.autoTable({
+    startY: y,
+    theme: 'grid',
+    head: [[
+        { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cédula', styles: { fontStyle: 'bold', halign: 'center' } },
+        { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } }
+    ]],
+    body: [[
+        `${info.nombre_supervisor}`,
+        `${info.cedula_supervisor}`,
+        `${info.cargo_supervisor}`
+    ]],
+    styles: {
+        fontSize: 7.5,
+        cellPadding: 1,
+        halign: 'center',
+        lineWidth: 0.3
+    },
+    margin: { left: 10, right: 10 },
+    tableWidth: 190
+});
+
+y = doc.lastAutoTable.finalY + 10;
+
     // Sección B: Objetivos
     doc.setFontSize(10);
     doc.text('SECCION "B": OBJETIVOS', 10, y); y += 4;

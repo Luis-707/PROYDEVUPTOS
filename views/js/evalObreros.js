@@ -208,9 +208,6 @@ function validarCadena(cadena){
                     <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvalObrero(${item.id_eval_obreros},'${item.estado_eval_obreros}')">
                         <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
                     </a>
-                    <a class="dropdown-item" href="javascript:void(0);" onclick="abrirPlanillaObrero('${cedula}', ${item.id_eval_obreros})">
-                        <i class="icon-base bx bx-file me-1"></i>Planilla
-                    </a>
                 </div>
             </div>
         `;
