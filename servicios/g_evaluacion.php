@@ -17,10 +17,12 @@ try {
         }
     }
 
-    // Validaciones mínimas
-    $required = ['id_usuario','id_evaluado','periodo_evaluado','puntaje_final'];
+    $post = $dataCliente['_post'];
+
+    // 1) Validaciones mínimas
+    $required = ['evaluado_id','evaluador_id','id_eval_admin','puntaje_final'];
     foreach ($required as $key) {
-        if (empty($dataCliente['_post'][$key])) {
+        if (empty($post[$key])) {
             echo json_encode([
                 'success' => false,
                 'message' => "Falta el campo requerido: $key"
@@ -29,107 +31,68 @@ try {
         }
     }
 
-    // Instanciar clase con conexión
-    $planilla = new PlanillaAdministrativos($dataCliente['_post'], $this->conexion);
+    $planilla = new PlanillaAdministrativos($post, $this->conexion);
 
-    // 1) Buscar evaluación existente con sql_buscar(id_eval_admin) o, si no llega, derivar por id_usuario + id_evaluado + periodo
-    $idEvalAdminPost = isset($dataCliente['_post']['id_eval_admin']) ? (int)$dataCliente['_post']['id_eval_admin'] : 0;
+    $evaluado_id   = (int)$post['evaluado_id'];
+    $evaluador_id  = (int)$post['evaluador_id'];
+    $id_eval_admin = (int)$post['id_eval_admin'];
+    $puntaje_final = (int)$post['puntaje_final'];
+    $id_rango      = isset($post['id_rango']) ? (int)$post['id_rango'] : 0;
 
-    if ($idEvalAdminPost > 0) {
-        // Usar sql_buscar con el id recibido
-        $sqlEval = $planilla->sql_buscar($idEvalAdminPost);
-        $respEval = $this->ejecutarConsultaBdds($sqlEval);
-        $evalRow  = isset($respEval[0][0]) ? $respEval[0][0] : ($respEval[0] ?? []);
-        if (empty($evalRow)) {
-            echo json_encode([
-                'success' => false,
-                'message' => '❌ No existe evaluación previa con ese id_eval_admin para este evaluado/evaluador'
-            ]);
-            exit;
-        }
-        $planilla->setIdEvalAdmin((int)$evalRow['id_eval_admin']);
-    } else {
-        // Fallback: localizar la evaluación por id_usuario + id_evaluado + periodo
-        // reutilizando sql_listar_periodo_por_id requeriría id_eval_admin, así que aquí asumimos
-        // que ya existe un registro para esa combinación y actualizamos con sql_guardar_evaluacion (que filtra por periodo)
-        // Si necesitas confirmación estricta, podrías crear un método sql_buscar_por_usuario_evaluado_periodo.
-        // Continuamos y confiamos en el UPDATE por periodo.
-    }
-
-    // 2) Verificar duplicados en objetivos
-    if ($planilla->getPeriodoevaluado() !== '') {
-        // Si tenemos id_eval_admin set, verificamos duplicados
-        $idEvalAdmin = $planilla->getPeriodoevaluado() !== '' && $planilla->getIdevaluado() > 0
-            ? ($planilla->getIdEvalAdmin() ?? 0)
-            : ($planilla->getIdEvalAdmin() ?? 0);
-    } else {
-        $idEvalAdmin = $planilla->getIdEvalAdmin() ?? 0;
-    }
-
-    if ($idEvalAdmin > 0) {
-        $sqlCheckObj = $planilla->sql_existen_objetivos($idEvalAdmin);
-        $resCheckObj = $this->ejecutarConsultaBdds($sqlCheckObj);
-        $totalObj = isset($resCheckObj[0][0]['total']) ? (int)$resCheckObj[0][0]['total'] : (int)($resCheckObj[0]['total'] ?? 0);
-
-        if ($totalObj > 0) {
-            echo json_encode([
-                'success' => false,
-                'message' => '⚠️ Ya existen objetivos y competencias registrados para esta evaluación'
-            ]);
-            exit;
-        }
-
-        $sqlCheckComp = $planilla->sql_existen_competencias($idEvalAdmin);
-        $resCheckComp = $this->ejecutarConsultaBdds($sqlCheckComp);
-        $totalComp = isset($resCheckComp[0][0]['total']) ? (int)$resCheckComp[0][0]['total'] : (int)($resCheckComp[0]['total'] ?? 0);
-
-        if ($totalComp > 0) {
-            echo json_encode([
-                'success' => false,
-                'message' => '⚠️ Ya existen competencias registradas para esta evaluación'
-            ]);
-            exit;
+    // 2) Si no viene id_rango, lo calculamos por puntaje
+    if ($id_rango <= 0) {
+        $sqlRango = PlanillaAdministrativos::sql_id_rango_por_puntaje($puntaje_final);
+        $resRango = $this->ejecutarConsultaBdds($sqlRango);
+        if (!empty($resRango[0][0]['id_rango'])) {
+            $id_rango = (int)$resRango[0][0]['id_rango'];
+            $post['id_rango'] = $id_rango;
+            $planilla = new PlanillaAdministrativos($post, $this->conexion);
         }
     }
 
-    // 3) Calcular id_rango si no viene (opcional)
-    if (empty($dataCliente['_post']['id_rango'])) {
-        $idRango = $planilla->obtenerIdRangoPorPuntaje((int)$dataCliente['_post']['puntaje_final']);
-        if ($idRango !== null) {
-            // inyectamos el id_rango en la instancia para el UPDATE
-            // (si tu clase tiene setter, úsalo; si no, recrea la instancia)
-            $dataCliente['_post']['id_rango'] = $idRango;
-            $planilla = new PlanillaAdministrativos($dataCliente['_post'], $this->conexion);
-        }
-    }
+    // 3) Verificar duplicados de objetivos/competencias para este id_eval_admin
+    $sqlCheckObj = PlanillaAdministrativos::sql_existen_objetivos($id_eval_admin);
+    $resCheckObj = $this->ejecutarConsultaBdds($sqlCheckObj);
+    $totalObj = isset($resCheckObj[0][0]['total']) ? (int)$resCheckObj[0][0]['total'] : 0;
 
-    // 4) Actualizar evaluación general por periodo (id_evaluado + id_usuario + periodo_evaluado)
-    $sqlUpdateEval = $planilla->sql_guardar_evaluacion();
-    $resEval = $this->ejecutarConsultaBdds($sqlUpdateEval);
-    $rowEval = isset($resEval[0][0]) ? $resEval[0][0] : ($resEval[0] ?? []);
+    $sqlCheckComp = PlanillaAdministrativos::sql_existen_competencias($id_eval_admin);
+    $resCheckComp = $this->ejecutarConsultaBdds($sqlCheckComp);
+    $totalComp = isset($resCheckComp[0][0]['total']) ? (int)$resCheckComp[0][0]['total'] : 0;
 
-    if (empty($rowEval['id_eval_admin'])) {
+    if ($totalObj > 0 || $totalComp > 0) {
         echo json_encode([
             'success' => false,
-            'message' => '❌ No se pudo actualizar la evaluación'
+            'message' => 'Ya existen objetivos o competencias registrados para esta evaluación'
         ]);
         exit;
     }
 
-    $idEvalAdminFinal = (int)$rowEval['id_eval_admin'];
-    $planilla->setIdEvalAdmin($idEvalAdminFinal);
+    // 4) Actualizar evaluación general
+    $sqlUpdate = $planilla->sql_guardar_evaluacion();
+    $resUpdate = $this->ejecutarConsultaBdds($sqlUpdate);
+    $rowEval   = isset($resUpdate[0][0]) ? $resUpdate[0][0] : ($resUpdate[0] ?? []);
+
+    if (empty($rowEval['id_eval_admin'])) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No se pudo actualizar la evaluación'
+        ]);
+        exit;
+    }
+
+    $idEvalFinal = (int)$rowEval['id_eval_admin'];
 
     // 5) Guardar objetivos
-    if (!empty($dataCliente['_post']['objetivos'])) {
-        $objetivos = is_string($dataCliente['_post']['objetivos'])
-            ? json_decode($dataCliente['_post']['objetivos'], true)
-            : $dataCliente['_post']['objetivos'];
+    if (!empty($post['objetivos'])) {
+        $objetivos = is_string($post['objetivos'])
+            ? json_decode($post['objetivos'], true)
+            : $post['objetivos'];
 
         if (is_array($objetivos)) {
             foreach ($objetivos as $obj) {
                 if (!empty($obj['id_odi'])) {
                     $sqlObj = $planilla->sql_guardar_objetivo(
-                        $idEvalAdminFinal,
+                        $idEvalFinal,
                         (int)$obj['id_odi'],
                         (int)$obj['rango'],
                         (int)$obj['pesoXRango']
@@ -141,16 +104,16 @@ try {
     }
 
     // 6) Guardar competencias
-    if (!empty($dataCliente['_post']['competencias'])) {
-        $competencias = is_string($dataCliente['_post']['competencias'])
-            ? json_decode($dataCliente['_post']['competencias'], true)
-            : $dataCliente['_post']['competencias'];
+    if (!empty($post['competencias'])) {
+        $competencias = is_string($post['competencias'])
+            ? json_decode($post['competencias'], true)
+            : $post['competencias'];
 
         if (is_array($competencias)) {
             foreach ($competencias as $comp) {
                 if (!empty($comp['id_competencia'])) {
                     $sqlComp = $planilla->sql_guardar_competencia(
-                        $idEvalAdminFinal,
+                        $idEvalFinal,
                         (int)$comp['id_competencia'],
                         (int)$comp['rango'],
                         (int)$comp['pesoXRango']
@@ -161,11 +124,10 @@ try {
         }
     }
 
-    // 7) Respuesta final
     echo json_encode([
         'success' => true,
-        'message' => '✅ Evaluación actualizada con éxito',
-        'id_eval_admin' => $idEvalAdminFinal
+        'message' => 'Evaluación guardada/actualizada con éxito',
+        'id_eval_admin' => $idEvalFinal
     ]);
 
 } catch (Throwable $e) {

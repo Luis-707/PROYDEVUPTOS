@@ -9,23 +9,28 @@ if (empty($dataCliente['_post'])) {
     $dataCliente['_post'] = json_decode($json, true) ?? [];
 }
 
-// Validar que venga la cédula y el periodo
-if (empty($dataCliente['_post']['cedula_usuario']) || empty($dataCliente['_post']['id_eval_admin'])) {
+// Validar datos requeridos
+if (
+    empty($dataCliente['_post']['evaluado_id']) ||
+    empty($dataCliente['_post']['id_eval_admin']) ||
+    empty($dataCliente['_post']['cedula_usuario'])
+) {
     echo json_encode([
         'success' => false,
-        'message' => 'Faltan datos: cédula o periodo de evaluación'
+        'message' => 'Faltan datos: evaluado_id, id_eval_admin o cedula_usuario'
     ]);
     exit;
 }
 
+$evaluado_id   = (int)$dataCliente['_post']['evaluado_id'];
+$idEvalAdmin   = (int)$dataCliente['_post']['id_eval_admin'];
 $cedula = $dataCliente['_post']['cedula_usuario'];
-$idEvalAdmin = $dataCliente['_post']['id_eval_admin'];
 
 // Instanciar clase Objetivo con la conexión
 $objetivo = new Objetivo([], $this);
 
 // Obtener lista filtrada de objetivos
-$respuesta = $objetivo->listar_objetivos($cedula, $idEvalAdmin);
+$respuesta = $objetivo->listar_objetivos($evaluado_id, $idEvalAdmin, $cedula);
 
 // Responder en JSON
 echo json_encode([
@@ -33,4 +38,3 @@ echo json_encode([
     'data' => $respuesta
 ]);
 exit;
-?>

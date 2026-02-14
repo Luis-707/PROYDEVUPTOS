@@ -57,7 +57,8 @@ session_start();
           <li class="list-group-item"><strong>Cargo:</strong> <span id="evaluado_cargo"></span></li>
           <li class="list-group-item"><strong>Ubicación:</strong> <span id="evaluado_ubicacion"></span></li>
         </ul>
-        <input type="hidden" id="id_evaluado" name="id_evaluado">
+        <input type="hidden" id="evaluado_id" name="evaluado_id"> 
+
       </div>
 
       <!-- Evaluador -->
@@ -69,7 +70,7 @@ session_start();
           <li class="list-group-item"><strong>Cargo:</strong> <span id="evaluador_cargo"></span></li>
           <li class="list-group-item"><strong>Ubicación:</strong> <span id="evaluador_ubicacion"></span></li>
         </ul>
-        <input type="hidden" id="id_usuario_evaluador" name="id_usuario">
+        <input type="hidden" id="evaluador_id" name="evaluador_id">
       </div>
 
       <!-- Supervisor -->

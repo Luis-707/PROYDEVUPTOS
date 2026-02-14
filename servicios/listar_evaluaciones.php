@@ -2,27 +2,40 @@
 session_start();
 include_once '../clases/Listados.php';
 
-$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
-$rolUsuario   = $_SESSION['usuario']['rol'] ?? null;
+header('Content-Type: application/json; charset=utf-8');
 
-if (!$cedulaSesion || !$rolUsuario) {
-    echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
-    exit;
-}
+try {
 
-$ListaE = new Listados($this);
+    // 1) Validar sesión
+    $idUsuario = $_SESSION['usuario']['id_usuario'] ?? null;
+    $roles     = $_SESSION['usuario']['roles'] ?? [];
 
-// Seleccionar SQL según rol
-switch ($rolUsuario) {
-   
-    case 'evaluador':
-        $sql = Listados::sql_listar_por_evaluador($cedulaSesion);
-        break;
-   
-    default:
+    if (!$idUsuario || empty($roles)) {
+        echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
+        exit;
+    }
+
+    // 2) Validar rol
+    if (!in_array('evaluador', $roles)) {
         echo json_encode(["success" => false, "message" => "Rol no autorizado"]);
         exit;
-}
+    }
 
-$respuesta = $ListaE->listaEvaluados($sql);
-return $respuesta;
+    // 3) Ejecutar SQL
+    $sql = Listados::sql_listar_evaluaciones_admin((int)$idUsuario);
+
+    $Lista = new Listados($this);
+    $resp = $Lista->listaEvaluados($sql);
+
+    echo json_encode([
+        "success" => true,
+        "data"    => $resp[0] ?? []
+    ]);
+
+} catch (Throwable $e) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Error en el servidor: " . $e->getMessage()
+    ]);
+}
+exit;

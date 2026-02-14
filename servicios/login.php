@@ -25,12 +25,16 @@ try {
         exit;
     }
 
+    // Instancia Usuario con la nueva estructura
     $usuario = new Usuario($_POST, $this->conexion);
     $sql = $usuario->sql_buscar();
     $respuesta = $this->ejecutarConsultaBdds($sql);
 
     if ($respuesta && count($respuesta[0]) > 0) {
-        $row = $respuesta[0][0];
+
+        // Varias filas = varios roles
+        $filas = $respuesta[0];
+        $row = $filas[0]; // Datos generales del usuario
 
         if ($row['estado_usuario'] === 'Inactivo') {
             echo json_encode([
@@ -40,10 +44,10 @@ try {
             ]);
             exit;
         }
-        
-        
 
         if (password_verify($clave, $row['clave'])) {
+
+            // Validación del PIN
             if ($pin !== null && $pin !== $row['cedula_usuario']) {
                 echo json_encode([
                     "success" => false,
@@ -52,11 +56,17 @@ try {
                 exit;
             }
 
+            // Agrupar roles
+            $roles = [];
+            foreach ($filas as $f) {
+                $roles[] = strtolower(trim($f['nombre_rol']));
+            }
+
+            // Guardar sesión
             $_SESSION['usuario'] = [
                 'id_usuario' => $row['id_usuario'],
                 'cedula'     => $row['cedula_usuario'],
-                'rol_id'     => $row['rol_id'],
-                'rol'        => strtolower(trim($row['rol']))
+                'roles'      => $roles
             ];
 
             echo json_encode([
@@ -64,21 +74,23 @@ try {
                 "message"   => "Bienvenido",
                 "id_usuario"=> $row['id_usuario'],
                 "cedula"    => $row['cedula_usuario'],
-                "rol_id"    => $row['rol_id'],
-                "rol"       => strtolower(trim($row['rol']))
+                "roles"     => $roles
             ]);
+
         } else {
             echo json_encode([
                 "success" => false,
                 "message" => "Clave incorrecta"
             ]);
         }
+
     } else {
         echo json_encode([
             "success" => false,
             "message" => "Usuario no encontrado"
         ]);
     }
+
 } catch (Throwable $e) {
     echo json_encode([
         "success" => false,

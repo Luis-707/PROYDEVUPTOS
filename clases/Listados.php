@@ -48,6 +48,25 @@ class Listados {
         return "No se ha definido la conexión";
     }
 
+    public static function sql_listar_evaluaciones_admin(int $idEvaluador): string {
+        return sprintf("
+            SELECT 
+                ea.id_eval_admin,
+                ea.evaluado_id,
+                u.cedula_usuario AS cedula,
+                u.nombre_completo,
+                c.nombre_cargo AS cargo,
+                ea.periodo_evaluado,
+                EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
+            FROM evaluacion_administrativos ea
+            JOIN usuarios u ON u.id_usuario = ea.evaluado_id
+            JOIN cargos c ON c.id_cargo = u.id_cargo
+            WHERE ea.evaluador_id = %d
+            ORDER BY u.cedula_usuario ASC;
+        ", $idEvaluador);
+
+    }
+
     // 🔹 Listado general (solo para admins, si lo usas)
     public static function sql_listar_evaluados(): string {
         return "
@@ -63,32 +82,56 @@ class Listados {
         ";
     }
 
-    // 🔹 Listar solo el evaluado logueado
-    public static function sql_listar_por_evaluado(string $cedula): string {
+    public static function sql_listar_por_evaluado(string $cedula): string
+    {
         return sprintf("
-            SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado, ea.periodo_evaluado
-            FROM evaluados e
-            JOIN usuarios u ON e.id_usuario = u.id_usuario
-            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
-            LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
-            WHERE u.cedula_usuario = '%s' AND ea.estado_eval_admin = 'Finalizada';
+            SELECT 
+                ea.id_eval_admin,
+                u.cedula_usuario,
+                u.nombre_completo,
+                c.nombre_cargo AS cargo,
+                o.nombre AS unidad,
+                ea.periodo_evaluado,
+                EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
+            FROM evaluacion_administrativos ea
+            JOIN usuarios u ON u.id_usuario = ea.evaluado_id
+            JOIN cargos c ON c.id_cargo = u.id_cargo
+            JOIN organizaciones o ON o.id_org = c.id_org
+            WHERE u.cedula_usuario = '%s'
+              AND ea.estado_eval_admin = 'Finalizada'
+            ORDER BY u.cedula_usuario ASC;
         ", addslashes($cedula));
     }
 
-    // 🔹 Listar evaluados bajo un supervisor
-    public static function sql_listar_por_supervisor(string $cedula): string {
-        return sprintf("
-            SELECT ea.id_eval_admin, EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, e.id_evaluado, u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa, c.cargo_evaluado, ea.periodo_evaluado
-            FROM evaluados e
-            JOIN usuarios u ON e.id_usuario = u.id_usuario
-            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
-            LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
-            JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
-            JOIN supervisores s ON ev.id_supervisor = s.id_supervisor
-            JOIN usuarios u_sup ON s.id_usuario = u_sup.id_usuario
-            WHERE u_sup.cedula_usuario = '%s' AND ea.estado_eval_admin = 'Finalizada';
-        ", addslashes($cedula));
-    }
+    public static function sql_listar_por_supervisor(string $cedulaSupervisor): string
+{
+    return sprintf("
+       SELECT 
+            ea.id_eval_admin,
+            u.cedula_usuario,
+            u.nombre_completo,
+            c.nombre_cargo AS cargo,
+            o.nombre AS unidad,
+            ea.periodo_evaluado,
+            EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
+
+        FROM evaluacion_administrativos ea
+        JOIN usuarios u ON u.id_usuario = ea.evaluado_id
+        JOIN cargos c ON c.id_cargo = u.id_cargo
+        JOIN organizaciones o ON o.id_org = c.id_org
+        JOIN usuarios ev ON ev.id_usuario = ea.evaluador_id
+        JOIN cargos c_ev ON c_ev.id_cargo = ev.id_cargo
+        JOIN organizaciones org_ev ON org_ev.id_org = c_ev.id_org
+        JOIN organizaciones org_sup ON org_sup.id_org = org_ev.padre_id
+        JOIN cargos c_sup ON c_sup.id_org = org_sup.id_org
+        JOIN usuarios sup ON sup.id_cargo = c_sup.id_cargo
+
+        WHERE sup.cedula_usuario = '%s'
+          AND ea.estado_eval_admin = 'Finalizada'
+        ORDER BY u.cedula_usuario ASC LIMIT 100
+    ", addslashes($cedulaSupervisor));
+}
+  
 
     // 🔹 Listar evaluados bajo un evaluador (si manejas este rol)
     public static function sql_listar_por_evaluador(string $cedula): string {

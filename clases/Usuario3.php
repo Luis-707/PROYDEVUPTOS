@@ -114,9 +114,15 @@ class Usuario {
     // Método para buscar por clave primaria cedula_usuario
     public function sql_buscar(): string {
         return sprintf(
-            "SELECT u.id_usuario, u.cedula_usuario, u.clave, u.estado_usuario, r.rol_id, r.rol
+            "SELECT 
+                u.id_usuario,
+                u.cedula_usuario,
+                u.clave,
+                u.estado_usuario,
+                r.rol AS nombre_rol
             FROM usuarios u
-            JOIN roles_sistema r ON u.rol_id = r.rol_id
+            JOIN posee_rol pr ON pr.id_usuario = u.id_usuario
+            JOIN roles_sistema r ON r.rol_id = pr.rol_id
             WHERE u.cedula_usuario = '%s';",
             addslashes($this->cedula_usuario)
         );
@@ -145,13 +151,19 @@ class Usuario {
     // Método para buscar por id_usuario
     public function sql_buscar_usuario_por_id(): string {
         return sprintf(
-            "SELECT u.id_usuario, u.cedula_usuario, u.clave, u.estado_usuario, r.rol_id, r.rol
+            "SELECT 
+                u.id_usuario,
+                u.cedula_usuario,
+                u.estado_usuario,
+                r.rol AS nombre_rol
             FROM usuarios u
-            JOIN roles_sistema r ON u.rol_id = r.rol_id
-            WHERE id_usuario = %d;",
+            JOIN posee_rol pr ON pr.id_usuario = u.id_usuario
+            JOIN roles_sistema r ON r.rol_id = pr.rol_id
+            WHERE u.id_usuario = %d;",
             $this->id_usuario
         );
     }
+    
 
     // Getters
     public function getClave(): string {

@@ -133,6 +133,10 @@ async function guardarEvaluacionCompleta() {
 
   let datos = capturarValoresFormulario('formulario_planilla');
 
+  datos.append("evaluado_id", document.getElementById("evaluado_id").value);
+datos.append("evaluador_id", document.getElementById("evaluador_id").value);
+datos.append("id_eval_admin", sessionStorage.getItem("id_eval_admin"));
+
   // Capturar objetivos y competencias
   const objetivos = capturarResultadosTabla("tabla-objetivos", "id_odi");
   const competencias = capturarResultadosTabla("tabla-competencias", "id_competencia");
@@ -184,14 +188,17 @@ function valorFormEvaluacion(evaluado='', evaluador='', RangoActuacion='', punta
 // Cargar datos de evaluado/evaluador/supervisor
 // =============================
 async function cargarPlanilla() {
-  const cedula = sessionStorage.getItem("cedula_planilla");
-  if (!cedula) {
-    alert("No se seleccionó evaluado");
+  const evaluado_id = sessionStorage.getItem("evaluado_id");
+  const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
+
+  if (!evaluado_id || !idEvalAdmin) {
+    alert("No se seleccionó evaluación válida");
     return;
   }
 
   const formData = new FormData();
-  formData.append("cedula_usuario", cedula);
+  formData.append("evaluado_id", evaluado_id);
+  formData.append("id_eval_admin", idEvalAdmin);
 
   const resp = await microApi('controlador/?planilla', formData);
 
@@ -200,27 +207,34 @@ async function cargarPlanilla() {
     return;
   }
 
-  const registro = resp.data;
+  const r = resp.data;
 
+  // ============================
   // Evaluado
-  document.getElementById("evaluado_fullname").textContent = registro.nombre_completo_evaluado || "N/D";
-  document.getElementById("evaluado_cedula").textContent = registro.cedula_usuario || "N/D";
-  document.getElementById("evaluado_cargo").textContent = registro.cargo_evaluado || "Sin cargo";
-  document.getElementById("evaluado_ubicacion").textContent = registro.ubicacion_evaluado || "N/D";
-  document.getElementById("id_evaluado").value = registro.id_evaluado;
+  // ============================
+  document.getElementById("evaluado_fullname").textContent = r.evaluado_nombre || "N/D";
+  document.getElementById("evaluado_cedula").textContent = r.evaluado_cedula || "N/D";
+  document.getElementById("evaluado_cargo").textContent = r.evaluado_cargo || "N/D";
+  document.getElementById("evaluado_ubicacion").textContent = r.evaluado_ubicacion || "N/D";
+  document.getElementById("evaluado_id").value = r.evaluado_id;
 
+  // ============================
   // Evaluador
-  document.getElementById("evaluador_fullname").textContent = registro.nombre_completo_evaluador || "N/D";
-  document.getElementById("evaluador_cedula").textContent = registro.cedula_evaluador || "N/D";
-  document.getElementById("evaluador_cargo").textContent = registro.cargo_evaluador || "Sin cargo";
-  document.getElementById("evaluador_ubicacion").textContent = registro.ubicacion_evaluador || "N/D";
-  document.getElementById("id_usuario_evaluador").value = registro.id_usuario_evaluador;
+  // ============================
+  document.getElementById("evaluador_fullname").textContent = r.evaluador_nombre || "N/D";
+  document.getElementById("evaluador_cedula").textContent = r.evaluador_cedula || "N/D";
+  document.getElementById("evaluador_cargo").textContent = r.evaluador_cargo || "N/D";
+  document.getElementById("evaluador_ubicacion").textContent = r.evaluador_ubicacion || "N/D";
+  document.getElementById("evaluador_id").value = r.evaluador_id;
 
+  // ============================
   // Supervisor
-  document.getElementById("supervisor_fullname").textContent = registro.nombre_completo_supervisor || "N/D";
-  document.getElementById("supervisor_cedula").textContent = registro.cedula_supervisor || "N/D";
-  document.getElementById("supervisor_cargo").textContent = registro.cargo_supervisor || "Sin cargo";
+  // ============================
+  document.getElementById("supervisor_fullname").textContent = r.supervisor_nombre || "N/D";
+  document.getElementById("supervisor_cedula").textContent = r.supervisor_cedula || "N/D";
+  document.getElementById("supervisor_cargo").textContent = r.supervisor_cargo || "N/D";
 }
+
 
 // =============================
 // Periodo de Evaluación
@@ -228,45 +242,29 @@ async function cargarPlanilla() {
 
 
 async function cargarPeriodoEval() {
-  const cedula = sessionStorage.getItem("cedula_planilla");
-  const idEvaluado = document.getElementById("id_evaluado")?.value;
-  const idUsuario = document.getElementById("id_usuario_evaluador")?.value;
+  const evaluado_id = document.getElementById("evaluado_id").value;
+  const evaluador_id = document.getElementById("evaluador_id").value;
   const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
 
-  console.log("👉 Enviando al servicio l_periodo:", {
-    cedula_usuario: cedula,
-    id_evaluado: idEvaluado,
-    id_usuario: idUsuario,
-    id_eval_admin: idEvalAdmin
-   
-  });
-
   const formData = new FormData();
-  formData.append("cedula_usuario", cedula);
-  formData.append("id_evaluado", idEvaluado);
-  formData.append("id_usuario", idUsuario);
+  formData.append("evaluado_id", evaluado_id);
+  formData.append("evaluador_id", evaluador_id);
   formData.append("id_eval_admin", idEvalAdmin);
- 
-  
 
   const resp = await microApi('controlador/?l_periodo', formData);
-  console.log("Respuesta periodo:", resp);
 
-  if (!resp.success || !resp.data) {
-    Swal.fire({ icon: 'error', title: 'Error', text: resp.message || "No se pudo cargar el periodo" });
+  if (!resp.success) {
+    Swal.fire({ icon: 'error', title: 'Error', text: resp.message });
     return;
   }
 
-  const periodo = resp.data;
-  document.getElementById("fecha-inicio").value = periodo.fecha_inicio || "";
-  document.getElementById("fecha-cierre").value = periodo.fecha_cierre || "";
-  document.getElementById("periodo-evaluacion").value = periodo.periodo_evaluado || "";
+  const p = resp.data;
 
-  // Si quieres guardar el id_eval_admin en memoria para otros usos:
-  /*if (resp.id_eval_admin) {
-    sessionStorage.setItem("id_eval_admin", resp.id_eval_admin);
-  }*/
+  document.getElementById("fecha-inicio").value = p.fecha_inicio || "";
+  document.getElementById("fecha-cierre").value = p.fecha_cierre || "";
+  document.getElementById("periodo-evaluacion").value = p.periodo_evaluado || "";
 }
+
 
 
 // =============================
@@ -423,6 +421,7 @@ function renderTablaDinamica(datos, idTabla, idTotal, campoPeso, campoNombre, ca
 async function cargarTablasPlanilla() {
   const cedula = sessionStorage.getItem("cedula_planilla");
   const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
+  const evaluado_id = sessionStorage.getItem("evaluado_id");
   if (!cedula) {
     alert("No se seleccionó evaluado");
     return;
@@ -431,6 +430,7 @@ async function cargarTablasPlanilla() {
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
   formData.append("id_eval_admin", idEvalAdmin);
+  formData.append("evaluado_id", evaluado_id);
 
   // 👉 Cargar objetivos
   const objResp = await microApi('controlador/?l_objetivos', formData);

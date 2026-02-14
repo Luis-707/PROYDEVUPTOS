@@ -1,12 +1,10 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', '0');
-ini_set('display_startup_errors', '0');
-
-header('Content-Type: application/json; charset=utf-8');
-
+session_start();
 include_once "../clases/Planilla_comentarios.php";
 
+// ======================================================
+// FUNCIÓN DE NORMALIZACIÓN (del servicio original)
+// ======================================================
 function normalizarRespuesta($resp) {
     if (isset($resp[0][0])) {
         return $resp[0][0];
@@ -16,87 +14,110 @@ function normalizarRespuesta($resp) {
     return [];
 }
 
-try {
-    // Inicializar dataCliente
-    if (!isset($dataCliente)) {
-        $dataCliente = ['_post' => $_POST];
-        if (empty($dataCliente['_post'])) {
-            $json = file_get_contents("php://input");
-            $dataCliente['_post'] = json_decode($json, true) ?? [];
-        }
+// ======================================================
+// CARGA DE POST (del servicio original)
+// ======================================================
+if (!isset($dataCliente)) {
+    $dataCliente = ['_post' => $_POST];
+    if (empty($dataCliente['_post'])) {
+        $json = file_get_contents("php://input");
+        $dataCliente['_post'] = json_decode($json, true) ?? [];
     }
-
-    // Validar parámetros obligatorios
-    if (empty($dataCliente['_post']['id_eval_admin']) || empty($dataCliente['_post']['cedula_usuario'])) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Faltan parámetros: id_eval_admin y/o cedula_usuario'
-        ]);
-        exit;
-    }
-
-    $idEvalAdmin = (int)$dataCliente['_post']['id_eval_admin'];
-    $cedula      = trim($dataCliente['_post']['cedula_usuario']);
-
-    // Instanciar clase con ambos valores
-    $planilla = new Planilla_comentarios([
-        'id_eval_admin'  => $idEvalAdmin,
-        'cedula_usuario' => $cedula
-    ], $this->conexion);
-
-    // 1. Ejecutar consulta de evaluación
-    $sqlEval = $planilla->sql_buscar();
-    $evaluaciones = $this->ejecutarConsultaBdds($sqlEval);
-    $evalData = normalizarRespuesta($evaluaciones);
-
-    if (empty($evalData['id_eval_admin'])) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'No se encontró evaluación registrada'
-        ]);
-        exit;
-    }
-
-    $planilla->setIdEvalAdmin((int)$evalData['id_eval_admin']);
-
-    // 2. Objetivos (ahora con cedula + id_eval_admin)
-    $sqlObj = $planilla->sql_objetivos_por_cedula($cedula, $planilla->getIdEvalAdmin());
-    $objetivos = $this->ejecutarConsultaBdds($sqlObj);
-    $objetivos = isset($objetivos[0][0]) ? $objetivos[0] : ($objetivos[0] ?? []);
-
-    // 3. Competencias (por id_eval_admin)
-    $sqlComp = $planilla->sql_competencias($planilla->getIdEvalAdmin());
-    $competencias = $this->ejecutarConsultaBdds($sqlComp);
-    $competencias = isset($competencias[0][0]) ? $competencias[0] : ($competencias[0] ?? []);
-
-    // 4. Relaciones (por cédula)
-    $sqlRel = $planilla->sql_relaciones_por_cedula($cedula);
-    $relaciones = $this->ejecutarConsultaBdds($sqlRel);
-    $relacionData = isset($relaciones[0][0]) ? $relaciones[0][0] : ($relaciones[0] ?? null);
-
-    // 5. Fusionar cargos en evaluación
-    if ($relacionData) {
-        $evalData['cargo_evaluado']   = $relacionData['cargo_evaluado'] ?? null;
-        $evalData['cargo_evaluador']  = $relacionData['cargo_evaluador'] ?? null;
-        $evalData['cargo_supervisor'] = $relacionData['cargo_supervisor'] ?? null;
-    }
-
-    // 6. Respuesta final
-    echo json_encode([
-        'success' => true,
-        'message' => 'Datos cargados correctamente',
-        'data' => [
-            'evaluacion'   => $evalData,
-            'objetivos'    => $objetivos,
-            'competencias' => $competencias,
-            'relaciones'   => $relacionData
-        ]
-    ]);
-
-} catch (Throwable $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Error en el servidor: ' . $e->getMessage()
-    ]);
 }
+
+$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
+$rolesSesion  = $_SESSION['usuario']['roles'] ?? [];
+
+if (!$cedulaSesion || empty($rolesSesion)) {
+    echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
+    exit;
+}
+
+$data = $dataCliente['_post'] ?? $_POST ?? [];
+$planilla = new Planilla_comentarios($data);
+
+// ======================================================
+// VALIDACIÓN DE PERMISOS
+// ======================================================
+
+// Caso 1: Usuario es EVALUADO
+if (in_array("evaluado", $rolesSesion)) {
+
+    $sql = $planilla->sql_buscar_por_id_y_evaluado($cedulaSesion);
+    $respuesta = $this->ejecutarConsultaBdds($sql);
+
+    if (empty($respuesta) || empty($respuesta[0])) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Usuario no autorizado para ver esta evaluación'
+        ]);
+        exit;
+    }
+}
+
+// Caso 2: Usuario es SUPERVISOR DEL EVALUADOR
+elseif (in_array("supervisor del evaluador", $rolesSesion)) {
+
+    $sql = $planilla->sql_buscar_por_id_y_supervisor($cedulaSesion);
+    $respuesta = $this->ejecutarConsultaBdds($sql);
+
+    if (empty($respuesta) || empty($respuesta[0])) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Usuario no autorizado para ver esta evaluación'
+        ]);
+        exit;
+    }
+}
+
+// Caso 3: Ningún rol válido
+else {
+    echo json_encode(["success" => false, "message" => "Rol no autorizado"]);
+    exit;
+}
+
+// ======================================================
+// SI PASÓ LA VALIDACIÓN → CARGAR LA PLANILLA COMPLETA
+// ======================================================
+
+$cedula = $planilla->getCedulaUsuario();
+$idEval = $planilla->getIdEvalAdmin();
+
+// 1. Relaciones
+$sqlRel = Planilla_comentarios::sql_relaciones_por_cedula($cedula);
+$relacionesRaw = $this->ejecutarConsultaBdds($sqlRel);
+$relaciones = normalizarRespuesta($relacionesRaw);
+
+// 2. Datos de la evaluación
+$sqlEval = $planilla->sql_buscar();
+$evaluacionRaw = $this->ejecutarConsultaBdds($sqlEval);
+$evaluacion = normalizarRespuesta($evaluacionRaw);
+
+// 3. Objetivos
+$sqlObj = Planilla_comentarios::sql_objetivos_por_cedula($cedula, $idEval);
+$objetivosRaw = $this->ejecutarConsultaBdds($sqlObj);
+$objetivos = isset($objetivosRaw[0]) && is_array($objetivosRaw[0])
+    ? $objetivosRaw[0]
+    : $objetivosRaw;
+
+// 4. Competencias
+$sqlComp = Planilla_comentarios::sql_competencias($idEval);
+$competenciasRaw = $this->ejecutarConsultaBdds($sqlComp);
+$competencias = isset($competenciasRaw[0]) && is_array($competenciasRaw[0])
+    ? $competenciasRaw[0]
+    : $competenciasRaw;
+
+// ======================================================
+// RESPUESTA FINAL
+// ======================================================
+
+echo json_encode([
+    "success" => true,
+    "data" => [
+        "relaciones"  => $relaciones,
+        "evaluacion"  => $evaluacion,
+        "objetivos"   => $objetivos,
+        "competencias"=> $competencias
+    ]
+]);
 exit;

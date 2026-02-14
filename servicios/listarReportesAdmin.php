@@ -4,25 +4,38 @@ header('Content-Type: application/json; charset=utf-8');
 
 include_once "../clases/ReportesPlanillaAdmin.php";
 
+// Validar sesión
 $cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
-$rolUsuario   = $_SESSION['usuario']['rol'] ?? null;
+$rolesSesion  = $_SESSION['usuario']['roles']  ?? null;
 
-if (!$cedulaSesion || !$rolUsuario) {
-    echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
+if (!$cedulaSesion || empty($rolesSesion)) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Usuario no autenticado"
+    ]);
     exit;
 }
 
-// conexion con la clase de reportes de planilla administrativos
+// Instanciar clase con conexión real
 $reporte = new ReportesPlanillaAdmin($this);
 
+// Ejecutar consulta
 $respuesta = $reporte->listarReportesAdmin();
 
-if (empty($respuesta)) { 
-    echo json_encode(["success" => true, "data" => [], "message" => "No hay evaluaciones disponibles para reporte"]); 
-    exit; 
-} 
+// Si no hay evaluaciones disponibles
+if (empty($respuesta)) {
+    echo json_encode([
+        "success" => true,
+        "data"    => [],
+        "message" => "No hay evaluaciones disponibles para reporte"
+    ]);
+    exit;
+}
 
-echo json_encode(["success" => true, "data" => $respuesta]);
+// Respuesta normal
+echo json_encode([
+    "success" => true,
+    "data"    => $respuesta
+]);
 exit;
-
-
+?>

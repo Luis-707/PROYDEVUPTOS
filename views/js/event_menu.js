@@ -196,24 +196,18 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
-        function abrirPlanilla(cedula, idEvalAdmin){ 
-          // Guardamos la cédula seleccionada 
-          console.log("👉 abrirPlanilla() recibió:", cedula);
-          sessionStorage.setItem("cedula_planilla", cedula); 
-          sessionStorage.setItem("id_eval_admin", idEvalAdmin); 
-          // Cargamos la vista de la planilla en el cuerpo 
-          mostrarVista('planilla'); 
-          // Una vez cargada la vista, ejecutamos la carga de datos 
-          setTimeout(async () => { 
+        function abrirPlanilla(cedula, evaluado_id, idEvalAdmin){
+          console.log("👉 abrirPlanilla() recibió:", cedula, evaluado_id, idEvalAdmin);
+          sessionStorage.setItem("evaluado_id", evaluado_id);
+          sessionStorage.setItem("id_eval_admin", idEvalAdmin);
+          sessionStorage.setItem("cedula_planilla", cedula);
+          mostrarVista('planilla');
+      
+          setTimeout(async () => {
               await cargarPlanilla();
-              cargarPeriodoEval(); // carga periodo evaluación
-  
-              // Crea las tablas para objetivos y competencias
+              await cargarPeriodoEval();
               await cargarTablasPlanilla();
-  
-             
-  
-           }, 300); 
+          }, 300);
       }
   
       function abrirPlanillaReadonly(cedula, idEvalAdmin){ 

@@ -1,26 +1,27 @@
 <?php
 include_once "../clases/PlanillaAdministrativos.php";
 
-// Recibir datos
-$dataCliente['_post'] = $_POST;
+header('Content-Type: application/json; charset=utf-8');
 
-// Asegurarse de que existan los campos necesarios
-if (!isset($dataCliente['_post']['id_evaluado']) || !isset($dataCliente['_post']['periodo_evaluado'])) {
-    return 0; // faltan datos
+// Normalizar entrada
+$data = $_POST;
+
+$idEvalAdmin  = isset($data['id_eval_admin']) ? (int)$data['id_eval_admin'] : 0;
+$evaluado_id  = isset($data['evaluado_id']) ? (int)$data['evaluado_id'] : 0;
+$evaluador_id = isset($data['evaluador_id']) ? (int)$data['evaluador_id'] : 0;
+
+// Validación mínima
+if ($idEvalAdmin <= 0 || $evaluado_id <= 0 || $evaluador_id <= 0) {
+    echo json_encode(0);
+    exit;
 }
 
-$evaluacion = new PlanillaAdministrativos($dataCliente['_post']);
-
-// Generar SQL
-$sql = $evaluacion->sql_buscar();
-error_log("SQL generado: " . $sql);
+// SQL
+$sql = PlanillaAdministrativos::sql_buscar_evaluacion($idEvalAdmin, $evaluado_id, $evaluador_id);
 
 // Ejecutar
 $respuesta = $this->ejecutarConsultaBdds($sql);
 
 // Retornar 0 si no existe, 1 si existe
-if (empty($respuesta)) {
-    return 0;
-} else {
-    return 1;
-}
+echo json_encode(!empty($respuesta) ? 1 : 0);
+exit;

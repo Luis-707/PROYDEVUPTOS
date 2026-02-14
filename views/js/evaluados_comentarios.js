@@ -18,8 +18,8 @@
     const tableData = registros.map(item => {
         const cedula = String(item.cedula_usuario).trim();
         const fullname = item.nombre_completo || "No encontrado";
-        const cargoTexto = item.cargo_evaluado || "Sin cargo";
-        const unidadAdmin = item.ubicacion_administrativa || "N/D";
+        const cargoTexto = item.cargo || "Sin cargo";
+        const unidadAdmin = item.unidad || "N/D";
         const periodo = item.periodo_evaluado || "N/D";
         const anioInicio = item.anio_inicio || "N/D";
         

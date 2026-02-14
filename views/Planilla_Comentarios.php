@@ -1,7 +1,4 @@
-<?php
-
-include_once "Sesion.php";
-?>
+<?php include_once "Sesion.php"; ?>
 
 <div class="container mt-4">
   <h3>EVALUACIÓN DEL DESEMPEÑO</h3>
@@ -9,6 +6,7 @@ include_once "Sesion.php";
 
   <!-- Sección A: Datos de identificación -->
   <div class="row mt-5">
+    <!-- Evaluado -->
     <div class="col-md-4">
       <h5>Evaluado</h5>
       <ul class="list-group">
@@ -18,6 +16,8 @@ include_once "Sesion.php";
         <li class="list-group-item"><strong>Unidad:</strong> <span id="evaluado_ubicacion"></span></li>
       </ul>
     </div>
+
+    <!-- Evaluador -->
     <div class="col-md-4">
       <h5>Evaluador</h5>
       <ul class="list-group">
@@ -27,12 +27,15 @@ include_once "Sesion.php";
         <li class="list-group-item"><strong>Unidad:</strong> <span id="evaluador_ubicacion"></span></li>
       </ul>
     </div>
+
+    <!-- Supervisor -->
     <div class="col-md-4">
       <h5>Supervisor</h5>
       <ul class="list-group">
         <li class="list-group-item"><strong>Nombre:</strong> <span id="supervisor_fullname"></span></li>
         <li class="list-group-item"><strong>Cédula:</strong> <span id="supervisor_cedula"></span></li>
         <li class="list-group-item"><strong>Cargo:</strong> <span id="supervisor_cargo"></span></li>
+        <li class="list-group-item"><strong>Unidad:</strong> <span id="supervisor_ubicacion"></span></li>
       </ul>
     </div>
   </div>
@@ -81,48 +84,46 @@ include_once "Sesion.php";
     </div>
   </div>
 
-  <!-- Sección E: Comentarios y Conformidad -->
-  <!-- Formulario SOLO para comentarios -->
+  <!-- Sección E: Comentarios -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h6 class="text-muted d-flex justify-content-between">
+        <span>SECCIÓN "E":</span>
+        <span>COMENTARIOS</span>
+      </h6>
+    </div>
 
-<div class="container mt-4">
-  <h3>EVALUACIÓN DEL DESEMPEÑO</h3>
-  <h5>NIVEL ADMINISTRATIVO</h5>
-  
+    <!-- Formulario Evaluado -->
+    <form id="form_comentario_evaluado" onsubmit="event.preventDefault(); Validar_form_comentario_evaluado(1);">
+      <textarea id="comentario_evaluado" name="comentario_evaluado" class="form-control" rows="4"></textarea>
 
-    <div class="row mt-4">
-      <div class="col-md-12">
-        <h6 class="text-muted d-flex justify-content-between">
-          <span>SECCIÓN "E":</span>
-          <span>COMENTARIOS</span>
-        </h6>
+      <div class="mb-3">
+        <label class="form-label">¿Está de acuerdo con la evaluación?</label>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="conformidad" id="conformidad_si" value="si">
+          <label class="form-check-label" for="conformidad_si">Sí</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="conformidad" id="conformidad_no" value="no">
+          <label class="form-check-label" for="conformidad_no">No</label>
+        </div>
       </div>
 
-      <!-- Formulario Evaluado -->
-<form id="form_comentario_evaluado" onsubmit="event.preventDefault(); Validar_form_comentario_evaluado(1);">
-  <textarea id="comentario_evaluado" name="comentario_evaluado" class="form-control" rows="4"></textarea>
-  <!-- Nuevo apartado de conformidad -->
-  <div class="mb-3">
-    <label class="form-label">¿Está de acuerdo con la evaluación?</label>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="conformidad" id="conformidad_si" value="si">
-      <label class="form-check-label" for="conformidad_si">Sí</label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="conformidad" id="conformidad_no" value="no">
-      <label class="form-check-label" for="conformidad_no">No</label>
-    </div>
+      <input type="hidden" id="id_eval_admin_eval" name="id_eval_admin" value="">
+      <button type="submit" class="btn btn-primary">Guardar Comentario Evaluado</button>
+    </form>
+
+    <!-- Formulario Supervisor -->
+    <form id="form_comentario_supervisor" onsubmit="event.preventDefault(); Validar_form_comentario_supervisor(1);">
+      <textarea id="comentario_supervisor" name="comentario_supervisor" class="form-control" rows="4"></textarea>
+      <input type="hidden" id="id_eval_admin_sup" name="id_eval_admin" value="">
+      <button type="submit" class="btn btn-primary">Guardar Comentario Supervisor</button>
+    </form>
   </div>
-
-  <input type="hidden" id="id_eval_admin_eval" name="id_eval_admin" value="">
-  <button type="submit" class="btn btn-primary">Guardar Comentario Evaluado</button>
-</form>
-
-<!-- Formulario Supervisor -->
-<form id="form_comentario_supervisor" onsubmit="event.preventDefault(); Validar_form_comentario_supervisor(1);">
-  <textarea id="comentario_supervisor" name="comentario_supervisor" class="form-control" rows="4"></textarea>
-  <input type="hidden" id="id_eval_admin_sup" name="id_eval_admin" value="">
-  <button type="submit" class="btn btn-primary">Guardar Comentario Supervisor</button>
-</form>
 </div>
 
+
+
 <script src="views/js/planilla_comentarios.js"></script>
+
+

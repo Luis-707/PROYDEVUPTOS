@@ -1,7 +1,20 @@
 // =============================
+// Obtener roles desde la nueva sesión
+// =============================
+function obtenerRolesSesion() {
+  const rolesGuardados = sessionStorage.getItem("roles");
+  if (!rolesGuardados) return [];
+  try {
+    return JSON.parse(rolesGuardados);
+  } catch (e) {
+    console.error("Error parseando roles de sesión:", e);
+    return [];
+  }
+}
+
+// =============================
 // Cargar planilla en modo solo lectura
 // =============================
-
 async function cargarPlanillaReadonly() {
   const cedula = sessionStorage.getItem("cedula_planilla");
   if (!cedula) {
@@ -11,23 +24,22 @@ async function cargarPlanillaReadonly() {
 
   const idEvalAdmin = sessionStorage.getItem("id_eval_admin");
 
-  // Llamar al servicio readonly
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
   formData.append("id_eval_admin", idEvalAdmin || "");
-  const resp = await microApi('controlador/?planilla_comentarios', formData);
+
+  const resp = await microApi("controlador/?planilla_comentarios", formData);
 
   if (!resp?.success) {
     alert(resp?.message || "Error cargando planilla readonly");
     return;
   }
 
-  // Debug: ver qué llega del backend
   console.log("DEBUG evaluacion:", resp.data.evaluacion);
   console.log("DEBUG objetivos:", resp.data.objetivos);
   console.log("DEBUG competencias:", resp.data.competencias);
+  console.log("DEBUG relaciones:", resp.data.relaciones);
 
-  // Renderizar solo con los datos de la respuesta
   renderizarPlanillaReadonly(resp.data);
 }
 
@@ -35,28 +47,60 @@ async function cargarPlanillaReadonly() {
 // Renderizar datos en la interfaz
 // =============================
 function renderizarPlanillaReadonly(data) {
-  const relaciones = data.relaciones;
-  const evalData = data.evaluacion;
+  const r = data.relaciones;
+  const e = data.evaluacion;
 
+  // =============================
   // Evaluado
-  document.getElementById("evaluado_fullname").textContent = relaciones.nombre_completo_evaluado || "N/D";
-  document.getElementById("evaluado_cedula").textContent = relaciones.cedula_usuario || "N/D";
-  document.getElementById("evaluado_cargo").textContent = relaciones.cargo_evaluado || "Sin cargo";
-  document.getElementById("evaluado_ubicacion").textContent = relaciones.ubicacion_evaluado || "N/D";
+  // =============================
+  document.getElementById("evaluado_fullname").textContent =
+    r.nombre_evaluado || "N/D";
 
+  document.getElementById("evaluado_cedula").textContent =
+    r.cedula_evaluado || "N/D";
+
+  document.getElementById("evaluado_cargo").textContent =
+    r.cargo_evaluado || "Sin cargo";
+
+  document.getElementById("evaluado_ubicacion").textContent =
+    r.unidad_evaluado || "N/D";
+
+  // =============================
   // Evaluador
-  document.getElementById("evaluador_fullname").textContent = relaciones.nombre_completo_evaluador || "N/D";
-  document.getElementById("evaluador_cedula").textContent = relaciones.cedula_evaluador || "N/D";
-  document.getElementById("evaluador_cargo").textContent = relaciones.cargo_evaluador || "Sin cargo";
-  document.getElementById("evaluador_ubicacion").textContent = relaciones.ubicacion_evaluador || "N/D";
+  // =============================
+  document.getElementById("evaluador_fullname").textContent =
+    r.nombre_evaluador || "N/D";
 
+  document.getElementById("evaluador_cedula").textContent =
+    r.cedula_evaluador || "N/D";
+
+  document.getElementById("evaluador_cargo").textContent =
+    r.cargo_evaluador || "Sin cargo";
+
+  document.getElementById("evaluador_ubicacion").textContent =
+    r.unidad_evaluador || "N/D";
+
+  // =============================
   // Supervisor
-  document.getElementById("supervisor_fullname").textContent = relaciones.nombre_completo_supervisor || "N/D";
-  document.getElementById("supervisor_cedula").textContent = relaciones.cedula_supervisor || "N/D";
-  document.getElementById("supervisor_cargo").textContent = relaciones.cargo_supervisor || "Sin cargo";
+  // =============================
+  document.getElementById("supervisor_fullname").textContent =
+    r.nombre_supervisor || "N/D";
+
+  document.getElementById("supervisor_cedula").textContent =
+    r.cedula_supervisor || "N/D";
+
+  document.getElementById("supervisor_cargo").textContent =
+    r.cargo_supervisor || "Sin cargo";
+
+  document.getElementById("supervisor_ubicacion").textContent =
+    r.unidad_supervisor || "N/D";
+
+  // =============================
   // Objetivos
+  // =============================
   const tbodyObj = document.querySelector("#tabla-objetivos-readonly tbody");
   tbodyObj.innerHTML = "";
+
   data.objetivos.forEach(o => {
     tbodyObj.innerHTML += `
       <tr>
@@ -67,9 +111,12 @@ function renderizarPlanillaReadonly(data) {
       </tr>`;
   });
 
+  // =============================
   // Competencias
+  // =============================
   const tbodyComp = document.querySelector("#tabla-competencias-readonly tbody");
   tbodyComp.innerHTML = "";
+
   data.competencias.forEach(c => {
     tbodyComp.innerHTML += `
       <tr>
@@ -80,55 +127,70 @@ function renderizarPlanillaReadonly(data) {
       </tr>`;
   });
 
+  // =============================
   // Resultado final
-  document.getElementById("puntaje-total").textContent = evalData.puntaje_final || 0;
-  document.getElementById("rango-actuacion").textContent = evalData.rango_actuacion || "N/D";
+  // =============================
+  document.getElementById("puntaje-total").textContent =
+    e.puntaje_final || 0;
 
-  // Comentarios y conformidad
-  document.getElementById("comentario_supervisor").value = evalData.comentario_supervisor || "";
-  document.getElementById("comentario_evaluado").value = evalData.comentario_evaluado || "";
+  document.getElementById("rango-actuacion").textContent =
+    e.rango_actuacion || "N/D";
 
-  // Setear id_eval_admin en ambos formularios
-  if (evalData.id_eval_admin) {
-    document.getElementById("id_eval_admin_eval").value = evalData.id_eval_admin;
-    document.getElementById("id_eval_admin_sup").value = evalData.id_eval_admin;
-    console.log("DEBUG id_eval_admin seteado:", evalData.id_eval_admin);
-  } else {
-    console.warn("⚠️ No llegó id_eval_admin desde backend");
+  // =============================
+  // Comentarios
+  // =============================
+  document.getElementById("comentario_supervisor").value =
+    e.comentario_supervisor || "";
+
+  document.getElementById("comentario_evaluado").value =
+    e.comentario_evaluado || "";
+
+  // =============================
+  // Setear id_eval_admin
+  // =============================
+  if (e.id_eval_admin) {
+    document.getElementById("id_eval_admin_eval").value = e.id_eval_admin;
+    document.getElementById("id_eval_admin_sup").value = e.id_eval_admin;
   }
 
-  // Setear conformidad si viene del backend
-  if (evalData.conformidad) {
-    if (evalData.conformidad.toLowerCase() === "si") {
-      document.getElementById("conformidad_si").checked = true;
-    } else if (evalData.conformidad.toLowerCase() === "no") {
-      document.getElementById("conformidad_no").checked = true;
-    }
+  // =============================
+  // Conformidad
+  // =============================
+  if (e.conformidad) {
+    const conf = e.conformidad.toLowerCase();
+    if (conf === "si") document.getElementById("conformidad_si").checked = true;
+    if (conf === "no") document.getElementById("conformidad_no").checked = true;
   }
 
-  // Habilitar según rol
+  // =============================
+  // Permisos según rol
+  // =============================
   habilitarCamposPorRol();
 }
-
 
 // =============================
 // Permisos por rol
 // =============================
 function habilitarCamposPorRol() {
-  const rol = (window.rolUsuario || "").trim().toLowerCase();
+  const rolesSesion = obtenerRolesSesion(); // viene de sessionStorage "roles"
 
   // Ocultar ambos formularios por defecto
-  document.getElementById("form_comentario_evaluado").style.display = "none";
+  document.getElementById("form_comentario_evaluado").style.display   = "none";
   document.getElementById("form_comentario_supervisor").style.display = "none";
 
-  if (rol === "evaluado") {
+  // Si el usuario es EVALUADO
+  if (rolesSesion.includes("evaluado")) {
     document.getElementById("form_comentario_evaluado").style.display = "block";
     document.getElementById("comentario_evaluado").removeAttribute("readonly");
-  } else if (rol === "supervisor del evaluador") {
+  }
+
+  // Si el usuario es SUPERVISOR DEL EVALUADOR
+  if (rolesSesion.includes("supervisor del evaluador")) {
     document.getElementById("form_comentario_supervisor").style.display = "block";
     document.getElementById("comentario_supervisor").removeAttribute("readonly");
   }
 }
+
 // =============================
 // Inicialización
 // =============================

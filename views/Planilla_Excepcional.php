@@ -1,5 +1,5 @@
 <?php
-session_start();
+include_once '../servicios/Sesion.php';
 ?>
 
 <style>
@@ -71,13 +71,13 @@ session_start();
         </ul>
       </div>
 
-      <!-- Hidden inputs para envío -->
+      <!-- Hidden inputs -->
       <input type="hidden" id="ex_id_eval_admin" name="id_eval_admin">
       <input type="hidden" id="ex_periodo" name="periodo">
-      <input type="hidden" id="ex_fecha" name="fecha"> <!-- se setea en el JS -->
+      <input type="hidden" id="ex_fecha" name="fecha">
     </div>
 
-    <!-- Sección B: Exposición de Motivos / Asignación de Rango excepcional -->
+    <!-- Sección B: Indicadores -->
     <div class="row mt-4">
       <div class="col-md-12">
         <h6 class="text-muted d-flex justify-content-between">
@@ -89,15 +89,7 @@ session_start();
         </p>
       </div>
 
-      <!-- Indicadores (se cargan/nombran desde JS; textarea debajo de cada indicador) -->
-      <div class="col-md-12" id="contenedor-indicadores">
-        <!-- Ejemplo de estructura (se genera dinámicamente):
-        <div class="indicador-card" data-indicador-id="...">
-          <div class="indicador-title">Nombre del indicador</div>
-          <textarea class="form-control motivo-textarea" rows="4" placeholder="Describa el motivo..."></textarea>
-        </div>
-        -->
-      </div>
+      <div class="col-md-12" id="contenedor-indicadores"></div>
     </div>
 
     <!-- Botón Guardar -->
@@ -113,3 +105,4 @@ session_start();
 </div>
 
 <script src="views/js/planilla_excepcional.js"></script>
+
