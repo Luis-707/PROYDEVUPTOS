@@ -1,82 +1,92 @@
 <?php
+
 class EvaluacionObreros {
+
     private $conexion;
+
     private $id_eval_obreros = 0;
-    private $id_evaluado = 0;
+    private $evaluado_id = 0;     // ← CORRECTO   // ← CORRECTO
     private $rango_id = 0;
     private $tiempo_puesto = 0;
-    private $id_usuario = 0;
     private $puntaje_total = 0;
+    private $conformidad = 0;
+    private $comentario_evaluado = '';
+    private $comentario_supervisor = '';
 
-    // Campos que existen en la tabla pero NO se usan en esta etapa
-    private $conformidad = "";
-    private $comentario_evaluado = "";
-    private $comentario_supervisor = "";
+    public function __construct($data = array(), $conexion = NULL) {
 
-    public function __construct($data = array(''), $conexion = NULL) {
-
-        if (isset($data['id_eval_obreros'])) 
+        if (isset($data['id_eval_obreros']))
             $this->id_eval_obreros = (int)$data['id_eval_obreros'];
 
-        if (isset($data['id_evaluado'])) 
-            $this->id_evaluado = (int)$data['id_evaluado'];
+        if (isset($data['evaluado_id']))
+            $this->evaluado_id = (int)$data['evaluado_id'];
 
-        if (isset($data['rango_id'])) 
+        if (isset($data['rango_id']))
             $this->rango_id = (int)$data['rango_id'];
 
-        if (isset($data['tiempo_puesto'])) 
+        if (isset($data['tiempo_puesto']))
             $this->tiempo_puesto = (int)$data['tiempo_puesto'];
 
-        if (isset($data['id_usuario'])) 
-            $this->id_usuario = (int)$data['id_usuario'];
-
-        if (isset($data['puntaje_total'])) 
+        if (isset($data['puntaje_total']))
             $this->puntaje_total = (int)$data['puntaje_total'];
 
-        if ($conexion != NULL) 
+        if (isset($data['conformidad']))
+            $this->conformidad = (int)$data['conformidad'];
+
+        if (isset($data['comentario_evaluado']))
+            $this->comentario_evaluado = trim($data['comentario_evaluado']);
+
+        if (isset($data['comentario_supervisor']))
+            $this->comentario_supervisor = trim($data['comentario_supervisor']);
+
+        if ($conexion !== NULL)
             $this->conexion = $conexion;
     }
 
-    public function setIdEvalOb(int $id): void {
-        $this->id_eval_obreros = $id;
-    }
-
-
     // ============================================================
-    // 1) CONSULTA PARA PLANILLA OBREROS
+    // 1) CONSULTA REAL PARA PLANILLA OBREROS
     // ============================================================
-    public static function sql_datos_planilla(string $cedula): string {
+    public static function sql_datos_planilla(string $cedula, int $idEval): string {
         return sprintf("
-            SELECT 
-                eo.id_eval_obreros,
-                e.id_evaluado,
-                u.cedula_usuario,
-                u.nombre_completo,
-                c.cargo_evaluado,
-                ao.nombre_ao AS area_ocupacional,
-                uf.nombre_uf AS ubicacion_fisica,
-                u.ubicacion_administrativa,
-                ev.id_usuario AS id_usuario_evaluador,
-                uev.nombre_completo AS nombre_completo_evaluador,
-                cev.cargo_evaluador,
-                uev.ubicacion_administrativa AS ubicacion_evaluador,
-                eo.periodo_evaluacion
-            FROM evaluados e
-            JOIN usuarios u ON e.id_usuario = u.id_usuario
-            JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
-            JOIN evaluacion_obreros eo ON eo.id_evaluado = e.id_evaluado
-            LEFT JOIN area_ocupacional ao ON e.id_ao = ao.id_ao
-            LEFT JOIN ubicacion_fisica uf ON e.id_uf = uf.id_uf
-            JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
-            JOIN usuarios uev ON ev.id_usuario = uev.id_usuario
-            JOIN cargos_evaluadores cev ON ev.id_cargo_evaluador = cev.id_cargo_evaluador
-            WHERE u.cedula_usuario = '%s'
-            LIMIT 1;
-        ", addslashes($cedula));
+           SELECT     
+                ev.nombre_completo AS nombre_completo_evaluador,
+                ev.cedula_usuario AS cedula_evaluador,
+                ev_cargo.nombre_cargo AS cargo_evaluador,
+                ev.ubicacion_administrativa AS ubicacion_evaluador,
+                
+                ed.nombre_completo AS nombre_completo,
+                ed.cedula_usuario AS cedula_usuario,
+                ed_cargo.nombre_cargo AS cargo_evaluado,
+                ed_org.nombre AS area_ocupacional,
+                ed.ubicacion_administrativa AS ubicacion_administrativa,
+                uf.nombre_ubicacion AS ubicacion_fisica,
+                ed.fecha_ingreso,
+
+                e.id_eval_obreros,
+                e.evaluado_id,
+                e.periodo_evaluacion,
+                e.fecha_inicio,
+                e.fecha_cierre
+
+            FROM evaluacion_obreros e
+
+            JOIN usuarios ev ON e.evaluador_id = ev.id_usuario
+            JOIN cargos ev_cargo ON ev.id_cargo = ev_cargo.id_cargo
+            
+            JOIN usuarios ed ON e.evaluado_id = ed.id_usuario
+            JOIN ubicacion_fisica uf ON ed.id_uf = uf.id_uf
+            JOIN cargos ed_cargo ON ed.id_cargo = ed_cargo.id_cargo
+            JOIN organizaciones ed_org ON ed_cargo.id_org = ed_org.id_org
+
+            WHERE e.id_eval_obreros = %d
+              AND ed.cedula_usuario = '%s'
+
+            LIMIT 1
+        ", $idEval, addslashes($cedula));
     }
 
     // ============================================================
-    // 2) ACTUALIZAR EVALUACIÓN (VERSIÓN FINAL)
+    // 2) ACTUALIZAR EVALUACIÓN (UPDATE REAL)
     // ============================================================
     public function sql_guardar_evaluacion(): string {
         return sprintf(
@@ -84,17 +94,17 @@ class EvaluacionObreros {
              SET rango_id = %d,
                  puntaje_total = %d,
                  tiempo_puesto = %d
-             WHERE id_evaluado = %d
+             WHERE evaluado_id = %d
              RETURNING id_eval_obreros;",
             $this->rango_id,
             $this->puntaje_total,
             $this->tiempo_puesto,
-            $this->id_evaluado
+            $this->evaluado_id
         );
     }
 
     // ============================================================
-    // 3) GUARDAR DETALLE DE CRITERIOS (VERSIÓN FINAL)
+    // 3) GUARDAR DETALLE DE CRITERIOS
     // ============================================================
     public static function sql_guardar_detalle(int $idEval, array $c): string {
         return sprintf(
@@ -106,6 +116,8 @@ class EvaluacionObreros {
             (int)$c['puntaje_obtenido']
         );
     }
+
+
 
     // ============================================================
     // 4) LISTAR EVALUACIONES

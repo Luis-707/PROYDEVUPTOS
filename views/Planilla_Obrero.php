@@ -1,36 +1,16 @@
 <style>
-        .section-title {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-        .factor-title {
-            background-color: #e9ecef;
-            font-weight: 600;
-        }
-        .small-text {
-            font-size: .85rem;
-        }
-        .factor-weight {
-            width: 90px;
-            text-align: center;
-            white-space: nowrap;
-        }
-        .col-puntaje {
-            width: 90px;
-            text-align: center;
-        }
-        .table-eval th, .table-eval td {
-            vertical-align: middle;
-        }
-        .badge-eval {
-            font-size: 0.9rem;
-        }
-        .factor-incompleto {
+    .section-title { background-color: #f8f9fa; font-weight: 600; }
+    .factor-title { background-color: #e9ecef; font-weight: 600; }
+    .small-text { font-size: .85rem; }
+    .factor-weight { width: 90px; text-align: center; white-space: nowrap; }
+    .col-puntaje { width: 90px; text-align: center; }
+    .table-eval th, .table-eval td { vertical-align: middle; }
+    .badge-eval { font-size: 0.9rem; }
+    .factor-incompleto {
         background-color: #ffe5e5 !important;
         border-left: 4px solid #dc3545 !important;
     }
-    </style>
-
+</style>
 
 <div class="container my-4">
     <form id="formulario_planilla_obrero" onsubmit="event.preventDefault(); validar_form_evaluacion_obrero(1);">
@@ -40,13 +20,11 @@
                 <p class="mb-0 small-text">Instrumento de Evaluación de Desempeño Laboral - Nivel Obrero</p>
             </div>
 
-            <!--Campos ocultos -->
-
-            <input type="hidden" id="id_evaluado" name="id_evaluado">
-<input type="hidden" id="id_usuario" name="id_usuario">
-<input type="hidden" id="rango_id" name="rango_id">
-<input type="hidden" id="id_eval_obreros" name="id_eval_obreros">
-
+            <!-- Campos ocultos -->
+            <input type="hidden" id="evaluado_id" name="evaluado_id">
+            <input type="hidden" id="rango_id" name="rango_id">
+            <input type="hidden" id="id_eval_obreros" name="id_eval_obreros">
+            <input type="hidden" id="tiempo_puesto" name="tiempo_puesto">
 
             <div class="card-body">
 
@@ -82,7 +60,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0">Años en el puesto</label>
-                        <input type="text" class="form-control" name="tiempo_puesto" id="tiempo_puesto" readonly>
+                        <input type="text" class="form-control" id="tiempo_puesto_visible" readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label mb-0">Ubicación administrativa</label>

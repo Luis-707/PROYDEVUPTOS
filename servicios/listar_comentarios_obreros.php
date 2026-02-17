@@ -1,32 +1,62 @@
 <?php
 session_start();
-include_once '../clases/Listados.php';
+include_once "../clases/Listados.php";
 
-$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
-$rolUsuario   = $_SESSION['usuario']['rol'] ?? null;
+header('Content-Type: application/json; charset=utf-8');
 
-if (!$cedulaSesion || !$rolUsuario) {
-    echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
+// =============================
+// Validación de sesión
+// =============================
+$idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
+$cedulaSesion    = $_SESSION['usuario']['cedula'] ?? null;
+$rolesSesion     = $_SESSION['usuario']['roles'] ?? [];
+
+if (!$idUsuarioSesion || !$cedulaSesion || empty($rolesSesion)) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Usuario no autenticado"
+    ]);
     exit;
 }
 
-$Lista = new Listados($this);
+$Listados = new Listados($this);
 
-// Seleccionar SQL según rol
-switch ($rolUsuario) {
+// =============================
+// Selección de consulta según rol
+// =============================
 
-    case 'evaluado':
-        $sql = Listados::sql_listar_comentarios_obrero_evaluado($cedulaSesion);
-        break;
-    
-    case 'supervisor del evaluador':
-        $sql = Listados::sql_listar_comentarios_obrero_supervisor($cedulaSesion);
-        break;
-   
-    default:
-        echo json_encode(["success" => false, "message" => "Rol no autorizado"]);
-        exit;
+// 1) Si es evaluado → listar sus propias evaluaciones obreras finalizadas
+if (in_array("evaluado", $rolesSesion)) {
+    $sql = Listados::sql_listar_comentarios_obrero_por_evaluado($cedulaSesion);
 }
 
-$respuesta = $Lista->listarComentariosEvaluadosObreros($sql);
-return $respuesta;
+// 2) Si es supervisor del evaluador → listar evaluaciones de sus subordinados
+elseif (in_array("supervisor del evaluador", $rolesSesion)) {
+    $sql = Listados::sql_listar_comentarios_obrero_por_supervisor((int)$idUsuarioSesion);
+}
+
+// 3) Cualquier otro rol → no autorizado
+else {
+    echo json_encode([
+        "success" => false,
+        "message" => "Rol no autorizado para ver comentarios obreros"
+    ]);
+    exit;
+}
+
+// =============================
+// Ejecutar consulta
+// =============================
+$resp = $Listados->listarComentariosEvaluadosObreros($sql);
+
+// La clase Listados devuelve un arreglo con índice 0
+$rows = $resp[0] ?? [];
+
+// =============================
+// Respuesta final
+// =============================
+echo json_encode([
+    "success" => true,
+    "data"    => $rows
+]);
+exit;

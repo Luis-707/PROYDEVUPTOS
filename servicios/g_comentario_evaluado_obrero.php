@@ -2,41 +2,54 @@
 session_start();
 include_once "../clases/Planilla_comentarios_obreros.php";
 
-$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
-if (!$cedulaSesion) {
+header('Content-Type: application/json; charset=utf-8');
+
+$idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
+$rolesSesion     = $_SESSION['usuario']['roles'] ?? [];
+
+if (!$idUsuarioSesion || empty($rolesSesion)) {
     echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
     exit;
 }
 
-$data = $dataCliente['_post'] ?? $_POST ?? [];
-$planilla = new Planilla_comentarios_obreros($data, $this);
+if (!in_array("evaluado", $rolesSesion)) {
+    echo json_encode(["success" => false, "message" => "No tiene permiso para comentar como evaluado"]);
+    exit;
+}
 
-// 1. Validar propiedad de la evaluación
-$sql = $planilla->sql_buscar_por_id_y_evaluado_obrero($cedulaSesion);
-$res = $this->ejecutarConsultaBdds($sql);
+$data = $_POST ?? [];
+$planilla = new Planilla_comentarios_obreros($data, $this->conexion);
 
-if (empty($res) || empty($res[0])) {
+// ============================================================
+// 1. Validar permiso real
+// ============================================================
+$sqlPermiso = $planilla->sql_buscar_por_id_y_evaluado($_SESSION['usuario']['cedula']);
+$permiso = $this->ejecutarConsultaBdds($sqlPermiso);
+
+if (empty($permiso) || empty($permiso[0])) {
     echo json_encode([
         "success" => false,
-        "message" => "Usuario no autorizado para actualizar este comentario"
+        "message" => "No está autorizado para comentar esta evaluación"
     ]);
     exit;
 }
 
-// 2. Ejecutar UPDATE
-$sql = $planilla->sql_update_comentario_evaluado_obrero();
-$update = $this->ejecutarConsultaBdds($sql);
+// ============================================================
+// 2. Ejecutar UPDATE usando el método de la clase
+// ============================================================
+$sqlUpdate = $planilla->sql_update_comentario_evaluado();
+$update = $this->ejecutarConsultaBdds($sqlUpdate);
 
 if (empty($update) || empty($update[0])) {
     echo json_encode([
         "success" => false,
-        "message" => "No se actualizó ningún registro"
+        "message" => "No se pudo guardar el comentario"
     ]);
     exit;
 }
 
 echo json_encode([
     "success" => true,
-    "message" => "Comentario del evaluado actualizado correctamente"
+    "message" => "Comentario del evaluado guardado correctamente"
 ]);
 exit;

@@ -29,36 +29,21 @@ function formatearFecha(fechaStr) {
 }
 
 // =============================
-// Obtener fecha de ingreso desde JSON (async)
+// Calcular tiempo en el puesto (AÑOS) desde fecha_ingreso BD
 // =============================
-async function obtenerFechaIngresoPorCedula(cedula) {
-    try {
-        const resp = await microApi('views/js/datos_empleado.json');
+function calcularTiempoPuestoDesdeBD(fechaIngresoStr) {
+    if (!fechaIngresoStr) return "";
 
-        if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
-            console.error("JSON con formato inesperado");
-            return "";
-        }
+    const ingreso = new Date(fechaIngresoStr);
+    const hoy = new Date();
 
-        const datos = resp[0].data;
-        const cedulaBusqueda = cedula.toLowerCase();
+    if (isNaN(ingreso.getTime())) return "";
 
-        const empleado = datos.find(emp =>
-            emp.pin && emp.pin.toLowerCase() === cedulaBusqueda
-        );
+    const diffMs = hoy - ingreso;
+    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const años = Math.floor(diffDias / 365);
 
-        if (!empleado || !empleado.create) {
-            console.warn("Empleado no encontrado o sin fecha 'create'");
-            return "";
-        }
-
-        const soloFecha = empleado.create.split(" ")[0];
-        return formatearFecha(soloFecha);
-
-    } catch (error) {
-        console.error("Error obteniendo fecha de ingreso:", error);
-        return "";
-    }
+    return `${años}`;
 }
 
 // =============================
@@ -75,7 +60,7 @@ function validar_form_evaluacion_obrero(opc) {
     }
 
     switch (key) {
-      case 'puntaje_final':
+      case 'puntaje_total':
         if (!validarnumero(valor)) {
           alert("El puntaje final solo debe contener números");
           isValid = false;
@@ -86,10 +71,6 @@ function validar_form_evaluacion_obrero(opc) {
           alert("Opción de rango inválida.");
           isValid = false;
         }
-        break;
-      case 'fecha_inicio':
-      case 'fecha_cierre':
-      case 'periodo_evaluacion':
         break;
       default:
         console.log(`Campo ${key} no requiere validación específica.`);
@@ -114,18 +95,13 @@ async function cargarPlanillaObrero() {
   const cedula = sessionStorage.getItem("cedula_planilla_obrero");
   const idEvalOb = sessionStorage.getItem("id_eval_obreros");
 
+ 
+
   if (!cedula) {
       alert("No se seleccionó evaluado");
       return;
   }
 
-  console.log("👉 Enviando al servicio :", {
-    cedula_usuario: cedula
-  });
-
-  // ============================
-  // 1. Consultar datos de la planilla
-  // ============================
   const formData = new FormData();
   formData.append("cedula_usuario", cedula);
   formData.append("id_eval_obreros", idEvalOb);
@@ -140,108 +116,40 @@ async function cargarPlanillaObrero() {
   const r = resp.data;
 
   // ============================
-  // 2. Obtener fecha de ingreso (async)
+  // Calcular tiempo en el puesto desde fecha_ingreso BD
   // ============================
-  r.fecha_ingreso = await obtenerFechaIngresoPorCedula(r.cedula_usuario);
+  r.tiempo_puesto = calcularTiempoPuestoDesdeBD(r.fecha_ingreso);
 
   // ============================
-  // 3. Calcular tiempo en el puesto
-  // ============================
-  r.tiempo_puesto = await calcularTiempoPuestoPorCedula(r.cedula_usuario);
-
-  console.log("📌 JSON recibido (con tiempo_puesto y fecha_ingreso):", r);
-
-  // ============================
-  // 4. Llenar campos visibles
+  // Llenar campos visibles
   // ============================
   document.getElementById("evaluado_nombre").value = r.nombre_completo || "N/D";
   document.getElementById("evaluado_ci").value = r.cedula_usuario || "N/D";
   document.getElementById("evaluado_cargo").value = r.cargo_evaluado || "Sin cargo";
 
-  // 👉 FECHA DE INGRESO FORMATEADA
-  document.getElementById("fecha_ingreso").value = r.fecha_ingreso;
+  // FECHA DE INGRESO FORMATEADA
+  document.getElementById("fecha_ingreso").value = formatearFecha(r.fecha_ingreso);
 
+  document.getElementById("tiempo_puesto_visible").value = r.tiempo_puesto;
   document.getElementById("tiempo_puesto").value = r.tiempo_puesto;
+
   document.getElementById("ubicacion_admin").value = r.ubicacion_administrativa || "N/D";
   document.getElementById("ubicacion_fisica").value = r.ubicacion_fisica || "N/D";
   document.getElementById("periodo").value = r.periodo_evaluacion || "N/D";
   document.getElementById("area_ocupacional").value = r.area_ocupacional || "N/D";
 
   // ============================
-  // 5. Datos del evaluador
+  // Datos del evaluador
   // ============================
   document.getElementById("evaluador_nombre").value = r.nombre_completo_evaluador || "N/D";
   document.getElementById("evaluador_cargo").value = r.cargo_evaluador || "Sin cargo";
   document.getElementById("evaluador_ubicacion").value = r.ubicacion_evaluador || "N/D";
 
   // ============================
-  // 6. Campos ocultos
+  // Campos ocultos
   // ============================
-  document.getElementById("id_evaluado").value = r.id_evaluado;
-  document.getElementById("id_usuario").value = r.id_usuario_evaluador;
+  document.getElementById("evaluado_id").value = r.evaluado_id;
   document.getElementById("id_eval_obreros").value = r.id_eval_obreros;
-
-  console.log("📥 Campos ocultos cargados:", {
-      id_evaluado: r.id_evaluado,
-      id_usuario: r.id_usuario_evaluador,
-      id_eval_obreros: r.id_eval_obreros
-  });
-}
-
-// =============================
-// Resetear formulario
-// =============================
-function valorFormEvaluacionObrero(evaluado='', evaluador='', RangoCalificacion='', puntajeObrero='', periodo_evaluacion='',tiempo_puesto='') {
-  document.getElementById('id_evaluado_obrero').value = evaluado;
-  document.getElementById('id_usuario_evaluador').value = evaluador;
-  document.getElementById('periodo-evaluacion').value = periodo_evaluacion;
-  document.getElementById('rango_id').value = RangoCalificacion;
-  document.getElementById('puntaje_final').value = puntajeObrero;
-  document.getElementById('tiempo_puesto').value = tiempo_puesto;
-}
-
-// =============================
-// Calcular tiempo en el puesto usando JSON "create"
-// =============================
-async function calcularTiempoPuestoPorCedula(cedula) {
-  try {
-    const resp = await microApi('views/js/datos_empleado.json');
-
-    if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
-      console.error("JSON con formato inesperado");
-      return "";
-    }
-
-    const datos = resp[0].data;
-    const cedulaBusqueda = cedula.toLowerCase();
-
-    const empleado = datos.find(emp => emp.pin && emp.pin.toLowerCase() === cedulaBusqueda);
-
-    if (!empleado || !empleado.create) {
-      console.warn("Empleado no encontrado o sin fecha 'create'");
-      return "";
-    }
-
-    const fechaStr = empleado.create.split(" ")[0];
-    const ingreso = new Date(fechaStr);
-    const hoy = new Date();
-
-    if (isNaN(ingreso.getTime())) {
-      console.warn("Fecha inválida en JSON");
-      return "";
-    }
-
-    const diffMs = hoy - ingreso;
-    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    const años = Math.floor(diffDias / 365);
-
-    return `${años}`;
-
-  } catch (error) {
-    console.error("Error calculando tiempo en el puesto:", error);
-    return "";
-  }
 }
 
 // =============================

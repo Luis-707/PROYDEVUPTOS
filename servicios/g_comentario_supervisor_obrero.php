@@ -2,42 +2,54 @@
 session_start();
 include_once "../clases/Planilla_comentarios_obreros.php";
 
-$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
-if (!$cedulaSesion) {
+header('Content-Type: application/json; charset=utf-8');
+
+$idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
+$rolesSesion     = $_SESSION['usuario']['roles'] ?? [];
+
+if (!$idUsuarioSesion || empty($rolesSesion)) {
     echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
     exit;
 }
 
-$data = $dataCliente['_post'] ?? $_POST ?? [];
-$planilla = new Planilla_comentarios_obreros($data);
+if (!in_array("supervisor del evaluador", $rolesSesion)) {
+    echo json_encode(["success" => false, "message" => "No tiene permiso para comentar como supervisor"]);
+    exit;
+}
 
-// 1. Validar que la evaluación corresponda al evaluado en sesión
-$sql = $planilla->sql_buscar_por_id_y_supervisor_obrero($cedulaSesion);
-$respuesta = $this->ejecutarConsultaBdds($sql);
+$data = $_POST ?? [];
+$planilla = new Planilla_comentarios_obreros($data, $this->conexion);
 
-if (empty($respuesta) || empty($respuesta[0])) {
+// ============================================================
+// 1. Validar permiso real
+// ============================================================
+$sqlPermiso = $planilla->sql_buscar_por_id_y_supervisor($_SESSION['usuario']['cedula']);
+$permiso = $this->ejecutarConsultaBdds($sqlPermiso);
+
+if (empty($permiso) || empty($permiso[0])) {
     echo json_encode([
-        'success' => false,
-        'message' => 'Usuario no autorizado para actualizar este comentario'
+        "success" => false,
+        "message" => "No está autorizado para comentar esta evaluación"
     ]);
     exit;
 }
 
-// 2. Ejecutar update
-$sql = $planilla->sql_update_comentario_supervisor_obrero();
-$resUpdate = $this->ejecutarConsultaBdds($sql);
+// ============================================================
+// 2. Ejecutar UPDATE usando el método de la clase
+// ============================================================
+$sqlUpdate = $planilla->sql_update_comentario_supervisor();
+$update = $this->ejecutarConsultaBdds($sqlUpdate);
 
-// 3. Verificar filas afectadas
-if (empty($resUpdate) || empty($resUpdate[0])) {
+if (empty($update) || empty($update[0])) {
     echo json_encode([
-        'success' => false,
-        'message' => 'No se actualizó ningún registro'
+        "success" => false,
+        "message" => "No se pudo guardar el comentario"
     ]);
     exit;
 }
 
 echo json_encode([
-    'success' => true,
-    'message' => 'Comentario del supervisor actualizado correctamente'
+    "success" => true,
+    "message" => "Comentario del supervisor guardado correctamente"
 ]);
 exit;

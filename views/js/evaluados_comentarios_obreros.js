@@ -3,25 +3,25 @@
 // =============================
 async function listarEvaluadosComentariosObreros() {
 
-    // 1) Obtener datos desde el backend
-    const datos = await obtenerDatosPersonalesComentariosObreros();
-    if (!datos) return;
+    const resp = await obtenerDatosPersonalesComentariosObreros();
 
-    // 2) Reiniciar DataTable si existe
+    if (!resp || resp.success !== true) {
+        console.error("Error en respuesta:", resp);
+        return;
+    }
+
+    const registros = Array.isArray(resp.data) ? resp.data : [];
+
     if ($.fn.DataTable.isDataTable('#tabla-evaluadosComentariosObreros')) {
         $('#tabla-evaluadosComentariosObreros').DataTable().destroy();
     }
-
     $('#tabla-evaluadosComentariosObreros tbody').empty();
 
-    // 3) Normalizar registros
-    const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-
     const tableData = registros.map(item => {
-        const cedula = String(item.cedula_usuario).trim();
-        const fullname = item.nombre_completo || "No encontrado";
-        const cargo = item.cargo_evaluado || "Sin cargo";
-        const anio = item.anio_inicio || "N/D";
+        const cedula  = item.cedula_usuario || "N/D";
+        const nombre  = item.nombre_completo || "N/D";
+        const cargo   = item.cargo || "N/D";
+        const anio    = item.anio_inicio || "N/D";
         const periodo = item.periodo_evaluacion || "N/D";
 
         const acciones = `
@@ -31,59 +31,38 @@ async function listarEvaluadosComentariosObreros() {
             </button>
         `;
 
-        return [
-            cedula,
-            fullname,
-            cargo,
-            anio,
-            periodo,
-            acciones
-        ];
+        return [cedula, nombre, cargo, anio, periodo, acciones];
     });
 
-    // 4) Inicializar DataTable
     $('#tabla-evaluadosComentariosObreros').DataTable({
         data: tableData,
         columns: [
-            { title: "Cédula", width: "120px" },
+            { title: "Cédula" },
             { title: "Nombre Completo" },
-            { title: "Cargo", width: "200px" },
-            { title: "Año", width: "100px" },
-            { title: "Período", width: "120px" },
-            { 
-                title: "Acciones",
-                width: "140px",
-                orderable: false,
-                searchable: false
-            }
+            { title: "Cargo" },
+            { title: "Año" },
+            { title: "Período" },
+            { title: "Acciones", orderable: false, searchable: false }
         ],
         pageLength: 10,
         responsive: true,
         order: [[0, 'asc']],
         language: {
-            search: "Buscar evaluados:",
-            lengthMenu: "Mostrar _MENU_ registros por página",
-            info: "Mostrando _START_ a _END_ de _TOTAL_ evaluados",
-            infoEmpty: "Mostrando 0 a 0 de 0 evaluados",
+            search: "Buscar:",
             emptyTable: "No hay evaluaciones obreras finalizadas",
-            zeroRecords: "No se encontraron evaluados coincidentes",
-            paginate: {
-                previous: "Anterior",
-                next: "Siguiente"
-            }
+            zeroRecords: "No se encontraron coincidencias"
         }
     });
 }
 
 // =============================
-// Llamar al servicio backend
+// Servicio backend
 // =============================
 async function obtenerDatosPersonalesComentariosObreros() {
     try {
-        let resp = await microApi('controlador/?listar_comentarios_obreros');
-        return resp;
-    } catch (error) {
-        console.error('Error al obtener datos obreros:', error);
+        return await microApi('controlador/?listar_comentarios_obreros');
+    } catch (e) {
+        console.error("Error:", e);
         return null;
     }
 }
