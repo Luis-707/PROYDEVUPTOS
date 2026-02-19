@@ -17,6 +17,11 @@ session_start();
   <h3>EVALUACION DEL DESEMPEÑO</h3>
   <h5>NIVEL ADMINISTRATIVO</h5>
 
+  <button class="btn btn-outline-primary btn-sm"
+        onclick="mostrarVista('evaluacion'); listarEvaluados();">
+    ← Volver al listado
+</button>
+
   <!-- Formulario -->
   <form id="formulario_planilla" onsubmit="event.preventDefault(); validar_form_evaluacion(1);">
 

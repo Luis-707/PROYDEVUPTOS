@@ -4,11 +4,10 @@ header('Content-Type: application/json; charset=utf-8');
 
 include_once "../clases/ReportesPlanillaAdmin.php";
 
-// Validar sesión
-$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
-$rolesSesion  = $_SESSION['usuario']['roles']  ?? null;
+$idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
+$rolesSesion     = $_SESSION['usuario']['roles'] ?? [];
 
-if (!$cedulaSesion || empty($rolesSesion)) {
+if (!$idUsuarioSesion || empty($rolesSesion)) {
     echo json_encode([
         "success" => false,
         "message" => "Usuario no autenticado"
@@ -16,26 +15,22 @@ if (!$cedulaSesion || empty($rolesSesion)) {
     exit;
 }
 
-// Instanciar clase con conexión real
-$reporte = new ReportesPlanillaAdmin($this);
+try {
+    $reporte = new ReportesPlanillaAdmin($this);
 
-// Ejecutar consulta
-$respuesta = $reporte->listarReportesAdmin();
+    $res = $reporte->listarReportesAdminFiltrado($idUsuarioSesion, $rolesSesion);
+    $data = $res[0] ?? $res;
 
-// Si no hay evaluaciones disponibles
-if (empty($respuesta)) {
     echo json_encode([
         "success" => true,
-        "data"    => [],
-        "message" => "No hay evaluaciones disponibles para reporte"
+        "data"    => $data
     ]);
-    exit;
+
+} catch (Throwable $e) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Error en el servidor: " . $e->getMessage()
+    ]);
 }
 
-// Respuesta normal
-echo json_encode([
-    "success" => true,
-    "data"    => $respuesta
-]);
 exit;
-?>

@@ -1,3 +1,8 @@
+<?php
+include_once '../servicios/Sesion.php';
+?>
+
+
 <h2>Reportes de Evaluaciones Obreras</h2>
 
 <p class="card-text">

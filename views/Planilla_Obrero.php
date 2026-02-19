@@ -26,6 +26,13 @@
             <input type="hidden" id="id_eval_obreros" name="id_eval_obreros">
             <input type="hidden" id="tiempo_puesto" name="tiempo_puesto">
 
+
+            <button class="btn btn-outline-primary btn-sm"
+        onclick="mostrarVista('evaluacion_obreros'); listarEvaluacionesObreros();">
+    ← Volver al listado
+</button>
+
+
             <div class="card-body">
 
                 <!-- Instrucciones -->

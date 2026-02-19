@@ -4,6 +4,11 @@
   <h3>EVALUACIÓN DEL DESEMPEÑO</h3>
   <h5>NIVEL ADMINISTRATIVO (Solo Lectura)</h5>
 
+  <button class="btn btn-outline-primary btn-sm"
+          onclick="mostrarVista('comentarios'); listarEvaluadosComentarios();">
+      ← Volver al listado
+    </button>
+
   <!-- Sección A: Datos de identificación -->
   <div class="row mt-5">
     <!-- Evaluado -->

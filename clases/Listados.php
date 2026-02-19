@@ -82,31 +82,10 @@ class Listados {
         ";
     }
 
-    public static function sql_listar_por_evaluado(string $cedula): string
-    {
-        return sprintf("
-            SELECT 
-                ea.id_eval_admin,
-                u.cedula_usuario,
-                u.nombre_completo,
-                c.nombre_cargo AS cargo,
-                o.nombre AS unidad,
-                ea.periodo_evaluado,
-                EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
-            FROM evaluacion_administrativos ea
-            JOIN usuarios u ON u.id_usuario = ea.evaluado_id
-            JOIN cargos c ON c.id_cargo = u.id_cargo
-            JOIN organizaciones o ON o.id_org = c.id_org
-            WHERE u.cedula_usuario = '%s'
-              AND ea.estado_eval_admin = 'Finalizada'
-            ORDER BY u.cedula_usuario ASC;
-        ", addslashes($cedula));
-    }
-
-    public static function sql_listar_por_supervisor(string $cedulaSupervisor): string
+    public static function sql_listar_por_evaluado(int $idUsuario): string
 {
     return sprintf("
-       SELECT 
+        SELECT 
             ea.id_eval_admin,
             u.cedula_usuario,
             u.nombre_completo,
@@ -114,22 +93,47 @@ class Listados {
             o.nombre AS unidad,
             ea.periodo_evaluado,
             EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
-
         FROM evaluacion_administrativos ea
         JOIN usuarios u ON u.id_usuario = ea.evaluado_id
         JOIN cargos c ON c.id_cargo = u.id_cargo
         JOIN organizaciones o ON o.id_org = c.id_org
-        JOIN usuarios ev ON ev.id_usuario = ea.evaluador_id
-        JOIN cargos c_ev ON c_ev.id_cargo = ev.id_cargo
-        JOIN organizaciones org_ev ON org_ev.id_org = c_ev.id_org
-        JOIN organizaciones org_sup ON org_sup.id_org = org_ev.padre_id
-        JOIN cargos c_sup ON c_sup.id_org = org_sup.id_org
-        JOIN usuarios sup ON sup.id_cargo = c_sup.id_cargo
-
-        WHERE sup.cedula_usuario = '%s'
+        WHERE u.id_usuario = %d
           AND ea.estado_eval_admin = 'Finalizada'
-        ORDER BY u.cedula_usuario ASC LIMIT 100
-    ", addslashes($cedulaSupervisor));
+        ORDER BY u.cedula_usuario ASC;
+    ", $idUsuario);
+}
+
+
+
+
+
+public static function sql_listar_por_supervisor(int $idUsuarioSupervisor): string
+{
+    return sprintf("
+        SELECT 
+            ea.id_eval_admin,
+            u_eval.cedula_usuario,
+            u_eval.nombre_completo,
+            cargo_eval.nombre_cargo AS cargo,
+            org_eval.nombre AS unidad,
+            ea.periodo_evaluado,
+            EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
+
+        FROM evaluacion_administrativos ea
+        JOIN usuarios u_eval ON u_eval.id_usuario = ea.evaluado_id
+        JOIN cargos cargo_eval ON cargo_eval.id_cargo = u_eval.id_cargo
+        JOIN organizaciones org_eval ON org_eval.id_org = cargo_eval.id_org
+        JOIN usuarios u_ev ON u_ev.id_usuario = ea.evaluador_id
+        JOIN cargos cargo_ev ON cargo_ev.id_cargo = u_ev.id_cargo
+        JOIN organizaciones org_ev ON org_ev.id_org = cargo_ev.id_org
+        JOIN usuarios u_sup ON u_sup.id_usuario = %d
+        JOIN cargos cargo_sup ON cargo_sup.id_cargo = u_sup.id_cargo
+        JOIN organizaciones org_sup ON org_sup.id_org = cargo_sup.id_org
+
+        WHERE org_ev.padre_id = org_sup.id_org
+          AND ea.estado_eval_admin = 'Finalizada'
+        ORDER BY u_eval.cedula_usuario ASC;
+    ", $idUsuarioSupervisor);
 }
   
 

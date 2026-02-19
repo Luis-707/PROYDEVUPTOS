@@ -162,36 +162,84 @@ class ReportesPlanillaAdmin {
         ", $idEvalAdmin);
     }
 
-    // ============================================================
-    // 5) Listar evaluaciones disponibles para reporte
-    // ============================================================
-    public static function sql_listar_reportes(): string {
-        return "
-            SELECT 
-                ea.id_eval_admin,
-                u_eval.cedula_usuario,
-                u_eval.nombre_completo,
-                cargo_eval.nombre_cargo AS cargo_evaluado,
-                ea.periodo_evaluado,
-                ea.conformidad,
-                EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
-                ea.comentario_supervisor,
-                ea.comentario_evaluado
-            FROM evaluacion_administrativos ea
-            JOIN usuarios u_eval ON ea.evaluado_id = u_eval.id_usuario
-            JOIN cargos cargo_eval ON u_eval.id_cargo = cargo_eval.id_cargo
-            WHERE TRIM(ea.comentario_supervisor) <> ''
-              AND TRIM(ea.comentario_evaluado) <> ''
-              AND TRIM(ea.conformidad) <> '';
-        ";
-    }
+    public static function sql_listar_reportes_filtrado(int $idUsuarioSesion, array $roles): string {
 
-    public function listarReportesAdmin() {
-        if ($this->conexion !== null) {
-            return $this->conexion->ejecutarConsultaBdds(self::sql_listar_reportes());
+        // ADMINISTRADOR → ve todo
+        if (in_array("administrador", $roles)) {
+            return self::sql_listar_reportes();
         }
-        return [];
+    
+        // EVALUADOR → ve solo sus evaluaciones
+        if (in_array("evaluador", $roles)) {
+            return sprintf("
+                SELECT 
+                    ea.id_eval_admin,
+                    u_eval.cedula_usuario,
+                    u_eval.nombre_completo,
+                    cargo_eval.nombre_cargo AS cargo_evaluado,
+                    ea.periodo_evaluado,
+                    ea.conformidad,
+                    EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
+                    ea.comentario_supervisor,
+                    ea.comentario_evaluado
+                FROM evaluacion_administrativos ea
+                JOIN usuarios u_eval ON ea.evaluado_id = u_eval.id_usuario
+                JOIN cargos cargo_eval ON u_eval.id_cargo = cargo_eval.id_cargo
+                WHERE ea.evaluador_id = %d
+                  AND TRIM(ea.comentario_supervisor) <> ''
+                  AND TRIM(ea.comentario_evaluado) <> ''
+                  AND TRIM(ea.conformidad) <> '';
+            ", $idUsuarioSesion);
+        }
+    
+        // SUPERVISOR DEL EVALUADOR → ve evaluaciones de sus subordinados
+        if (in_array("supervisor del evaluador", $roles)) {
+            return sprintf("
+                SELECT 
+                    ea.id_eval_admin,
+                    u_eval.cedula_usuario,
+                    u_eval.nombre_completo,
+                    cargo_eval.nombre_cargo AS cargo_evaluado,
+                    ea.periodo_evaluado,
+                    ea.conformidad,
+                    EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
+                    ea.comentario_supervisor,
+                    ea.comentario_evaluado
+                FROM evaluacion_administrativos ea
+    
+                -- Evaluado
+                JOIN usuarios u_eval ON ea.evaluado_id = u_eval.id_usuario
+                JOIN cargos cargo_eval ON u_eval.id_cargo = cargo_eval.id_cargo
+                JOIN organizaciones org_eval ON org_eval.id_org = cargo_eval.id_org
+    
+                -- Evaluador
+                JOIN usuarios u_ev ON u_ev.id_usuario = ea.evaluador_id
+                JOIN cargos cargo_ev ON u_ev.id_cargo = cargo_ev.id_cargo
+                JOIN organizaciones org_ev ON org_ev.id_org = cargo_ev.id_org
+    
+                -- Supervisor (usuario en sesión)
+                JOIN usuarios u_sup ON u_sup.id_usuario = %d
+                JOIN cargos cargo_sup ON cargo_sup.id_cargo = u_sup.id_cargo
+                JOIN organizaciones org_sup ON org_sup.id_org = cargo_sup.id_org
+    
+                WHERE org_ev.padre_id = org_sup.id_org
+                  AND TRIM(ea.comentario_supervisor) <> ''
+                  AND TRIM(ea.comentario_evaluado) <> ''
+                  AND TRIM(ea.conformidad) <> '';
+            ", $idUsuarioSesion);
+        }
+    
+        // Si no tiene roles válidos → no ve nada
+        return "SELECT * FROM evaluacion_administrativos WHERE 1=0;";
     }
+    
+    
+    
+    public function listarReportesAdminFiltrado(int $idUsuarioSesion, array $roles) {
+        $sql = self::sql_listar_reportes_filtrado($idUsuarioSesion, $roles);
+        return $this->conexion->ejecutarConsultaBdds($sql);
+    }
+    
 
     public function ejecutarConsulta(string $sql) {
         if ($this->conexion !== null) {

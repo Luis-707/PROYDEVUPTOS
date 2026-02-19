@@ -2,10 +2,10 @@
 session_start();
 include_once '../clases/Listados.php';
 
-$cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
-$rolesSesion  = $_SESSION['usuario']['roles'] ?? [];   // AHORA ES UN ARRAY
+$idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
+$rolesSesion     = $_SESSION['usuario']['roles'] ?? [];
 
-if (!$cedulaSesion || empty($rolesSesion)) {
+if (!$idUsuarioSesion || empty($rolesSesion)) {
     echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
     exit;
 }
@@ -13,7 +13,7 @@ if (!$cedulaSesion || empty($rolesSesion)) {
 $Lista = new Listados($this);
 
 // ======================================================
-// Seleccionar SQL según rol (MISMA LÓGICA DEL ORIGINAL)
+// Seleccionar SQL según rol
 // ======================================================
 
 $sql = "";
@@ -22,14 +22,14 @@ $sql = "";
 // Caso 1: Usuario es EVALUADO
 // ---------------------------------------------
 if (in_array("evaluado", $rolesSesion)) {
-    $sql = Listados::sql_listar_por_evaluado($cedulaSesion);
+    $sql = Listados::sql_listar_por_evaluado($idUsuarioSesion);
 }
 
 // ---------------------------------------------
 // Caso 2: Usuario es SUPERVISOR DEL EVALUADOR
 // ---------------------------------------------
 elseif (in_array("supervisor del evaluador", $rolesSesion)) {
-    $sql = Listados::sql_listar_por_supervisor($cedulaSesion);
+    $sql = Listados::sql_listar_por_supervisor($idUsuarioSesion);
 }
 
 // ---------------------------------------------
@@ -44,4 +44,5 @@ else {
 // Ejecutar consulta
 // ======================================================
 $respuesta = $Lista->listarEvaluadosComentarios($sql);
-return $respuesta;
+echo json_encode(["success" => true, "data" => $respuesta]);
+exit;

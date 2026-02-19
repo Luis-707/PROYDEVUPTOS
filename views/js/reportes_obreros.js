@@ -2,46 +2,13 @@
 // Formatear fecha (DD/MM/YYYY)
 // =============================
 function formatearFecha(fechaStr) {
+    if (!fechaStr) return "";
     const fecha = new Date(fechaStr);
     if (isNaN(fecha.getTime())) return "";
     const dia = String(fecha.getDate()).padStart(2, '0');
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const año = fecha.getFullYear();
     return `${dia}/${mes}/${año}`;
-}
-
-// =============================
-// Obtener fecha de ingreso desde JSON (async)
-// =============================
-async function obtenerFechaIngresoPorCedula(cedula) {
-    try {
-        const resp = await microApi('views/js/datos_empleado.json');
-
-        if (!Array.isArray(resp) || resp.length === 0 || !resp[0].data) {
-            console.error("JSON con formato inesperado");
-            return "";
-        }
-
-        const datos = resp[0].data;
-        const cedulaBusqueda = cedula.toLowerCase();
-
-        const empleado = datos.find(emp =>
-            emp.pin && emp.pin.toLowerCase() === cedulaBusqueda
-        );
-
-        if (!empleado || !empleado.create) {
-            console.warn("Empleado no encontrado o sin fecha 'create'");
-            return "";
-        }
-
-        const soloFecha = empleado.create.split(" ")[0];
-        return formatearFecha(soloFecha);
-
-    } catch (error) {
-        console.error("Error obteniendo fecha de ingreso:", error);
-        return "";
-    }
-
 }
 
 // =============================
@@ -114,8 +81,10 @@ async function generarPDFObrero(idEvalObrero) {
         }
 
         const info = resp.data || {};
-        // Obtener fecha de ingreso desde JSON
-info.fecha_ingreso = await obtenerFechaIngresoPorCedula(info.cedula_evaluado);
+
+        // Formatear fecha de ingreso desde BD
+        info.fecha_ingreso = formatearFecha(info.fecha_ingreso);
+
         const factores = Array.isArray(resp.factores) ? resp.factores : [];
         const criterios = Array.isArray(resp.criterios) ? resp.criterios : [];
         const seleccionados = Array.isArray(resp.seleccionados) ? resp.seleccionados : [];
@@ -149,110 +118,104 @@ function generarPlanillaObrera(doc, info, factores, criterios, seleccionados) {
     doc.text("EVALUACION DEL DESEMPEÑO - NIVEL OBRERO", 105, y, { align: "center" });
     y += 10;
 
-   // =============================
-// SECCIÓN A: DATOS DEL EVALUADO
-// =============================
-doc.setFontSize(10);
-doc.text('SECCION "A": DATOS DEL EVALUADO', 10, y);
-y += 6;
+    // =============================
+    // SECCIÓN A: DATOS DEL EVALUADO
+    // =============================
+    doc.setFontSize(10);
+    doc.text('SECCION "A": DATOS DEL EVALUADO', 10, y);
+    y += 6;
 
-// Línea 1: Apellidos y Nombres / Cédula
-doc.autoTable({
-    startY: y,
-    head: [[
-        { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
-        { content: 'Cédula', styles: { fontStyle: 'bold', halign: 'center' } }
-    ]],
-    body: [[info.nombre_evaluado, info.cedula_evaluado]],
-    theme: 'grid',
-    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
-    margin: { left: 10, right: 10 },
-    tableWidth: 190
-});
-y = doc.lastAutoTable.finalY + 4;
+    // Línea 1
+    doc.autoTable({
+        startY: y,
+        head: [[
+            { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
+            { content: 'Cédula', styles: { fontStyle: 'bold', halign: 'center' } }
+        ]],
+        body: [[info.nombre_evaluado, info.cedula_evaluado]],
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1, halign: 'center' },
+        margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 4;
 
-// Línea 2: Cargo / Fecha ingreso / Años en el puesto
-doc.autoTable({
-    startY: y,
-    head: [[
-        { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } },
-        { content: 'Fecha de Ingreso', styles: { fontStyle: 'bold', halign: 'center' } },
-        { content: 'Años en el Puesto', styles: { fontStyle: 'bold', halign: 'center' } }
-    ]],
-    body: [[info.cargo_evaluado, info.fecha_ingreso, info.tiempo_puesto]],
-    theme: 'grid',
-    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
-    margin: { left: 10, right: 10 },
-    tableWidth: 190
-});
-y = doc.lastAutoTable.finalY + 4;
+    // Línea 2
+    doc.autoTable({
+        startY: y,
+        head: [[
+            { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } },
+            { content: 'Fecha de Ingreso', styles: { fontStyle: 'bold', halign: 'center' } },
+            { content: 'Años en el Puesto', styles: { fontStyle: 'bold', halign: 'center' } }
+        ]],
+        body: [[info.cargo_evaluado, info.fecha_ingreso, info.tiempo_puesto]],
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1, halign: 'center' },
+        margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 4;
 
-// Línea 3: Ubicación Administrativa / Ubicación Física
-doc.autoTable({
-    startY: y,
-    head: [[
-        { content: 'Ubicación Administrativa', styles: { fontStyle: 'bold', halign: 'center' } },
-        { content: 'Ubicación Física', styles: { fontStyle: 'bold', halign: 'center' } }
-    ]],
-    body: [[info.ubicacion_evaluado, info.ubicacion_fisica]],
-    theme: 'grid',
-    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
-    margin: { left: 10, right: 10 },
-    tableWidth: 190
-});
-y = doc.lastAutoTable.finalY + 4;
+    // Línea 3
+    doc.autoTable({
+        startY: y,
+        head: [[
+            { content: 'Ubicación Administrativa', styles: { fontStyle: 'bold', halign: 'center' } },
+            { content: 'Ubicación Física', styles: { fontStyle: 'bold', halign: 'center' } }
+        ]],
+        body: [[info.ubicacion_evaluado, info.ubicacion_fisica]],
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1, halign: 'center' },
+        margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 4;
 
-// Línea 4: Periodo Evaluado / Área Ocupacional
-doc.autoTable({
-    startY: y,
-    head: [[
-        { content: 'Periodo Evaluado', styles: { fontStyle: 'bold', halign: 'center' } },
-        { content: 'Área Ocupacional', styles: { fontStyle: 'bold', halign: 'center' } }
-    ]],
-    body: [[info.periodo_evaluacion, info.area_ocupacional]],
-    theme: 'grid',
-    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
-    margin: { left: 10, right: 10 },
-    tableWidth: 190
-});
-y = doc.lastAutoTable.finalY + 10;
+    // Línea 4
+    doc.autoTable({
+        startY: y,
+        head: [[
+            { content: 'Periodo Evaluado', styles: { fontStyle: 'bold', halign: 'center' } },
+            { content: 'Área Ocupacional', styles: { fontStyle: 'bold', halign: 'center' } }
+        ]],
+        body: [[info.periodo_evaluacion, info.area_ocupacional]],
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1, halign: 'center' },
+        margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 10;
 
-// =============================
-// SECCIÓN B: DATOS DEL EVALUADOR
-// =============================
-doc.setFontSize(10);
-doc.text('SECCION "B": DATOS DEL EVALUADOR', 10, y);
-y += 6;
+    // =============================
+    // SECCIÓN B: DATOS DEL EVALUADOR
+    // =============================
+    doc.setFontSize(10);
+    doc.text('SECCION "B": DATOS DEL EVALUADOR', 10, y);
+    y += 6;
 
-// Línea 1: Apellidos y Nombres / Cargo
-doc.autoTable({
-    startY: y,
-    head: [[
-        { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
-        { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } }
-    ]],
-    body: [[info.nombre_evaluador, info.cargo_evaluador]],
-    theme: 'grid',
-    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
-    margin: { left: 10, right: 10 },
-    tableWidth: 190
-});
-y = doc.lastAutoTable.finalY + 4;
+    // Línea 1
+    doc.autoTable({
+        startY: y,
+        head: [[
+            { content: 'Apellidos y Nombres', styles: { fontStyle: 'bold', halign: 'center' } },
+            { content: 'Cargo', styles: { fontStyle: 'bold', halign: 'center' } }
+        ]],
+        body: [[info.nombre_evaluador, info.cargo_evaluador]],
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1, halign: 'center' },
+        margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 4;
 
-// Línea 2: Ubicación Administrativa
-doc.autoTable({
-    startY: y,
-    head: [[
-        { content: 'Ubicación Administrativa', colSpan: 2, styles: { fontStyle: 'bold', halign: 'center' } }
-    ]],
-    body: [[info.ubicacion_evaluador, '']],
-    theme: 'grid',
-    styles: { fontSize: 8, cellPadding: 1, halign: 'center', textColor: 0, lineColor: 0, lineWidth: 0.3 },
-    margin: { left: 10, right: 10 },
-    tableWidth: 190
-});
-y = doc.lastAutoTable.finalY + 10;
-    
+    // Línea 2
+    doc.autoTable({
+        startY: y,
+        head: [[
+            { content: 'Ubicación Administrativa', colSpan: 2, styles: { fontStyle: 'bold', halign: 'center' } }
+        ]],
+        body: [[info.ubicacion_evaluador, '']],
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1, halign: 'center' },
+        margin: { left: 10, right: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 10;
+
     // =============================
     // SECCIÓN C: FACTORES Y CRITERIOS
     // =============================
@@ -321,101 +284,52 @@ y = doc.lastAutoTable.finalY + 10;
     });
 
     // =============================
-// SECCIÓN F: FIRMAS
-// =============================
-// =============================
-// SECCIÓN F: FIRMAS
-// =============================
-let yFirmas = doc.lastAutoTable.finalY + 12;
-doc.setFontSize(8);
+    // SECCIÓN F: FIRMAS
+    // =============================
+    let yFirmas = doc.lastAutoTable.finalY + 12;
+    doc.setFontSize(8);
 
-// --- Firmas ---
-doc.text("Firma Evaluador", 30, yFirmas);
-doc.line(20, yFirmas + 8, 70, yFirmas + 8);
+    doc.text("Firma Evaluador", 30, yFirmas);
+    doc.line(20, yFirmas + 8, 70, yFirmas + 8);
 
-doc.text("Firma Supervisor", 95, yFirmas);
-doc.line(85, yFirmas + 8, 135, yFirmas + 8);
+    doc.text("Firma Supervisor", 95, yFirmas);
+    doc.line(85, yFirmas + 8, 135, yFirmas + 8);
 
-doc.text("Firma Evaluado", 160, yFirmas);
-doc.line(150, yFirmas + 8, 200, yFirmas + 8);
+    doc.text("Firma Evaluado", 160, yFirmas);
+    doc.line(150, yFirmas + 8, 200, yFirmas + 8);
 
-// =============================
-// TABLAS DE FECHAS (3 tablas pequeñas separadas)
-// =============================
-// =============================
-// TABLAS DE FECHAS (3 tablas separadas, cada una con 3 columnas)
-// =============================
-let yFechas = yFirmas + 20;
+    // =============================
+    // TABLAS DE FECHAS
+    // =============================
+    let yFechas = yFirmas + 20;
 
-// Tabla 1: Fecha Evaluador
-doc.autoTable({
-    startY: yFechas,
-    head: [[{ content: 'Fecha Evaluador', colSpan: 3, styles: { halign: 'center', fontStyle: 'bold' } }]],
-    body: [
-        ['', '', ''] // fila vacía con 3 columnas
-    ],
-    theme: 'grid',
-    styles: {
-        fontSize: 7,
-        cellPadding: 1,
-        halign: 'center',
-        textColor: 0,
-        lineColor: 0,
-        lineWidth: 0.3
-    },
-    headStyles: {
-        fillColor: false,
-        textColor: 0
-    },
-    margin: { left: 20 },
-    tableWidth: 50
-});
+    doc.autoTable({
+        startY: yFechas,
+        head: [[{ content: 'Fecha Evaluador', colSpan: 3, styles: { halign: 'center', fontStyle: 'bold' } }]],
+        body: [['', '', '']],
+        theme: 'grid',
+        styles: { fontSize: 7, cellPadding: 1, halign: 'center' },
+        margin: { left: 20 },
+        tableWidth: 50
+    });
 
-// Tabla 2: Fecha Supervisor
-doc.autoTable({
-    startY: yFechas,
-    head: [[{ content: 'Fecha Supervisor', colSpan: 3, styles: { halign: 'center', fontStyle: 'bold' } }]],
-    body: [
-        ['', '', '']
-    ],
-    theme: 'grid',
-    styles: {
-        fontSize: 7,
-        cellPadding: 1,
-        halign: 'center',
-        textColor: 0,
-        lineColor: 0,
-        lineWidth: 0.3
-    },
-    headStyles: {
-        fillColor: false,
-        textColor: 0
-    },
-    margin: { left: 85 },
-    tableWidth: 50
-});
+    doc.autoTable({
+        startY: yFechas,
+        head: [[{ content: 'Fecha Supervisor', colSpan: 3, styles: { halign: 'center', fontStyle: 'bold' } }]],
+        body: [['', '', '']],
+        theme: 'grid',
+        styles: { fontSize: 7, cellPadding: 1, halign: 'center' },
+        margin: { left: 85 },
+        tableWidth: 50
+    });
 
-// Tabla 3: Fecha Evaluado
-doc.autoTable({
-    startY: yFechas,
-    head: [[{ content: 'Fecha Evaluado', colSpan: 3, styles: { halign: 'center', fontStyle: 'bold' } }]],
-    body: [
-        ['', '', '']
-    ],
-    theme: 'grid',
-    styles: {
-        fontSize: 7,
-        cellPadding: 1,
-        halign: 'center',
-        textColor: 0,
-        lineColor: 0,
-        lineWidth: 0.3
-    },
-    headStyles: {
-        fillColor: false,
-        textColor: 0
-    },
-    margin: { left: 150 },
-    tableWidth: 50
-});
+    doc.autoTable({
+        startY: yFechas,
+        head: [[{ content: 'Fecha Evaluado', colSpan: 3, styles: { halign: 'center', fontStyle: 'bold' } }]],
+        body: [['', '', '']],
+        theme: 'grid',
+        styles: { fontSize: 7, cellPadding: 1, halign: 'center' },
+        margin: { left: 150 },
+        tableWidth: 50
+    });
 }

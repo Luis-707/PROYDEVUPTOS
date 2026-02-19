@@ -35,6 +35,11 @@ include_once '../servicios/Sesion.php';
   <h3>Planilla de Desempeño Excepcional</h3>
   <h5>Nivel Administrativo</h5>
 
+    <button class="btn btn-outline-primary btn-sm"
+          onclick="mostrarVista('reportes_administrativos'); listarReportesAdministrativos();">
+      ← Volver al listado
+    </button>
+
   <!-- Estado de habilitación -->
   <div id="estado-excepcional" class="mt-3">
     <span class="badge-status badge-warn" id="badge-excepcional">
