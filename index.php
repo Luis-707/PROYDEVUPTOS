@@ -382,6 +382,7 @@ body::before {
     <script src="views/js/evaluados_comentarios.js"></script>
     <script src="views/js/evaluados_comentarios_obreros.js"></script>
     <script src="views/js/evaluados_resultados.js"></script>
+    <script src="views/js/evaluados_resultados_obreros.js"></script>
     <script src="views/js/logout.js"></script>
     <script src="views/js/GestionEvaluados.js"></script>
     <script src="views/js/evalAdministrativos.js"></script>

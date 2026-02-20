@@ -26,10 +26,12 @@ include_once "Sesion.php";
             <p class="mb-0 small-text">Comentarios de Evaluación de Desempeño Laboral - Nivel Obrero</p>
         </div>
 
+        <div class="text-start mb-3">
         <button class="btn btn-outline-primary btn-sm"
           onclick="mostrarVista('comentarios_obreros'); listarEvaluadosComentariosObreros();">
       ← Volver al listado
     </button>
+    </div>
 
         <div class="card-body small-text">
 

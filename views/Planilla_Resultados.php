@@ -6,6 +6,13 @@ include_once "Sesion.php";
   <h3>EVALUACIÓN DEL DESEMPEÑO</h3>
   <h5>NIVEL ADMINISTRATIVO (Solo Lectura)</h5>
 
+  <div class="text-start mb-3">
+        <button class="btn btn-outline-primary btn-sm"
+            onclick="mostrarVista('resultados'); listarEvaluadosResultados();">
+            ← Volver al listado
+        </button>
+        </div>
+
   <!-- Sección A: Datos de identificación -->
   <div class="row mt-5">
     <div class="col-md-4">

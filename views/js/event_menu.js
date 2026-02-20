@@ -196,6 +196,13 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
+        $("#formularioResultadosObreros").click(async function(){
+          if (await verificarAccesoMenu('Resultados Obreros', 'formularioResultadosObreros')) {
+            mostrarVista('resultados_obreros');
+            listarEvaluadosResultadosObreros();
+          }
+        });
+
         function abrirPlanilla(cedula, evaluado_id, idEvalAdmin){
           console.log("👉 abrirPlanilla() recibió:", cedula, evaluado_id, idEvalAdmin);
           sessionStorage.setItem("evaluado_id", evaluado_id);
@@ -239,6 +246,20 @@ $(document).on('click', '.menu-link', function() {
           await cargarPlanillaResultados(); // 👈 función definida en el JS de la vista readonly
       }, 300); 
   }
+
+
+  // =============================
+// Abrir planilla readonly obrera
+// =============================
+function abrirPlanillaResultadosObrero(cedula, idEvalObrero) {
+  sessionStorage.setItem("cedula_planilla_obrero", cedula);
+  sessionStorage.setItem("id_eval_obreros", idEvalObrero);
+  mostrarVista('planilla_resultados_obrero');
+
+  setTimeout(async () => {
+    await cargarPlanillaResultadosObrero();
+  }, 300);
+}
   
     //====================================
     function abrirPlanillaEditar(cedula, idEvalAdmin){ 
@@ -484,6 +505,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Gestion de Competencias', 'formularioCompetencias');
   await verificarAccesoMenu('Reportes', 'formularioReportesDesemp');
   await verificarAccesoMenu('Resultados', 'formularioResultados');
+  await verificarAccesoMenu('Resultados Obreros', 'formularioResultadosObreros');
   await verificarAccesoMenu('Reportes Administrativos', 'formularioReportesAdmin');
   await verificarAccesoMenu('Reportes Obreros', 'formularioReportesObreros');
   await verificarAccesoMenu('Registros Obreros', 'formularioRegistroObreros');

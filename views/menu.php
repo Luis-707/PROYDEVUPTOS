@@ -131,6 +131,13 @@
                     </a>
                 </li>
 
+                    <li class="menu-item">
+                        <a href="javascript:void(0)" class="menu-link" id="formularioResultadosObreros">
+                            <!--<i class="menu-icon icon-base bx bx-chart"></i>-->
+                            <div data-i18n="Resultados Obreros">Resultados Obreros</div>
+                        </a>
+                    </li>
+
 
                 <!--  Menu Seguridad-->
                 <!-- <li class="menu-header small">
