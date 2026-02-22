@@ -101,31 +101,6 @@ function capturarResultadosTabla(idTabla, campoId) {
 }
 
 // =============================
-// Validación de campos obligatorios
-// =============================
-/*function validarCamposObligatorios(fd) {
-  const obligatorios = [
-    "id_usuario",
-    "id_evaluado",
-    "id_rango",
-    "puntaje_final",
-    "fecha_inicio",
-    "fecha_cierre",
-    "periodo_evaluado"
-  ];
-
-  console.group("🔎 Verificación de campos obligatorios");
-  obligatorios.forEach(campo => {
-    const valor = fd.get(campo);
-    if (!valor) {
-      console.warn(`⚠️ El campo "${campo}" está vacío o no se está enviando`);
-    } else {
-      console.log(`✅ ${campo} => ${valor}`);
-    }
-  });
-  console.groupEnd();
-}*/
-// =============================
 // Guardar Evaluación
 // =============================
 async function guardarEvaluacionCompleta() {
@@ -177,9 +152,9 @@ datos.append("id_eval_admin", sessionStorage.getItem("id_eval_admin"));
 // Resetear formulario
 // =============================
 function valorFormEvaluacion(evaluado='', evaluador='', RangoActuacion='', puntaje='', periodo_evaluado='') {
-  document.getElementById('id_evaluado').value = evaluado;
-  document.getElementById('id_usuario_evaluador').value = evaluador;
-  document.getElementById('periodo-evaluacion').value = periodo_evaluado;
+  document.getElementById('evaluado_id').value = evaluado;
+  document.getElementById('evaluador_id').value = evaluador;
+  document.getElementById('periodo-evaluado').value = periodo_evaluado;
   document.getElementById('id_rango').value = RangoActuacion;
   document.getElementById('puntaje_final').value = puntaje;
 }
@@ -281,12 +256,6 @@ async function cargarRangosActuacion() {
 
   console.log("✅ Rangos cargados:", rangosActuacion);
 
-  /*if (rangosActuacion.length > 0) {
-    console.log("🔎 Claves detectadas en el primer objeto:", Object.keys(rangosActuacion[0]));
-    console.log("🔎 Ejemplo de primer rango:", rangosActuacion[0]);
-  } else {
-    console.warn("⚠️ No se recibieron rangos desde el backend");
-  }*/
 }
 
 // =============================
@@ -327,8 +296,6 @@ function actualizarTotalGeneral() {
   rangoEl.textContent = rangoTexto;
   document.getElementById("id_rango").value = rangoId;
 
-  // 👇 Depuración
-  /*console.log("🔎 Total:", totalGeneral, "=> Rango:", rangoTexto, "ID:", rangoId);*/
 }
 
 function actualizarTotales(idTabla, idTotal) {
@@ -455,6 +422,4 @@ async function cargarTablasPlanilla() {
   await cargarRangosActuacion();
   actualizarTotalGeneral();
 
-  // 👇 Test después de renderizar
-  //testCapturaDatos();
 }

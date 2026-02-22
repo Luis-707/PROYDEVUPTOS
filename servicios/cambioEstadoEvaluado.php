@@ -13,14 +13,14 @@ die(print_r($respuesta));
 */
 $editarEstadoEval = new Evaluado($dataCliente['_post']);
 
-$sql = $editarEstadoEval->sql_buscar_usuario_eval_id();
+$sql = $editarEstadoEval->sql_buscar_usuario_por_id();
 $respuesta = $this->ejecutarConsultaBdds($sql);
 
 if (count($respuesta) == 0) {     
   $respuesta = $dataCliente['_post']['id_usuario'].' No Existe';
  
 }else{
-  $sql=$editarEstadoEval->sql_actualizar_estado_usuario_eval();
+  $sql=$editarEstadoEval->sql_actualizar_estado_usuario();
   $respuesta = $this->ejecutarConsultaBdds($sql);
 }
 

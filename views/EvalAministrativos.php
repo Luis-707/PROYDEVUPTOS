@@ -40,8 +40,8 @@ td.acciones {
 <div class="container py-4">
       <form id="formulario_EvalAdmin" onsubmit="event.preventDefault(); validar_formEvalAdmin(1);">
         <div class="col-md-4">
-          <label for="id_evaluado" class="form-label">Seleccionar evaluado</label>
-          <select class="form-select" id="id_evaluado" name="id_evaluado" required>
+          <label for="evaluado_id" class="form-label">Seleccionar evaluado</label>
+          <select class="form-select" id="evaluado_id" name="evaluado_id" required>
             <option selected disabled>Seleccione un evaluado</option>
           </select>
         </div>

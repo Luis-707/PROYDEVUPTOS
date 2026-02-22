@@ -50,14 +50,14 @@
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvalAdministrativos">
                         <!--<i class="menu-icon icon-base bx bx-pinsel"></i>-->
-                        <div data-i18n="Evaluacion administrativos" >Evaluacion administrativos</div>
+                        <div data-i18n="Registros Administrativos" >Registros Administrativos</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioRegistroObreros">
                         <!--<i class="menu-icon icon-base bx bx-pinsel"></i>-->
-                        <div data-i18n="Evaluacion obreros" >Evaluacion obreros</div>
+                        <div data-i18n="Registros Obreros" >Registros Obreros</div>
                     </a>
                 </li>
 

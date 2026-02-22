@@ -15,8 +15,17 @@ try {
         exit;
     }
 
-    $dataCliente = $_POST;
-    $dataCliente['id_usuario'] = $idUsuarioSesion;
+    // 2) Detectar si los datos vienen como JSON o Form-Data
+    $dataCliente = [];
+    if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+        $raw = file_get_contents("php://input");
+        $dataCliente = json_decode($raw, true) ?? [];
+    } else {
+        $dataCliente = $_POST;
+    }
+
+    //$dataCliente = $_POST;
+    $dataCliente['evaluador_id'] = $idUsuarioSesion;
 
     $eval = new EvaluacionesObreros($dataCliente, $this->conexion);
 
@@ -45,3 +54,4 @@ try {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 exit;
+

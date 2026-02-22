@@ -27,12 +27,11 @@
             <input type="hidden" id="tiempo_puesto" name="tiempo_puesto">
 
             <div class="text-start mb-3">
-        <button class="btn btn-outline-primary btn-sm"
-            onclick="mostrarVista('evaluacion_obreros'); listarEvaluacionesObreros();">
-            ← Volver al listado
-        </button>
-        </div>
-
+    <button class="btn btn-outline-primary btn-sm"
+        onclick="salirDeVista = true; mostrarVista('evaluacion_obreros'); listarEvaluacionesObreros();">
+        ← Volver al listado
+    </button>
+</div>
 
             <div class="card-body">
 

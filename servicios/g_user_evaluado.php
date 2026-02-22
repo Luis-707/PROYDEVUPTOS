@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', '0'); 
 ini_set('display_startup_errors', '0');
@@ -11,12 +12,12 @@ try {
     $evaluado = new Evaluado($dataCliente['_post'], $this->conexion);
 
     // 1) Buscar si el usuario evaluado ya existe
-    $sql = $evaluado->sql_buscar_user_evaluado();
+    $sql = $evaluado->sql_buscar();  // ✅ Heredado de Usuario
     $respuesta = $this->ejecutarConsultaBdds($sql);
 
     if (count($respuesta) == 0) {
         // 2) Insertar nuevo usuario evaluado
-        $sql = $evaluado->sql_guardar_user_evaluado();
+        $sql = $evaluado->sql_guardar();  // ✅ Polimórfico (PostgreSQL RETURNING)
         $respInsert = $this->ejecutarConsultaBdds($sql);
 
         if (empty($respInsert) || empty($respInsert[0][0]['id_usuario'])) {

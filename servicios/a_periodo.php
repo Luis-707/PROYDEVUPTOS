@@ -25,7 +25,7 @@ if (count($respuesta) == 0) {
 }
 
 $respuesta = $this->ejecutarConsultaBdds($sql);
-  $respuesta = $this->servicio($data, 'l_evalAdministrativos');
+  $respuesta = $this->servicio($data, 'l_evalAdmin');
 return $respuesta;
 
  

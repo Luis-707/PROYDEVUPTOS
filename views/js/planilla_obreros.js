@@ -50,6 +50,9 @@ function calcularTiempoPuestoDesdeBD(fechaIngresoStr) {
 // Validar formulario de evaluación
 // =============================
 function validar_form_evaluacion_obrero(opc) {
+
+  if (salirDeVista) return;
+
   const formulario = document.getElementById('formulario_planilla_obrero');
   const Data = new FormData(formulario);
   let isValid = true;
@@ -87,11 +90,15 @@ function validar_form_evaluacion_obrero(opc) {
 // =============================
 let factoresObrero = [];
 let rangosCalificacion = [];
+let salirDeVista = false; // ← NUEVO
 
 // =============================
 // Cargar datos del evaluado/evaluador
 // =============================
 async function cargarPlanillaObrero() {
+
+  salirDeVista = false;
+
   const cedula = sessionStorage.getItem("cedula_planilla_obrero");
   const idEvalOb = sessionStorage.getItem("id_eval_obreros");
 
@@ -240,6 +247,8 @@ function renderFactoresObrero(factores) {
 // Recalcular puntajes y calificación
 // =============================
 function recalculateScores() {
+
+  if (salirDeVista) return;
   const factorScores = {};
 
   document.querySelectorAll('.factor-option').forEach(opt => {
@@ -275,6 +284,9 @@ function recalculateScores() {
 }
 
 function validarFactoresCompletos() {
+
+  if (salirDeVista) return true;
+
   let valido = true;
 
   document.querySelectorAll('.factor-title').forEach(header => {
@@ -298,6 +310,8 @@ function validarFactoresCompletos() {
 // Guardar evaluación
 // =============================
 async function guardarEvaluacionObrero() {
+
+  if (salirDeVista) return true; // ← NUEVO let valido = true;
 
   if (!validarFactoresCompletos()) {
       Swal.fire({

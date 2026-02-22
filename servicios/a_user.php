@@ -4,10 +4,10 @@ include_once "../clases/Usuario3.php";
 //$dataCliente['_post']['login'] = $dataCliente['_post']['otros_datos'];
  $data=$dataCliente['_post'];
 // var_dump($data['nombres']);
-
+/*
 $usuario = new Usuario( $dataCliente['_post']);
 $sql = $usuario->sql_buscar();
-$respuesta = $this->ejecutarConsultaBdds($sql);
+$respuesta = $this->ejecutarConsultaBdds($sql);*/
 /*  echo "---".count($respuesta)."---";
 die(print_r($respuesta));
 */

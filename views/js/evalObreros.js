@@ -23,7 +23,7 @@ function validarCadena(cadena){
   
   function validar_formEvalObrero(opc) {
   
-    var formulario = document.getElementById('formulario_EvalObrero');
+    var formulario = document.getElementById('formularioEvalObrero');
     var Data = new FormData(formulario);
     let isValid = true;
   
@@ -94,9 +94,9 @@ function validarCadena(cadena){
   
   async function guardarPeriodoEvaluacionObrero() {
     try {
-      let datos = capturarValoresFormulario('formulario_EvalObrero');
+      let datos = capturarValoresFormulario('formularioEvalObrero');
   
-      let idEvaluado = document.getElementById('id_evaluado_obrero').value;
+      let idEvaluado = document.getElementById('evaluado_id').value;
       if (!idEvaluado) {
         Swal.fire({
           icon: 'warning',
@@ -105,7 +105,7 @@ function validarCadena(cadena){
         });
         return;
       }
-      datos.append('id_evaluado', idEvaluado);
+      datos.append('evaluado_id', idEvaluado);
   
       const periodo = document.getElementById('periodo_evaluacion').value;
       const fechaInicio = document.getElementById('fecha_inicio_obrero').value;
@@ -169,7 +169,7 @@ function validarCadena(cadena){
   ============================================================ */
   
   async function listarEvalObrero(){
-      var resp = await microApi('controlador/?listar_evalObreros');
+      var resp = await microApi('controlador/?l_evalOb');
       listarTablaEvalObrero(resp);
   }
   
@@ -188,13 +188,13 @@ function validarCadena(cadena){
     }
   
     const tableData = registros.map(item => {
-        const cedula = String(item.cedula_usuario).trim();
-        const fullname = item.nombre_completo || "No encontrado";
+        const cedula = String(item.cedula_evaluado).trim();
+        const fullname = item.nombre_evaluado || "No encontrado";
         const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
         const cargoTexto = item.cargo_evaluado || "Sin cargo";
         const periodo = item.periodo_evaluacion || "";
         const anioInicio = item.anio_inicio;
-        const estado = item.estado_eval_obreros;
+        const estado = item.estado_eval_obrero;
   
         const acciones = `
             <div class="dropdown">
@@ -205,7 +205,7 @@ function validarCadena(cadena){
                     <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarPeriodoObrero(${item.id_eval_obreros})">
                         <i class="icon-base bx bx-edit-alt me-1"></i>Editar
                     </a>
-                    <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvalObrero(${item.id_eval_obreros},'${item.estado_eval_obreros}')">
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvalObrero(${item.id_eval_obreros},'${item.estado_eval_obrero}')">
                         <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
                     </a>
                 </div>
@@ -340,7 +340,7 @@ function validarCadena(cadena){
   
       const datos = new FormData();
       datos.append('id_eval_obreros', id_eval_obreros);
-      datos.append('estado_eval_obreros', nuevoEstado);
+      datos.append('estado_eval_obrero', nuevoEstado);
   
       try {
         const resp = await microApi('controlador/?cambiar_estadoEvalObrero', datos);
@@ -369,38 +369,49 @@ function validarCadena(cadena){
   ============================================================ */
   
   function valorFormEvalObrero(evaluado=''){
-    document.getElementById('id_evaluado_obrero').value = evaluado;
+    document.getElementById('evaluado_id').value = evaluado;
   }
   
   /* ============================================================
      LISTAR EVALUADOS PARA SELECT
   ============================================================ */
   
-  async function listarEvaluadosObrero() {
+  async function listarObrerosSelect() {
     try {
-      const resp = await microApi('controlador/?listar_datos');
-      llenarSelectEvaluadosObrero(resp);
+      // Llamada a la API para obtener las ubicaciones físicas
+      const resp = await microApi('controlador/?l_subOb');
+  
+      if (typeof resp === 'string') {
+        console.error('Error al listar a los subordinados:', resp);
+        return;
+      }
+  
+      llenarSelectEvaluadosO(resp);
     } catch (err) {
-      console.error('Error al listar evaluados obreros:', err);
+      console.error('La petición de listado de subordinados falló:', err);
     }
   }
   
-  function llenarSelectEvaluadosObrero(datos) {
-    const select = document.getElementById('id_evaluado_obrero');
+  function llenarSelectEvaluadosO(datos) {
+    const select = document.getElementById('evaluado_id');
     if (!select) return;
   
-    select.innerHTML = '<option value="">Seleccione a un usuario</option>';
+    // Opción por defecto (coincide con tu HTML)
+    select.innerHTML = '<option selected>Seleccione a un subordinado</option>';
   
+    // Manejo flexible del array de datos
     const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-    const evaluados = registros.filter(item => item.rol === 'Evaluado');
   
-    evaluados.forEach(item => {
-      const fullname = item.nombre_completo || item.cedula_usuario;
+    registros.forEach(item => {
+      const valor = item.evaluado_id;        // ID de evaluado (subordinado) como value
+      const texto = item.subordinado;  // Nombre como texto visible
   
-      const opcion = document.createElement('option');
-      opcion.value = item.id_evaluado;
-      opcion.textContent = fullname;
-      select.appendChild(opcion);
+      if (valor && texto) {  // Validación extra
+        const opcion = document.createElement('option');
+        opcion.value = valor;
+        opcion.textContent = texto;
+        select.appendChild(opcion);
+      }
     });
   }
   

@@ -18,23 +18,18 @@ try {
     }
 
     if ($cedula === '' || $clave === '') {
-        echo json_encode([
-            "success" => false,
-            "message" => "Faltan datos"
-        ]);
+        echo json_encode(["success" => false, "message" => "Faltan datos"]);
         exit;
     }
 
-    // Instancia Usuario con la nueva estructura
     $usuario = new Usuario($_POST, $this->conexion);
     $sql = $usuario->sql_buscar();
     $respuesta = $this->ejecutarConsultaBdds($sql);
 
     if ($respuesta && count($respuesta[0]) > 0) {
 
-        // Varias filas = varios roles
         $filas = $respuesta[0];
-        $row = $filas[0]; // Datos generales del usuario
+        $row = $filas[0];
 
         if ($row['estado_usuario'] === 'Inactivo') {
             echo json_encode([
@@ -47,7 +42,6 @@ try {
 
         if (password_verify($clave, $row['clave'])) {
 
-            // Validación del PIN
             if ($pin !== null && $pin !== $row['cedula_usuario']) {
                 echo json_encode([
                     "success" => false,
@@ -62,39 +56,32 @@ try {
                 $roles[] = strtolower(trim($f['nombre_rol']));
             }
 
-            // Guardar sesión
+            // Guardar sesión completa
             $_SESSION['usuario'] = [
-                'id_usuario' => $row['id_usuario'],
-                'cedula'     => $row['cedula_usuario'],
-                'roles'      => $roles
+                'id_usuario'        => $row['id_usuario'],
+                'cedula'    => $row['cedula_usuario'],
+                'id_cargo'          => $row['id_cargo'],
+                'roles'             => $roles
             ];
 
             echo json_encode([
-                "success"   => true,
-                "message"   => "Bienvenido",
-                "id_usuario"=> $row['id_usuario'],
-                "cedula"    => $row['cedula_usuario'],
-                "roles"     => $roles
+                "success"       => true,
+                "message"       => "Bienvenido",
+                "id_usuario"    => $row['id_usuario'],
+                "cedula"        => $row['cedula_usuario'],
+                "id_cargo"      => $row['id_cargo'],
+                "roles"         => $roles
             ]);
 
         } else {
-            echo json_encode([
-                "success" => false,
-                "message" => "Clave incorrecta"
-            ]);
+            echo json_encode(["success" => false, "message" => "Clave incorrecta"]);
         }
 
     } else {
-        echo json_encode([
-            "success" => false,
-            "message" => "Usuario no encontrado"
-        ]);
+        echo json_encode(["success" => false, "message" => "Usuario no encontrado"]);
     }
 
 } catch (Throwable $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Error en el servidor: " . $e->getMessage()
-    ]);
+    echo json_encode(["success" => false, "message" => "Error en el servidor: " . $e->getMessage()]);
 }
 exit;

@@ -8,7 +8,7 @@ $data = $dataCliente['_post'];
 $evaluado = new Evaluado($data, $this->conexion);
 
 // Generar consulta para buscar usuario evaluado por cédula
-$sql = $evaluado->sql_buscar_user_evaluado();
+$sql = $evaluado->sql_buscar();
 $respuesta = $this->ejecutarConsultaBdds($sql);
 
 if (count($respuesta) == 0) {
@@ -16,7 +16,7 @@ if (count($respuesta) == 0) {
     $respuesta = $data['cedula_usuario'] . ' No Existe';
 } else {
     // Existe, actualizar clave o datos que quieras actualizar
-    $sql = $evaluado->sql_actualizar_user_evaluado();
+    $sql = $evaluado->sql_actualizar();
     $respuesta = $this->ejecutarConsultaBdds($sql);
 }
 

@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', '0'); 
 ini_set('display_startup_errors', '0');
@@ -29,7 +30,7 @@ try {
     }
 
     // 3) Inyectar el id_usuario del evaluador desde la sesión
-    $dataCliente['id_usuario'] = $idUsuarioSesion;
+    $dataCliente['evaluador_id'] = $idUsuarioSesion;
 
     // 4) Instanciar la clase
     $evaluacion = new EvaluacionesAdministrativos($dataCliente, $this->conexion);

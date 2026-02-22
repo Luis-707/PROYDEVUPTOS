@@ -35,11 +35,11 @@ include_once '../servicios/Sesion.php';
 <h2>Registro de datos para las evaluaciones de personal obrero</h2>
 
 <div class="container py-4">
-    <form id="formulario_EvalObrero" onsubmit="event.preventDefault(); validar_formEvalObrero(1);">
+    <form id="formularioEvalObrero" onsubmit="event.preventDefault(); validar_formEvalObrero(1);">
 
         <div class="col-md-4">
-          <label for="id_evaluado_obrero" class="form-label">Seleccionar evaluado</label>
-          <select class="form-select" id="id_evaluado_obrero" name="id_evaluado" required>
+          <label for="evaluado_id" class="form-label">Seleccionar evaluado</label>
+          <select class="form-select" id="evaluado_id" name="evaluado_id" required>
             <option selected disabled>Seleccione un evaluado</option>
           </select>
         </div>

@@ -19,6 +19,6 @@ if (count($respuesta) == 0) {
 }
 
 $respuesta = $this->ejecutarConsultaBdds($sql);
-$respuesta = $this->servicio($data,'l_evalAdministrativos'); // el parametro no tiene extension pero es el servicio del archivo l_usuario.php
+$respuesta = $this->servicio($data,'l_evalAdmin'); // el parametro no tiene extension pero es el servicio del archivo l_usuario.php
 // Retornar la respuesta
 return $respuesta;

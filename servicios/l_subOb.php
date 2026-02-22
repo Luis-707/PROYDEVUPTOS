@@ -16,12 +16,12 @@ if (!$idUsuarioSesion || !$cedulaSesion) {
     exit;
 }
 
-include_once "../clases/Evaluado.php";
+include_once "../clases/EvaluacionesObreros.php";
 
-$usuario = new Evaluado([], $this);
+$subordinado = new EvaluacionesObreros([], $this);
 
-// Pasar el ID del usuario autenticado al método Sql_listar
-$sql = $usuario->sql_listar_sub($idUsuarioSesion);
+// Pasar el ID del usuario autenticado al método sql_listar_evaluadosOb
+$sql = $subordinado->sql_listar_evaluadosOb($idUsuarioSesion);
              
 $respuesta = $this->ejecutarConsultaBdds($sql);
 return $respuesta;

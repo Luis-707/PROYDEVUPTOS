@@ -75,11 +75,15 @@ function validar_form_evaluado(opc) {
       } 
 
   if (isValid) {
-    if (opc === 1) {
-      guardarEvaluado();
-    } else{
-      actualizarEvaluado();
-    }
+         // Obtener el valor del campo id_usuario_modal
+  var idUsuario = document.getElementById("id_usuario_modal").value;
+
+  // Comprobar si el campo está vacío
+  if (idUsuario.trim() === '') {
+    guardarEvaluado(); // Llamar a guardarEvaluado si está vacío
+  } else {
+    actualizarEvaluado(); // Llamar a actualizarEvaluado si no está vacío
+  }
   }
 }
 
@@ -99,8 +103,14 @@ if (clave.length < 10) {
 }
 
   // Agregar rol_id
-let idrolEvaluado = document.getElementById('id_rol_evaluado').value;
-datos.append('rol_id', idrolEvaluado);
+//let idrolEvaluado = document.getElementById('id_rol_evaluado').value;
+//datos.append('rol_id', idrolEvaluado);
+
+let idCargo = document.getElementById('id_cargo').value;
+datos.append('id_cargo', idCargo);
+
+let idUF = document.getElementById('id_uf').value;
+datos.append('id_uf', idUF);
 
 let nombreCompleto = document.getElementById('fullname_input').value;
 datos.append('nombre_completo', nombreCompleto);
@@ -110,6 +120,8 @@ datos.append('tipo_empleado', tipoEmpleado);
 
 let ubicacion = document.getElementById('additional_input').value;
 datos.append('ubicacion_administrativa', ubicacion);
+
+for (let [k, v] of datos.entries()) console.log(k, v);
 
   try {
     const resp = await microApi('controlador/?g_user_evaluado', datos);
@@ -131,130 +143,6 @@ async function listarGestionEvaluados() {
 }
 
 //==========================================================//
-//Funcion para rellenar el fomulario
-
-function editarUserEvaluado(cedula, clave, rolId, nombreCompleto, tipo, ubicacion) {
-// Rellenar los campos del formulario con los datos del usuario
-document.getElementById('id_cedula_usuario').value = cedula;
-//document.getElementById('cedula_modal').value = cedula; // campo oculto
-document.getElementById('id_clave').value = clave;
-document.getElementById('id_rol_evaluado').value = rolId;
-document.getElementById('fullname_input').value = nombreCompleto;
-document.getElementById('type_str_input').value = tipo;
-document.getElementById('additional_input').value = ubicacion;
-
-// Mostrar el mensaje
-document.getElementById('mensajeEditarEvaluado').style.display = 'block';
-
-// Activar el botón Editar
-const btnEditar = document.getElementById('btnEditarEval');
-btnEditar.disabled = false;
-btnEditar.classList.remove('btn-secondary');
-btnEditar.classList.add('btn-warning');
-}
-
-//==========================================================//
-
-//===============================================================//
-//Funcion que crea las filas de la tabla
-/*
-async function listarTablaEvaluados(datos) {
-  const tbody = document.querySelector("#tabla-GestionEvaluados tbody");
-  tbody.innerHTML = "";
-
-  // Cargar JSON con datos de empleados
-  const resp = await microApi('views/js/datos_empleado.json');
-  let empleados = [];
-
-  if (Array.isArray(resp)) {
-    empleados = resp[0]?.data || resp[0] || [];
-  } else if (resp?.data) {
-    empleados = resp.data;
-  }
-
-  // Aplanar si vienen anidados
-  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-
-  let html = "";
-
-  registros.forEach(item => {
-    const cedula = String(item.cedula_usuario || item.cedula_evaluado).trim();
-
-    // Buscar empleado en JSON
-    const empleado = empleados.find(emp =>
-      emp.pin_str === cedula || emp.pin === cedula
-    );
-
-    const fullname = empleado ? empleado.fullname : "No encontrado";
-    //const cargoTexto = item.cargo_evaluado || "Sin cargo";
-    //const tipoEmpleado = empleado && empleado.type_str
-      //? (Array.isArray(empleado.type_str) ? empleado.type_str.join(', ') : empleado.type_str)
-      //: "Desconocido";
-    //const status = empleado ? empleado.status_str : "Desconocido";
-
-    html += `
-      <tr>
-        <td>${item.clave ? "******" : ""}</td>
-        <td>${cedula}</td>
-        <td>${fullname}</td>
-        <td>${item.estado_usuario}</td>
-      <td>
-        <div class="dropdown">
-          <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="icon-base bx bx-dots-vertical-rounded"></i></button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="javascript:void(0);" onclick="abrirModalEditarEvaluado(${cedula})"><i class="icon-base bx bx-edit-alt me-1"></i>Editar</a>
-            <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarEvaluado(${item.cedula_usuario},${item.id_usuario})"><i class="icon-base bx bx-trash me-1"></i>Eliminar</a>
-            <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvaluado(${item.id_usuario},'${item.estado_usuario}')"><i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado</a>
-          </div>
-        </div>
-      </td>
-      </tr>
-    `;
-  });
-
-  tbody.innerHTML = html;
-}*/
-//Funcion para listar usuarios evaluados funcional
- /* async function listarTablaEvaluados(datos) {
-  const tbody = document.querySelector("#tabla-GestionEvaluados tbody");
-  tbody.innerHTML = "";
-
-  // Aplanar si vienen anidados
-  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-
-  let html = "";
-
-  registros.forEach(item => {
-      const cedula = String(item.cedula_usuario || item.cedula_evaluado).trim();
-      const fullname = item.nombre_completo || "No encontrado";
-
-      html += `
-          <tr>
-              <td>${item.clave ? "******" : ""}</td>
-              <td>${cedula}</td>
-              <td>${fullname}</td>
-              <td>${item.estado_usuario}</td>
-              <td>
-                  <div class="dropdown">
-                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                          <i class="icon-base bx bx-dots-vertical-rounded"></i>
-                      </button>
-                      <div class="dropdown-menu">
-                          <a class="dropdown-item" href="javascript:void(0);" onclick="editarUserEvaluado('${item.cedula_usuario}', '${item.clave ? item.clave : ""}', '${item.rol_id}', '${item.nombre_completo}', '${item.tipo_empleado}', '${item.ubicacion_administrativa}')">
-                              <i class="icon-base bx bx-edit-alt me-1"></i>Editar
-                          </a>
-                          <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvaluado(${item.id_usuario},'${item.estado_usuario}')">
-                              <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
-                          </a>
-                      </div>
-                  </div>
-              </td>
-          </tr>
-      `;
-  });
-
-  tbody.innerHTML = html;
-}*/
 // Listar evaluados en tabla DataTables
 async function listarTablaEvaluados(datos) {
 const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
@@ -269,10 +157,25 @@ $('#tabla-GestionEvaluados tbody').empty();
 
 // Preparar datos para DataTables
 const tableData = registros.map(item => {
-    const cedula = String(item.cedula_usuario || item.cedula_evaluado).trim();
-    const fullname = item.nombre_completo || "No encontrado";
-    const claveCol = item.clave ? "******" : "";
-    
+  const clave = item.clave ? "******" : "";  // Clave en asteriscos si no existe
+  const cedula = String(item.cedula_usuario || "").trim();
+  const nombreCompleto = item.subordinado || "Sin nombre";
+  const nombreCargo = item.cargo || "Sin cargo";
+  const estadoUsuario = item.estado_usuario;
+
+  // Acciones con funciones específicas para usuarios
+  const editarEval = `abrirModalUsuarioEval(
+    '${item.id}', 
+    '${cedula}', 
+    '${item.clave ? item.clave : ""}', 
+    '${item.subordinado}', 
+    '${item.tipo_empleado || ""}', 
+    '${item.ubicacion_administrativa || ""}', 
+    '${item.id_cargo}', 
+    '${item.id_uf}', 
+    '${item.fecha_ingreso || ""}')`;
+    const btnEstadoUsuarioEval = `cambiarEstadoEvaluado('${item.id}', '${item.estado_usuario}')`;
+
     // Botones de acción
     const acciones = `
         <div class="dropdown">
@@ -281,10 +184,10 @@ const tableData = registros.map(item => {
             </button>
             <div class="dropdown-menu">
                 <a class="dropdown-item" href="javascript:void(0);" 
-                   onclick="editarUserEvaluado('${item.cedula_usuario}', '${item.clave ? item.clave : ""}', '${item.rol_id}', '${item.nombre_completo}', '${item.tipo_empleado}', '${item.ubicacion_administrativa}')">
+                onclick="${editarEval}">
                     <i class="icon-base bx bx-edit-alt me-1"></i>Editar
                 </a>
-                <a class="dropdown-item" href="javascript:void(0);" onclick="cambiarEstadoEvaluado(${item.id_usuario},'${item.estado_usuario}')">
+                <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuarioEval}">
                     <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
                 </a>
             </div>
@@ -292,11 +195,12 @@ const tableData = registros.map(item => {
     `;
     
     return [
-        claveCol,
-        cedula,
-        fullname,
-        item.estado_usuario,
-        acciones
+      clave,
+      cedula,
+      nombreCompleto,
+      nombreCargo,
+      estadoUsuario,
+      acciones
     ];
 });
 
@@ -304,17 +208,18 @@ const tableData = registros.map(item => {
 $('#tabla-GestionEvaluados').DataTable({
     data: tableData,
     columns: [
-        { title: "Clave", width: "80px" },
-        { title: "Cédula", width: "120px" },
-        { title: "Nombre Completo" },
-        { title: "Estado", width: "300px" },
-        { 
-            title: "Acciones", 
-            width: "120px",
-            orderable: false,
-            searchable: false
-        }
-    ],
+      { title: "Clave", width: "100px" },
+      { title: "Cédula", width: "140px" },
+      { title: "Apellidos y nombres" },
+      { title: "Cargo" },
+      { title: "Estado", width: "100px" },
+      { 
+          title: "Acciones", 
+          width: "140px",
+          orderable: false,
+          searchable: false
+      }
+  ],
     pageLength: 25,
     responsive: true,
     order: [[1, 'asc']], // Ordenar por cédula por defecto
@@ -335,56 +240,6 @@ $('#tabla-GestionEvaluados').DataTable({
 
 
 //===============================================================//
-
-/*async function eliminarEvaluado(cedula) {
-  const result = await Swal.fire({
-    title: '¿Deseas eliminar este evaluado?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  });
-  if (result.isConfirmed) {
-    let datos = new FormData();
-    datos.append('cedula_usuario', cedula);
-    await microApi('controlador/?e_user_evaluado', datos);
-    listarEvaluados();
-    Swal.fire({ icon: 'success', title: 'Eliminado', text: 'Evaluado eliminado correctamente' });
-  }
-}*/
-
-//Eliminar usuario evaluado
-
-/*async function eliminarEvaluado(cedula) {
-const result = await Swal.fire({
-  title: '¿Deseas eliminar este evaluado?',
-  text: "Esta acción no se puede deshacer",
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonColor: '#d33',
-  cancelButtonColor: '#3085d6',
-  confirmButtonText: 'Sí, eliminar',
-  cancelButtonText: 'Cancelar'
-});
-
-if (result.isConfirmed) {
-  let datos = capturarValoresFormulario('formulario_evaluado', cedula);
-  //datos.append('otros_datos', cedula); // o 'cedula_usuario' según backend
-
-  var resp = await microApi('controlador/?e_user_evaluado', datos);
-
-  listarGestionEvaluados();
-
-  Swal.fire({
-    icon: 'success',
-    title: 'Eliminación de evaluado',
-    text: 'El evaluado fue eliminado correctamente'
-  });
-} else {
-  valorFormEvaluado(); // limpia formulario si cancela
-}
-}
-*/
 
 //==========================================================//
 //Cambiar estado del usuario
@@ -429,35 +284,15 @@ if (result.isConfirmed) {
 }
 
 //==========================================================//
-
-
-async function eliminarEvaluado(cedula) {
-const result = await Swal.fire({
-  title: '¿Deseas eliminar este evaluado?',
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonText: 'Sí, eliminar',
-  cancelButtonText: 'Cancelar'
-});
-if (result.isConfirmed) {
-  const formData = new FormData();
-  formData.append('cedula_usuario', cedula);
-  await microApi('controlador/?e_user_evaluado', formData);
-  listarGestionEvaluados();
-  Swal.fire({ icon: 'success', title: 'Eliminado', text: 'Evaluado eliminado correctamente' });
-}
-}
-
-
-//=========================================
-
-
-
+//editar usuario evaluado (subordinado abajo de la jerarquia)  
 async function actualizarEvaluado() {
   let datos = capturarValoresFormulario('formulario_evaluado');
 
-  let NuevoRo = document.getElementById('id_rol_evaluado').value;
-  datos.append('rol_id', NuevoRo);
+  let idCargo = document.getElementById('id_cargo').value;
+  datos.append('id_cargo', idCargo);
+
+  let idUF = document.getElementById('id_uf').value;
+  datos.append('id_uf', idUF);
 
   let cedulaEval = document.getElementById('id_cedula_usuario').value;
   datos.append('cedula_usuario', cedulaEval);
@@ -474,6 +309,7 @@ async function actualizarEvaluado() {
   var resp = await microApi('controlador/?a_user_evaluado', datos);
   listarTablaEvaluados(resp);
   Swal.fire({ icon: 'success', title: 'Actualización', text: 'Evaluado actualizado con éxito' });
+  valorFormEvaluado();
 }
 
 //Limpiar formulario
@@ -481,99 +317,101 @@ async function actualizarEvaluado() {
 function pa(cad){
 document.getElementById('id_clave').value = MD5(cad);
 }
-
+/*
 function valorFormEvaluado(cl='',ced='',RolSis=''){
 
 document.getElementById('id_clave').value = cl;
 document.getElementById('id_cedula_usuario').value = ced;
-document.getElementById('id_rol_evaluado').value = RolSis;
+//document.getElementById('id_rol_evaluado').value = RolSis;
 //document.getElementById('id_cargo_evaluado').value = cargo;
 
 
 
-}
-
-
-// =========================
-// Select de cargos evaluados
-// =========================
-/*async function listarCargosEvaluados() {
-  try {
-    const resp = await microApi('controlador/?l_cargos_evaluados');
-    if (typeof resp === 'string') {
-      console.error('Error al listar cargos evaluados:', resp);
-      return;
-    }
-    llenarSelectCargosEvaluados(resp);
-  } catch (err) {
-    console.error('La petición de cargos evaluados falló:', err);
-  }
-}
-
-function llenarSelectCargosEvaluados(datos) {
-  const select = document.getElementById('id_cargo_evaluado');
-  if (!select) return;
-  select.innerHTML = '<option value="">Seleccione un cargo</option>';
-  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-  registros.forEach(item => {
-    const opcion = document.createElement('option');
-    opcion.value = item.id_cargo_evaluado;
-    opcion.textContent = item.cargo_evaluado;
-    select.appendChild(opcion);
-  });
 }*/
 
-//Select para rol de evaluado
-
-async function listarRolesEvaluados() {
-  try {
-    // Llamas a la API que te devuelve los datos de jefes_superiores
-    const resp = await microApi('controlador/?listar_RolesSistema');
-
-    if (typeof resp === 'string') {
-      console.error('Error al listar Roles del Sistema:', resp);
-      return;
-    }
-
-    llenarSelectSoloEvaluado(resp);
-  } catch (err) {
-    console.error('La petición de Roles de Sistema falló:', err);
-  }
+function valorFormEvaluado(idUser='',cl='',ced='',fullname='',typestr='',addict='',cargo='',uf='',ingreso=''){
+ 
+document.getElementById('id_usuario_modal').value = idUser;  
+  document.getElementById('id_clave').value = cl;
+  document.getElementById('id_cedula_usuario').value = ced;
+  document.getElementById('fullname_input').value = fullname;
+  document.getElementById('type_str_input').value = typestr;
+  document.getElementById('additional_input').value = addict;
+  document.getElementById('id_cargo').value = cargo;    
+  document.getElementById('id_uf').value = uf;
+  document.getElementById('fecha_ingreso').value = ingreso;
 }
 
-function llenarSelectSoloEvaluado(datos) {
-  const select = document.getElementById('id_rol_evaluado');
-  if (!select) return;
+// =========================
+// Modal de edición
+// =========================
+// Función para abrir el modal y rellenar el formulario con datos de la fila
+function abrirModalUsuarioEval(id_usuario = '', cedula_usuario = '', clave = '', nombre_completo = '', tipo_empleado = '', ubicacion_administrativa = '', id_cargo = '', id_uf = '', fecha_ingreso = '') {
+// Resetear formulario para asegurar que los campos estén vacíos
+const form = document.getElementById("formulario_evaluado");
+form.reset();
 
-  // Opción por defecto
-  //select.innerHTML = '<option value="">-- Seleccione un rol del sistema --</option>';
+// Asignar los valores, pero si son undefined, asignar cadena vacía
+document.getElementById("id_usuario_modal").value = id_usuario || '';
+document.getElementById("id_cedula_usuario").value = cedula_usuario || '';
+document.getElementById("fullname_input").value = nombre_completo || '';
+document.getElementById("type_str_input").value = tipo_empleado || '';
+document.getElementById("additional_input").value = ubicacion_administrativa || '';
+document.getElementById("id_clave").value = clave || '';
+document.getElementById("id_cargo").value = id_cargo || '';
+document.getElementById("id_uf").value = id_uf || '';
+document.getElementById("fecha_ingreso").value = fecha_ingreso || '';
 
-  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+// Cambiar el título según si hay ID
+const tituloModal = document.querySelector("#modalUsuarioEval .modal-title");
+if (id_usuario) {
+  tituloModal.textContent = "Editar usuario";
+} else {
+  tituloModal.textContent = "Nuevo usuario";
+}
 
-  // Filtrar para obtener solo el rol Evaluado
-  const rolEvaluado = registros.find(item => (item.rol === 'Evaluado' || item.nombrerol === 'Evaluado'));
+// Mostrar el modal
+const modal = new bootstrap.Modal(document.getElementById('modalUsuarioEval'));
+modal.show();
+}
 
-  if (rolEvaluado) {
-    const valor = rolEvaluado.rol_id || rolEvaluado.idrol;
-    const texto = rolEvaluado.rol || rolEvaluado.nombrerol;
+//=====================================
 
+async function listarCargosSub() {
+try {
+  // Llamada a la API para obtener los cargos
+  const resp = await microApi('controlador/?l_cargos_sub');
+
+  if (typeof resp === 'string') {
+    console.error('Error al listar cargos:', resp);
+    return;
+  }
+
+  llenarSelectCargosSub(resp);
+} catch (err) {
+  console.error('La petición de cargos falló:', err);
+}
+}
+
+function llenarSelectCargosSub(datos) {
+const select = document.getElementById('id_cargo');
+if (!select) return;
+
+// Opción por defecto (coincide con tu HTML)
+select.innerHTML = '<option selected>Seleccione un cargo</option>';
+
+// Manejo flexible del array de datos
+const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+registros.forEach(item => {
+  const valor = item.id_cargo;  // ID del cargo como value
+  const texto = item.nombre_cargo;  // Nombre como texto visible
+
+  if (valor && texto) {  // Validación extra
     const opcion = document.createElement('option');
     opcion.value = valor;
     opcion.textContent = texto;
     select.appendChild(opcion);
   }
-}  
-
-// =========================
-// Modal de edición
-// =========================
-function abrirModalEditarEvaluado(cedula) {
-// Reiniciar el formulario de edición
-document.getElementById("form-modal-editar-evaluado").reset();
-
-// Asignar la cédula al campo oculto del modal
-document.getElementById("cedula_modal_eval").value = cedula;
-
-// Mostrar el modal
-$("#modalEditarEvaluado").modal("show");
+});
 }

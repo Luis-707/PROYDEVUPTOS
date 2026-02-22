@@ -83,13 +83,15 @@ function validar_form(opc) {
 
   // Si todas las validaciones pasan
   if (isValid) {        
-      
-     //formulario.submit(); // Enviar el formulario
-      if(opc==1)
-          guardarUsuario();  
-      else
-      actualizarUsuario();
-          
+       // Obtener el valor del campo id_usuario_modal
+  var idUsuario = document.getElementById("id_usuario_modal").value;
+
+  // Comprobar si el campo está vacío
+  if (idUsuario.trim() === '') {
+    guardarUsuario(); // Llamar a guardarUsuario si está vacío
+  } else {
+    actualizarUsuario(); // Llamar a actualizarUsuario si no está vacío
+  }
   }
 }
 async function guardarUsuario() {
@@ -107,8 +109,12 @@ if (clave.length < 10) {
 }
 
 let datosPersona = capturarValoresFormulario('formulario_usuario');
-let idRol = document.getElementById('id_rol_sistema').value;
-datosPersona.append('rol_id', idRol);
+
+let idCargo = document.getElementById('id_cargo').value;
+datosPersona.append('id_cargo', idCargo);
+
+let idUF = document.getElementById('id_uf').value;
+datosPersona.append('id_uf', idUF);
 
 let nombreCompleto = document.getElementById('fullname_input').value;
 datosPersona.append('nombre_completo', nombreCompleto);
@@ -164,176 +170,212 @@ return resp;
  
 }
 
-
-/*function abrirModalEditar(cedula,clave, rolSistema) {
-// 1) Resetear el formulario del modal
-document.getElementById("form-modal-editar").reset();
-
-// 2) Rellenar oculto y selects
-document.getElementById("cedula_modal").value      = cedula;
-document.getElementById("clave_modal").value       = clave; // No mostrar la clave real
-document.getElementById("rol_modal").value         = rolSistema;
-
-// 3) Mostrar el modal (Bootstrap/jQuery)
-$("#modalEditar").modal("show");
-}
-
-function rellenarSelect(datos, idSelect) {
-  const sel = document.getElementById(idSelect);
-
-  // Limpia y agrega la opción por defecto
-  sel.innerHTML = '<option value="">-- Seleccione --</option>';
-
-  // Aplana si es un array de arrays
-  const flat = Array.isArray(datos[0]) ? datos.flat() : datos;
-
-  // Recorre y agrega opciones
-  flat.forEach(o => {
-    const opt = document.createElement('option');
-    opt.value = o.rol_id;   // valor fijo
-    opt.textContent = o.rol; // texto fijo
-    sel.appendChild(opt);
-  });
-}
-
-// Variantes de tu función de listar, apuntando al ID del modal
-
-function listarRolesSistemaModal() {
-return microApi('controlador/?listar_RolesSelect')
-  .then(datos => rellenarSelect(datos, 'rol_modal'));
-}*/
-//==========================================================//
-//Funcion para rellenar el fomulario
-
-function editarUser(cedula, clave, rolId, nombreCompleto, tipo, ubicacion) {
-// Rellenar los campos del formulario con los datos del usuario
-document.getElementById('id_cedula_usuario').value = cedula;
-//document.getElementById('cedula_modal').value = cedula; // campo oculto
-document.getElementById('id_clave').value = clave;
-document.getElementById('id_rol_sistema').value = rolId;
-document.getElementById('fullname_input').value = nombreCompleto;
-document.getElementById('type_str_input').value = tipo;
-document.getElementById('additional_input').value = ubicacion;
-
-// Mostrar el mensaje
-document.getElementById('mensajeEditar').style.display = 'block';
-
-// Activar el botón Editar
-const btnEditar = document.getElementById('btnEditar');
-btnEditar.disabled = false;
-btnEditar.classList.remove('btn-secondary');
-btnEditar.classList.add('btn-warning');
-}
-
-//==========================================================//
-
 // Listar usuarios en tabla DataTables
-async function listarTablaUsuarios(datos) {
-  // Cargar lista de roles desde la API
-  const rolesResp = await microApi('controlador/?listar_RolesSistema');
-  const rolesList = Array.isArray(rolesResp[0]) ? rolesResp.flat() : rolesResp;
-  
-  // Aplanar datos si vienen anidados
-  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
-  
-  // Destruir DataTable existente si existe
-  if ($.fn.DataTable.isDataTable('#tabla-usuarios')) {
-      $('#tabla-usuarios').DataTable().destroy();
-  }
-  
-  // Limpiar tbody
-  $('#tabla-usuarios tbody').empty();
-  
-  // Preparar datos para DataTables
-  const tableData = registros.map(item => {
-      const ADMIN_ID = 1;
-      
-      // Buscar rol
-      const rolObj = rolesList.find(r => r.rol_id == item.rol_id || r.idrol == item.rol_id);
-      const rolTexto = rolObj ? (rolObj.rol || rolObj.nombrerol || "Desconocido") : "Desconocido";
-      
-      // Columna clave (oculta si existe)
-      const claveCol = item.clave ? "******" : "";
-      
-      let acciones;
-      
-      if (item.rol_id == ADMIN_ID) {
-          // Admin solo icono
-          acciones = `
-              <div class="acciones-icons">
-                  <img src="img/iconos/Usuario Administrador.png" alt="Admin" />
-              </div>
-          `;
-      } else {
-          // Usuario normal con dropdown
-          const editarF = `editarUser('${item.cedula_usuario}', '${item.clave ? item.clave : ""}', '${item.rol_id}', '${item.nombre_completo}', '${item.tipo_empleado}', '${item.ubicacion_administrativa}')`;
-          const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
-          const btnEstadoUsuario = `cambiarEstadoUsuario('${item.id_usuario}', '${item.estado_usuario}')`;
-          
-          acciones = `
-              <div class="dropdown">
-                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                      <i class="icon-base bx bx-dots-vertical-rounded"></i>
-                  </button>
-                  <div class="dropdown-menu">
-                      <a class="dropdown-item" href="javascript:void(0);" onclick="${editarF}">
-                          <i class="icon-base bx bx-edit-alt me-1"></i>Editar
-                      </a>
-                      <a class="dropdown-item" href="javascript:void(0);" onclick="${btnPerm}">
-                          <i class="icon-base bx bx-lock-open me-1"></i>Permisos
-                      </a>
-                      <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuario}">
-                          <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
-                      </a>
-                  </div>
-              </div>
-          `;
-      }
-      
-      return [
-          claveCol,
-          item.cedula_usuario,
-          item.nombre_completo,
-          rolTexto,
-          item.estado_usuario,
-          acciones
-      ];
-  });
-  
-  // Inicializar DataTable
-  $('#tabla-usuarios').DataTable({
-      data: tableData,
-      columns: [
-          { title: "Clave", width: "80px" },
-          { title: "Cédula", width: "120px" },
-          { title: "Nombre Completo" },
-          { title: "Rol" },
-          { title: "Estado", width: "100px" },
-          { 
-              title: "Acciones", 
-              width: "120px",
-              orderable: false,
-              searchable: false
-          }
-      ],
-      pageLength: 25,
-      responsive: true,
-      order: [[1, 'asc']], // Ordenar por cédula por defecto
-      language: {
-          search: "Buscar:",
-          lengthMenu: "Mostrar _MENU_ registros por página",
-          info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-          infoEmpty: "Mostrando 0 a 0 de 0 registros",
-          emptyTable: "No hay datos disponibles en la tabla",
-          zeroRecords: "No se encontraron registros coincidentes",
-          paginate: {
-              previous: "Anterior",
-              next: "Siguiente"
-          }
-      }
-  });
+/*async function listarTablaUsuarios(datos) {
+// Cargar lista de roles desde la API
+const rolesResp = await microApi('controlador/?listar_RolesSistema');
+const rolesList = Array.isArray(rolesResp[0]) ? rolesResp.flat() : rolesResp;
+
+// Aplanar datos si vienen anidados
+const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+// Destruir DataTable existente si existe
+if ($.fn.DataTable.isDataTable('#tabla-usuarios')) {
+    $('#tabla-usuarios').DataTable().destroy();
 }
 
+// Limpiar tbody
+$('#tabla-usuarios tbody').empty();
+
+// Preparar datos para DataTables
+const tableData = registros.map(item => {
+    const ADMIN_ID = 1;
+    
+    // Buscar rol
+    const rolObj = rolesList.find(r => r.rol_id == item.rol_id || r.idrol == item.rol_id);
+    const rolTexto = rolObj ? (rolObj.rol || rolObj.nombrerol || "Desconocido") : "Desconocido";
+    
+    // Columna clave (oculta si existe)
+    const claveCol = item.clave ? "******" : "";
+    
+    let acciones;
+    
+    if (item.rol_id == ADMIN_ID) {
+        // Admin solo icono
+        acciones = `
+            <div class="acciones-icons">
+                <img src="img/iconos/Usuario Administrador.png" alt="Admin" />
+            </div>
+        `;
+    } else {
+        // Usuario normal con dropdown
+        const editarF = `abrirModalUsuario('${item.id_usuario}', '${item.cedula_usuario}', '${item.clave ? item.clave : ""}', '${item.rol_id}', '${item.nombre_completo}', '${item.tipo_empleado}', '${item.ubicacion_administrativa}')`;
+        const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
+        const btnEstadoUsuario = `cambiarEstadoUsuario('${item.id_usuario}', '${item.estado_usuario}')`;
+        
+        acciones = `
+            <div class="dropdown">
+                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                    <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="${editarF}">
+                        <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="${btnPerm}">
+                        <i class="icon-base bx bx-lock-open me-1"></i>Permisos
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuario}">
+                        <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+    
+    return [
+        claveCol,
+        item.cedula_usuario,
+        item.nombre_completo,
+        rolTexto,
+        item.estado_usuario,
+        acciones
+    ];
+});
+
+// Inicializar DataTable
+$('#tabla-usuarios').DataTable({
+    data: tableData,
+    columns: [
+        { title: "Clave", width: "80px" },
+        { title: "Cédula", width: "120px" },
+        { title: "Nombre Completo" },
+        { title: "Rol" },
+        { title: "Estado", width: "100px" },
+        { 
+            title: "Acciones", 
+            width: "120px",
+            orderable: false,
+            searchable: false
+        }
+    ],
+    pageLength: 25,
+    responsive: true,
+    order: [[1, 'asc']], // Ordenar por cédula por defecto
+    language: {
+        search: "Buscar:",
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "Mostrando 0 a 0 de 0 registros",
+        emptyTable: "No hay datos disponibles en la tabla",
+        zeroRecords: "No se encontraron registros coincidentes",
+        paginate: {
+            previous: "Anterior",
+            next: "Siguiente"
+        }
+    }
+});
+}*/
+
+async function listarTablaUsuarios(datos) {
+const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+// Destruir DataTable existente si existe
+if ($.fn.DataTable.isDataTable('#tabla-usuarios')) {
+    $('#tabla-usuarios').DataTable().destroy();
+}
+
+// Limpiar tbody
+$('#tabla-usuarios tbody').empty();
+
+// Preparar datos para DataTables
+const tableData = registros.map(item => {
+    const clave = item.clave ? "******" : "";  // Clave en asteriscos si no existe
+    const cedula = String(item.cedula_usuario || "").trim();
+    const nombreCompleto = item.nombre_completo || "Sin nombre";
+    const nombreCargo = item.nombre_cargo || "Sin cargo";
+    const estadoUsuario = item.estado_usuario;
+    
+    // Acciones con funciones específicas para usuarios
+    const editarF = `abrirModalUsuario(
+      '${item.id_usuario}', 
+      '${cedula}', 
+      '${item.clave ? item.clave : ""}', 
+      '${item.nombre_completo}', 
+      '${item.tipo_empleado || ""}', 
+      '${item.ubicacion_administrativa || ""}', 
+      '${item.id_cargo}', 
+      '${item.id_uf}', 
+      '${item.fecha_ingreso || ""}')`;
+    const btnPerm = `abrirModalPermisosUsuario('${item.id_usuario}')`;
+    const btnrol = `abrirModalRolesUsuario('${item.id_usuario}')`;
+    const btnEstadoUsuario = `cambiarEstadoUsuario('${item.id_usuario}', '${item.estado_usuario}')`;
+    
+    const acciones = `
+        <div class="dropdown">
+            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                <i class="icon-base bx bx-dots-vertical-rounded"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="javascript:void(0);" onclick="${editarF}">
+                    <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+                </a>
+                <a class="dropdown-item" href="javascript:void(0);" onclick="${btnPerm}">
+                    <i class="icon-base bx bx-lock-open me-1"></i>Permisos
+                </a>
+                <a class="dropdown-item" href="javascript:void(0);" onclick="${btnrol}">
+                    <i class="icon-base bx bx-lock-open me-1"></i>Roles
+                </a>
+                <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuario}">
+                    <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
+                </a>
+            </div>
+        </div>
+    `;
+    
+    return [
+        clave,
+        cedula,
+        nombreCompleto,
+        nombreCargo,
+        estadoUsuario,
+        acciones
+    ];
+});
+
+// Inicializar DataTable
+$('#tabla-usuarios').DataTable({
+    data: tableData,
+    columns: [
+        { title: "Clave", width: "100px" },
+        { title: "Cédula", width: "140px" },
+        { title: "Apellidos y nombres" },
+        { title: "Cargo" },
+        { title: "Estado", width: "100px" },
+        { 
+            title: "Acciones", 
+            width: "140px",
+            orderable: false,
+            searchable: false
+        }
+    ],
+    pageLength: 10,
+    responsive: true,
+    order: [[1, 'asc']], // Ordenar por cédula por defecto
+    language: {
+        search: "Buscar:",
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "Mostrando 0 a 0 de 0 registros",
+        emptyTable: "No hay datos disponibles en la tabla",
+        zeroRecords: "No se encontraron registros coincidentes",
+        paginate: {
+            previous: "Anterior",
+            next: "Siguiente"
+        }
+    }
+});
+}
 
 
 //==========================================================//
@@ -410,8 +452,12 @@ if (result.isConfirmed) {
 
 async function actualizarUsuario() {
 let datosPersona = capturarValoresFormulario('formulario_usuario');
-let NuevoRol = document.getElementById('id_rol_sistema').value;
-datosPersona.append('rol_id', NuevoRol);
+
+let idCargo = document.getElementById('id_cargo').value;
+datosPersona.append('id_cargo', idCargo);
+
+let idUF = document.getElementById('id_uf').value;
+datosPersona.append('id_uf', idUF);
 
 let nombreEditar = document.getElementById('fullname_input').value;
 datosPersona.append('nombre_completo', nombreEditar);
@@ -428,7 +474,7 @@ datosPersona.append('ubicacion_administrativa', ubicacionEditar);
 var resp = await microApi('controlador/?a_user', datosPersona);
 
 listarTablaUsuarios(resp);
-
+valorFormUsuario();
 Swal.fire({
     icon: 'success',
     title: 'Actualizacion de Usuario',
@@ -440,14 +486,17 @@ function pa(cad){
   document.getElementById('id_clave').value = MD5(cad);
 }
 
-function valorFormUsuario(cl='',ced='',RolSis=''){
+function valorFormUsuario(idUser='',cl='',ced='',fullname='',typestr='',addict='',cargo='',uf='',ingreso=''){
  
+  document.getElementById('id_usuario_modal').value = idUser;  
   document.getElementById('id_clave').value = cl;
   document.getElementById('id_cedula_usuario').value = ced;
-  document.getElementById('id_rol_sistema').value = RolSis;
-  
-
-  
+  document.getElementById('fullname_input').value = fullname;
+  document.getElementById('type_str_input').value = typestr;
+  document.getElementById('additional_input').value = addict;
+  document.getElementById('id_cargo').value = cargo;    
+  document.getElementById('id_uf').value = uf;
+  document.getElementById('fecha_ingreso').value = ingreso;
 }
 
  // Funciones de permisos usuario
@@ -516,45 +565,180 @@ if (!resp || resp.success === false) {
 
 
 
-//Select de roles del sistema
+//Select de cargos del sistema
 
-async function listarRolesSistema() {
+async function listarCargos() {
+  try {
+    // Llamada a la API para obtener los cargos
+    const resp = await microApi('controlador/?l_cargos');
+
+    if (typeof resp === 'string') {
+      console.error('Error al listar cargos:', resp);
+      return;
+    }
+
+    llenarSelectCargos(resp);
+  } catch (err) {
+    console.error('La petición de cargos falló:', err);
+  }
+}
+
+function llenarSelectCargos(datos) {
+  const select = document.getElementById('id_cargo');
+  if (!select) return;
+
+  // Opción por defecto (coincide con tu HTML)
+  select.innerHTML = '<option selected>Seleccione un cargo</option>';
+
+  // Manejo flexible del array de datos
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+  registros.forEach(item => {
+    const valor = item.id_cargo;  // ID del cargo como value
+    const texto = item.nombre_cargo;  // Nombre como texto visible
+
+    if (valor && texto) {  // Validación extra
+      const opcion = document.createElement('option');
+      opcion.value = valor;
+      opcion.textContent = texto;
+      select.appendChild(opcion);
+    }
+  });
+}
+
+//==================================================================//
+//Listar ubicaciones fisicas (sede)
+async function listarUbicacionesFisicas() {
 try {
-  // Llamas a la API que te devuelve los datos de jefes_superiores
-  const resp = await microApi('controlador/?listar_RolesSelect');
+  // Llamada a la API para obtener las ubicaciones físicas
+  const resp = await microApi('controlador/?l_uf');
 
   if (typeof resp === 'string') {
-    console.error('Error al listar Roles del Sistema:', resp);
+    console.error('Error al listar ubicaciones físicas:', resp);
     return;
   }
 
-  llenarSelectRoles(resp);
+  llenarSelectUbicaciones(resp);
 } catch (err) {
-  console.error('La petición de Roles de Sistema falló:', err);
+  console.error('La petición de ubicaciones físicas falló:', err);
 }
 }
 
-function llenarSelectRoles(datos) {
-const select = document.getElementById('id_rol_sistema');
+function llenarSelectUbicaciones(datos) {
+const select = document.getElementById('id_uf');
 if (!select) return;
 
-// Opción por defecto
-select.innerHTML = '<option value="">-- Seleccione un rol del sistema --</option>';
+// Opción por defecto (coincide con tu HTML)
+select.innerHTML = '<option selected>Seleccione una ubicacion fisica</option>';
 
+// Manejo flexible del array de datos
 const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
 
 registros.forEach(item => {
-    const valor = item.rol_id || item.idrol;
-    const texto = item.rol || item.nombrerol;
+  const valor = item.id_uf;        // ID de ubicación física como value
+  const texto = item.nombre_ubicacion;  // Nombre como texto visible
 
-  const opcion = document.createElement('option');
-  opcion.value = valor;
-  opcion.textContent = texto;
-  select.appendChild(opcion);
+  if (valor && texto) {  // Validación extra
+    const opcion = document.createElement('option');
+    opcion.value = valor;
+    opcion.textContent = texto;
+    select.appendChild(opcion);
+  }
 });
 }
 
+//=================================================================//
+
+// Función para abrir el modal y rellenar el formulario con datos de la fila
+function abrirModalUsuario(id_usuario = '', cedula_usuario = '', clave = '', nombre_completo = '', tipo_empleado = '', ubicacion_administrativa = '', id_cargo = '', id_uf = '', fecha_ingreso = '') {
+// Resetear formulario para asegurar que los campos estén vacíos
+const form = document.getElementById("formulario_usuario");
+form.reset();
+
+// Asignar los valores, pero si son undefined, asignar cadena vacía
+document.getElementById("id_usuario_modal").value = id_usuario || '';
+document.getElementById("id_cedula_usuario").value = cedula_usuario || '';
+document.getElementById("fullname_input").value = nombre_completo || '';
+document.getElementById("type_str_input").value = tipo_empleado || '';
+document.getElementById("additional_input").value = ubicacion_administrativa || '';
+document.getElementById("id_clave").value = clave || '';
+document.getElementById("id_cargo").value = id_cargo || '';
+document.getElementById("id_uf").value = id_uf || '';
+document.getElementById("fecha_ingreso").value = fecha_ingreso || '';
 
 
+// Cambiar el título según si hay ID
+const tituloModal = document.querySelector("#modalUsuario .modal-title");
+if (id_usuario) {
+  tituloModal.textContent = "Editar usuario";
+} else {
+  tituloModal.textContent = "Nuevo usuario";
+}
 
+// Mostrar el modal
+const modal = new bootstrap.Modal(document.getElementById('modalUsuario'));
+modal.show();
+}
+
+// Lista y renderiza los roles de un usuario en el modal
+async function listarRolesUsuario(id_usuario) {
+const datos = new FormData();
+datos.append('id_usuario', id_usuario);
+
+// Consulta SQL adaptada para el controlador PHP
+const resp = await microApi('controlador/?listar_roles_sistema', datos);
+console.log("Respuesta listar_roles_usuario:", resp);
+
+if (!resp) {
+  Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los roles' });
+  return;
+}
+
+const registros = Array.isArray(resp[0]) ? resp.flat() : resp;
+
+const cont = document.getElementById('contenedor-switches-roles');
+cont.innerHTML = '';
+
+registros.forEach(r => {
+  cont.innerHTML += `
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox"
+             id="rol_${r.rol_id}"
+             ${r.acceso == 1 ? 'checked' : ''}
+             onchange="toggleRol(${id_usuario}, ${r.rol_id}, this.checked)">
+      <label class="form-check-label" for="rol_${r.rol_id}">${r.rol}</label>
+    </div>`;
+});
+}
+
+// Abre el modal de roles y lista los roles del usuario
+function abrirModalRolesUsuario(id_usuario) {
+window.usuarioActual = id_usuario;
+
+const modalEl = document.getElementById('modalRoles');
+const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+modal.show();
+
+// Pintar switches al abrir
+listarRolesUsuario(id_usuario);
+}
+
+// Activa o desactiva un rol y refresca el listado
+async function toggleRol(id_usuario, rol_id, checked) {
+const datos = new FormData();
+datos.append('id_usuario', id_usuario);
+datos.append('rol_id', rol_id);
+
+const servicio = checked ? 'controlador/?asignar_rol' : 'controlador/?revocar_rol';
+const resp = await microApi(servicio, datos);
+
+if (!resp || resp.success === false) {
+  // Revertir switch si falla
+  document.getElementById(`rol_${rol_id}`).checked = !checked;
+  Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el rol' });
+} else {
+  // 🔄 Refrescar switches desde la BD
+  await listarRolesUsuario(id_usuario);
+}
+}
 

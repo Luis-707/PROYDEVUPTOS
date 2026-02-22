@@ -15,4 +15,4 @@ if (count($resp) == 0) {
 $this->ejecutarConsultaBdds($eval->sql_actualizar_estado_evalObrero());
 
 // Refrescar tabla
-return $this->servicio($data, 'l_evalObreros');
+return $this->servicio($data, 'l_evalOb');

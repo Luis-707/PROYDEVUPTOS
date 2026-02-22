@@ -103,7 +103,7 @@ async function guardarPeriodoEvaluacion() {
     let datos = capturarValoresFormulario('formulario_EvalAdmin');
 
     // Asegurarnos de que el id_evaluado se envía
-    let idEvaluado = document.getElementById('id_evaluado').value;
+    let idEvaluado = document.getElementById('evaluado_id').value;
     if (!idEvaluado) {
       Swal.fire({
         icon: 'warning',
@@ -112,7 +112,7 @@ async function guardarPeriodoEvaluacion() {
       });
       return;
     }
-    datos.append('id_evaluado', idEvaluado);
+    datos.append('evaluado_id', idEvaluado);
 
     // Validar fechas y periodo antes de enviar
     const periodo = document.getElementById('periodo_evaluado').value;
@@ -175,12 +175,13 @@ function validarFechasPeriodo(fechaInicio, fechaCierre, periodo) {
 //Consultar evaluacines de personal administrativo
 
 async function listarEvalAdmin(){
-    var resp = await microApi('controlador/?listar_evalAdministrativo');
+    var resp = await microApi('controlador/?l_evalAdmin');
     listarTablaEvalAdmin(resp);
 }  
 
 //Listar las evaluaciones de personal administrativo en una tabla
-
+//Listar las evaluaciones de personal administrativo en tabla DataTables
+// Listar las evaluaciones de personal administrativo en tabla DataTables
 async function listarTablaEvalAdmin(datos) {
   const tbody = document.querySelector("#tabla-EvalAdmin tbody");
   tbody.innerHTML = "";
@@ -192,8 +193,8 @@ async function listarTablaEvalAdmin(datos) {
   }
 
   const tableData = registros.map(item => {
-      const cedula = String(item.cedula_usuario).trim();
-      const fullname = item.nombre_completo || "No encontrado";
+      const cedula = String(item.cedula_evaluado).trim();
+      const fullname = item.nombre_evaluado || "No encontrado";
       const ubicacion = item.ubicacion_administrativa || "Sin ubicación";
       const cargoTexto = item.cargo_evaluado || "Sin cargo";
       const periodoEvaluado = item.periodo_evaluado || "";
@@ -321,13 +322,13 @@ if (periodo === "Enero-Junio") {
 
 function valorFormEvalAdmin(evaluado=''){
   // Asignar valores a los campos del formulario
-  document.getElementById('id_evaluado').value = evaluado;  
+  document.getElementById('evaluado_id').value = evaluado;  
   
 }
 
 //===============================================================//
 //Select de evaluados
-
+/*
 async function listarEvaluadosAdmin() {
   try {
     // Obtener lista de evaluados desde API
@@ -359,6 +360,47 @@ function llenarSelectEvaluadosA(datos) {
     opcion.value = item.id_evaluado;
     opcion.textContent = fullname;
     select.appendChild(opcion);
+  });
+}
+*/
+
+//Listar ubicaciones fisicas (sede)
+async function listarEvaluadosAdmin() {
+  try {
+    // Llamada a la API para obtener las ubicaciones físicas
+    const resp = await microApi('controlador/?l_subAdmin');
+
+    if (typeof resp === 'string') {
+      console.error('Error al listar a los subordinados:', resp);
+      return;
+    }
+
+    llenarSelectEvaluadosA(resp);
+  } catch (err) {
+    console.error('La petición de listado de subordinados falló:', err);
+  }
+}
+
+function llenarSelectEvaluadosA(datos) {
+  const select = document.getElementById('evaluado_id');
+  if (!select) return;
+
+  // Opción por defecto (coincide con tu HTML)
+  select.innerHTML = '<option selected>Seleccione a un subordinado</option>';
+
+  // Manejo flexible del array de datos
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+
+  registros.forEach(item => {
+    const valor = item.evaluado_id;        // ID de evaluado (subordinado) como value
+    const texto = item.subordinado;  // Nombre como texto visible
+
+    if (valor && texto) {  // Validación extra
+      const opcion = document.createElement('option');
+      opcion.value = valor;
+      opcion.textContent = texto;
+      select.appendChild(opcion);
+    }
   });
 }
 

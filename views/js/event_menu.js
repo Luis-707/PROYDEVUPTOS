@@ -90,7 +90,7 @@ $(document).on('click', '.menu-link', function() {
 
 
         $("#formularioGestionEvaluados").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados')) {
+          if (await verificarAccesoMenu('Evaluados', 'formularioGestionEvaluados')) {
            //Variable de control para identificar vista actual
            view = 'gestion_evaluados';
             // Cargar la vista evaluados.php
@@ -98,8 +98,10 @@ $(document).on('click', '.menu-link', function() {
         
             // Inicializar funciones específicas de la vista
             listarGestionEvaluados();        // Poblar tabla de evaluados
+            listarCargosSub();
+            listarUbicacionesFisicas();
             /*listarCargosEvaluados();*/ 
-            listarRolesEvaluados();      // Poblar select de roles
+           // listarRolesEvaluados();      // Poblar select de roles
           }
         });
 
@@ -116,7 +118,7 @@ $(document).on('click', '.menu-link', function() {
         });
 
         $("#formularioEvalAdministrativos").click(async function(){
-          if (await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvalAdministrativos')) {
+          if (await verificarAccesoMenu('Registros Administrativos', 'formularioEvalAdministrativos')) {
             //Variable de control para identificar vista actual
             view = 'evaluacion_administrativos';
             // Cargar la vista evaluados.php
@@ -128,31 +130,33 @@ $(document).on('click', '.menu-link', function() {
           }
         });
 
-        // Hook de menú (event_menu.js)
-        $("#formularioRegistroObreros").click(async function(){
-           if (await verificarAccesoMenu('Registros Obreros', 'formularioRegistroObreros')) {
+       // Hook de menú (event_menu.js)
+       $("#formularioRegistroObreros").click(async function(){
+        if (await verificarAccesoMenu('Registros Obreros', 'formularioRegistroObreros')) {
 
-        // Variable de control para identificar vista actual
-          view = 'registro_obreros';
+     // Variable de control para identificar vista actual
+       view = 'registro_obreros';
 
-        // Cargar la vista
-           mostrarVista('registro_obreros');
+     // Cargar la vista
+        mostrarVista('registro_obreros');
 
-            // Inicializar funciones específicas del módulo
-             listarEvalObrero();        // Poblar tabla de evaluaciones obreros
-            listarEvaluadosObrero();   // Poblar select de evaluados
-          }
-       });
+         // Inicializar funciones específicas del módulo
+          listarEvalObrero();        // Poblar tabla de evaluaciones obreros
+          listarObrerosSelect();   // Poblar select de evaluados
+       }
+      });
         
-        $("#formularioUsuarios").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios')) {
-            //Variable de control para identificar vista actual
-            view = 'usuarios';
-            mostrarVista('usuarios');
-            listarUsuario();
-            listarRolesSistema();
-          }
-        });
+       $("#formularioUsuarios").click(async function(){
+        if (await verificarAccesoMenu('Usuarios', 'formularioUsuarios')) {
+          //Variable de control para identificar vista actual
+          view = 'usuarios';
+          mostrarVista('usuarios');
+          listarUsuario();
+          listarCargos();
+          listarUbicacionesFisicas();
+          //listarRolesSistemaModal();
+        }
+      });
 
         $("#formularioObjetivos").click(async function(){
           if (await verificarAccesoMenu('Gestion de Objetivos', 'formularioObjetivos')) {
@@ -493,14 +497,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 🔹 Al entrar a la sesión, verificar permisos y ocultar menús
   await verificarAccesoMenu('Gestion de Evaluadores', 'formularioEvaluadores');
   await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores');
-  await verificarAccesoMenu('Gestion de Evaluados', 'formularioGestionEvaluados');
+  await verificarAccesoMenu('Evaluados', 'formularioGestionEvaluados');
   await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados');
   await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion');
   await verificarAccesoMenu('Evaluaciones Obreros', 'formularioEvaluacionObreros');
   await verificarAccesoMenu('Comentarios', 'formularioComentarios');
   await verificarAccesoMenu('Comentarios Obreros', 'formularioComentariosObreros');
-  await verificarAccesoMenu('Gestion de Usuarios', 'formularioUsuarios');
-  await verificarAccesoMenu('Evaluacion Administrativos', 'formularioEvalAdministrativos');
+  await verificarAccesoMenu('Usuarios', 'formularioUsuarios');
+  await verificarAccesoMenu('Registros Administrativos', 'formularioEvalAdministrativos');
   await verificarAccesoMenu('Gestion de Objetivos', 'formularioObjetivos');
   await verificarAccesoMenu('Gestion de Competencias', 'formularioCompetencias');
   await verificarAccesoMenu('Reportes', 'formularioReportesDesemp');
