@@ -20,6 +20,8 @@ async function cargarPlanillaResultados() {
       alert(resp?.message || "Error cargando planilla readonly");
       return;
     }
+
+    console.log("Respuesta del servicio readonly:", resp);
   
     // Renderizar solo con los datos de la respuesta
     renderizarPlanillaResultados(resp.data);

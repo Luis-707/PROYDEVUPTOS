@@ -324,6 +324,8 @@ async function guardarEvaluacionObrero() {
 
   let datos = capturarValoresFormulario("formulario_planilla_obrero");
 
+  datos.append("periodo_evaluacion", document.getElementById("periodo").value);
+
   const seleccion = [];
   document.querySelectorAll('.factor-option:checked').forEach(opt => {
     seleccion.push({

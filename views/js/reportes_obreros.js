@@ -111,7 +111,18 @@ function generarPlanillaObrera(doc, info, factores, criterios, seleccionados) {
         seleccionadosMap[s.criterio_id] = s.puntaje_obtenido;
     });
 
+    // =============================
+// CINTILLO SUPERIOR CON IMAGEN
+// =============================
+const img = new Image();
+img.src = "img/cintillo.jpeg"; // ← coloca aquí tu imagen
+
+// addImage(imagen, tipo, x, y, width, height)
+doc.addImage(img, "JPEG", 10, 5, 190, 20);
+
+
     let y = 20;
+    y += 20;
 
     // Título
     doc.setFontSize(12);

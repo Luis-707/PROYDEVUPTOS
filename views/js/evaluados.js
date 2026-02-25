@@ -40,7 +40,7 @@ async function listarEvaluados() {
                 <i class="icon-base bx bx-show me-1"></i>Ver planilla
             </a>
             <a class="dropdown-item" href="javascript:void(0);" 
-               onclick="abrirPlanillaEditar('${item.evaluado_id}', '${item.id_eval_admin}')">
+               onclick="abrirPlanillaEditar('${cedula}','${item.evaluado_id}', '${item.id_eval_admin}')">
                 <i class="icon-base bx bx-edit-alt me-1"></i>Editar planilla
             </a>
           </div>

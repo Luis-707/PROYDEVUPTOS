@@ -10,6 +10,8 @@ async function listarEvaluadosResultados() {
       return;
   }
 
+  console.log("Datos administrativos recibidos:", resp.data);
+
   let registros = [];
 
 if (Array.isArray(resp.data[0])) {

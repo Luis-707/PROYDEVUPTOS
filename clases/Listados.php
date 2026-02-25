@@ -296,24 +296,34 @@ public static function sql_listar_por_supervisor(int $idUsuarioSupervisor): stri
     // 🔹 Listar evaluaciones por usuario evaluador
     public static function sql_reportes_por_evaluador(string $cedula): string {
         return sprintf("
-           SELECT 
-            ea.id_eval_admin, 
-            EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio, 
-            e.id_evaluado, 
-            u.cedula_usuario, 
-            u.nombre_completo, 
-            c.cargo_evaluado, 
-            ea.periodo_evaluado,
-            ea.puntaje_final,
-            ra.rango_actuacion
-        FROM evaluados e
-        JOIN usuarios u ON e.id_usuario = u.id_usuario
-        JOIN cargos_evaluados c ON e.id_cargo_evaluado = c.id_cargo_evaluado
-        LEFT JOIN evaluacion_administrativos ea ON ea.id_evaluado = e.id_evaluado
-        LEFT JOIN rango_actuacion ra ON ea.id_rango = ra.id_rango
-        JOIN evaluadores ev ON e.id_evaluador = ev.id_evaluador
-        JOIN usuarios u_ev ON ev.id_usuario = u_ev.id_usuario
-        WHERE u_ev.cedula_usuario = '%s';
+         SELECT 
+    ea.id_eval_admin,
+    EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
+    
+    u_eval.id_usuario AS evaluado_id,
+    u_eval.cedula_usuario,
+    u_eval.nombre_completo,
+    c_eval.nombre_cargo AS cargo_evaluado,
+    org_eval.nombre AS ubicacion_evaluado,
+
+    ea.periodo_evaluado,
+    ea.puntaje_final,
+    ra.rango_actuacion
+
+FROM evaluacion_administrativos ea
+JOIN usuarios u_eval 
+    ON ea.evaluado_id = u_eval.id_usuario
+JOIN cargos c_eval 
+    ON u_eval.id_cargo = c_eval.id_cargo
+JOIN organizaciones org_eval
+    ON c_eval.id_org = org_eval.id_org
+JOIN usuarios u_ev 
+    ON ea.evaluador_id = u_ev.id_usuario
+LEFT JOIN rango_actuacion ra 
+    ON ea.id_rango = ra.id_rango
+
+WHERE u_ev.cedula_usuario = '%s'
+ORDER BY ea.fecha_inicio DESC;
      ", addslashes($cedula));
     }
 

@@ -151,24 +151,64 @@ class Usuario {
         WHERE u.cedula_usuario = '%s';",
             addslashes($this->cedula_usuario)
         );
-    }
+    }  
+
+    public function sql_validar_cedula(): string {
+    return sprintf(
+        "SELECT id_usuario FROM usuarios WHERE cedula_usuario = '%s' LIMIT 1;",
+        addslashes($this->cedula_usuario)
+    );
+}
+
+public function sql_validar_cargo_unico(): string {
+    return sprintf(
+        "SELECT id_usuario 
+         FROM usuarios 
+         WHERE id_cargo = %d 
+         AND estado_usuario = 'Activo'
+         LIMIT 1;",
+        $this->id_cargo
+    );
+}
+
+
 
     // Método para consultar datos para el perfil de usuario
     public function sql_perfil_usuario(): string {
         return sprintf(
             "SELECT 
-            u.cedula_usuario, u.nombre_completo, u.ubicacion_administrativa,
-            COALESCE(ce.cargo_evaluado, ceva.cargo_evaluador, cs.cargo_supervisor) AS cargo_usuario,
-            r.rol
-            FROM usuarios u
-            JOIN roles_sistema r ON u.rol_id = r.rol_id
-            LEFT JOIN evaluados e ON u.id_usuario = e.id_usuario
-            LEFT JOIN cargos_evaluados ce ON e.id_cargo_evaluado = ce.id_cargo_evaluado
-            LEFT JOIN evaluadores eva ON u.id_usuario = eva.id_usuario
-            LEFT JOIN cargos_evaluadores ceva ON eva.id_cargo_evaluador = ceva.id_cargo_evaluador
-            LEFT JOIN supervisores s ON u.id_usuario = s.id_usuario
-            LEFT JOIN cargos_supervisores cs ON s.id_cargo_supervisor = cs.id_cargo_supervisor
-             WHERE u.cedula_usuario = '%d';",
+            u.cedula_usuario,
+            u.nombre_completo,
+            u.ubicacion_administrativa,
+            uf.nombre_ubicacion AS ubicacion_fisica,
+            org.nombre AS area_ocupacional,
+            u.fecha_ingreso,
+            c.nombre_cargo AS cargo_usuario,
+            org.nombre AS nombre_organizacion,
+            STRING_AGG(r.rol, ', ') AS rol
+
+        FROM usuarios u
+        JOIN cargos c 
+            ON c.id_cargo = u.id_cargo
+        JOIN organizaciones org
+            ON org.id_org = c.id_org
+         JOIN posee_rol pr
+            ON pr.id_usuario = u.id_usuario
+         JOIN ubicacion_fisica uf ON u.id_uf = uf.id_uf
+         JOIN roles_sistema r
+            ON r.rol_id = pr.rol_id
+
+        WHERE u.cedula_usuario = '%d'
+
+        GROUP BY 
+            u.cedula_usuario,
+            u.nombre_completo,
+            u.ubicacion_administrativa,
+            uf.nombre_ubicacion,
+            org.nombre,
+            u.fecha_ingreso,
+            c.nombre_cargo,
+            org.nombre;",
             $this->cedula_usuario
         );
     }

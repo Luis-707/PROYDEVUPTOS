@@ -25,7 +25,8 @@ try {
 
     $eval = new EvaluacionObreros($_POST, $this);
 
-    $sqlUpdate = $eval->sql_guardar_evaluacion();
+    // 1) Actualizar evaluación general
+    $sqlUpdate = $eval->sql_actualizar_evaluacion();
     $respUpdate = $this->ejecutarConsultaBdds($sqlUpdate);
 
     $idEval = $respUpdate[0][0]['id_eval_obreros'] ?? null;
@@ -35,20 +36,11 @@ try {
         exit;
     }
 
-    // ============================================================
-// VALIDAR SI YA EXISTEN DETALLES (EVITA DUPLICAR EVALUACIÓN)
-// ============================================================
-$sqlCheck = EvaluacionObreros::sql_existen_detalles($idEval);
-$existe = $this->ejecutarConsultaBdds($sqlCheck);
+    // 2) Eliminar detalles anteriores
+    $sqlDel = EvaluacionObreros::sql_eliminar_detalles($idEval);
+    $this->ejecutarConsultaBdds($sqlDel);
 
-if (!empty($existe[0][0]['total']) && (int)$existe[0][0]['total'] > 0) {
-    echo json_encode([
-        'success' => false,
-        'message' => '❌ Esta evaluación ya fue registrada anteriormente.'
-    ]);
-    exit;
-}
-
+    // 3) Insertar nuevos detalles
     if (!empty($_POST['seleccion'])) {
 
         $criterios = is_string($_POST['seleccion'])
@@ -67,7 +59,7 @@ if (!empty($existe[0][0]['total']) && (int)$existe[0][0]['total'] > 0) {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Evaluación guardada con éxito',
+        'message' => 'Evaluación actualizada con éxito',
         'id_eval_obreros' => $idEval
     ]);
 

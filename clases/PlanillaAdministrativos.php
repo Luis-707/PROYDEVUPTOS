@@ -506,6 +506,124 @@ LIMIT 1;
         ", $puntaje);
     }
 
+     // ============================================================
+    // 1) Cargar datos del evaluado, evaluador y supervisor
+    // ============================================================
+    public static function sql_cargar_planilla_editar(int $evaluado_id, int $id_eval_admin): string {
+        return sprintf("
+            SELECT     
+                ev.nombre_completo AS evaluador_nombre,
+                ev.cedula_usuario AS evaluador_cedula,
+                ev_cargo.nombre_cargo AS evaluador_cargo,
+                ev_org.nombre AS evaluador_ubicacion,
+
+                sup.nombre_completo AS supervisor_nombre,
+                sup.cedula_usuario AS supervisor_cedula,
+                sup_cargo.nombre_cargo AS supervisor_cargo,
+                
+                ed.nombre_completo AS evaluado_nombre,
+                ed.cedula_usuario AS evaluado_cedula,
+                ed_cargo.nombre_cargo AS evaluado_cargo,
+                ed_org.nombre AS evaluado_ubicacion,
+
+                e.id_eval_admin,
+                e.evaluado_id,
+                e.evaluador_id
+
+            FROM evaluacion_administrativos e
+
+            JOIN usuarios ev ON e.evaluador_id = ev.id_usuario
+            JOIN cargos ev_cargo ON ev.id_cargo = ev_cargo.id_cargo
+            JOIN organizaciones ev_org ON ev_cargo.id_org = ev_org.id_org
+
+            JOIN usuarios ed ON e.evaluado_id = ed.id_usuario
+            JOIN cargos ed_cargo ON ed.id_cargo = ed_cargo.id_cargo
+            JOIN organizaciones ed_org ON ed_cargo.id_org = ed_org.id_org
+
+            LEFT JOIN organizaciones org_padre ON ev_org.padre_id = org_padre.id_org
+            LEFT JOIN cargos sup_cargo ON sup_cargo.id_org = org_padre.id_org AND sup_cargo.es_jefe = true
+            LEFT JOIN usuarios sup ON sup.id_cargo = sup_cargo.id_cargo AND sup.estado_usuario = 'Activo'
+
+            WHERE e.id_eval_admin = %d
+              AND e.evaluado_id = %d
+
+            LIMIT 1;
+        ", $id_eval_admin, $evaluado_id);
+    }
+
+    // ============================================================
+    // 2) Buscar evaluación existente
+    // ============================================================
+    public static function sql_buscar(int $idEvalAdmin, int $evaluado_id, int $evaluador_id): string {
+        return sprintf("
+            SELECT id_eval_admin
+            FROM evaluacion_administrativos
+            WHERE id_eval_admin = %d
+              AND evaluado_id = %d
+              AND evaluador_id = %d
+            LIMIT 1;
+        ", $idEvalAdmin, $evaluado_id, $evaluador_id);
+    }
+
+    // ============================================================
+    // 3) Actualizar evaluación general
+    // ============================================================
+    public function sql_actualizar_evaluacion(): string {
+        return sprintf("
+            UPDATE evaluacion_administrativos
+            SET id_rango = %d,
+                puntaje_final = %d
+            WHERE id_eval_admin = %d
+              AND evaluado_id = %d
+              AND evaluador_id = %d
+            RETURNING id_eval_admin;
+        ",
+            $this->id_rango,
+            $this->puntaje_final,
+            $this->id_eval_admin,
+            $this->evaluado_id,
+            $this->evaluador_id
+        );
+    }
+
+    // ============================================================
+    // 5) Actualizar objetivos
+    // ============================================================
+    public function sql_actualizar_objetivo($idEvalAdmin, $idOdi, $rango, $pesoXRango): string {
+        return sprintf("
+            UPDATE evaluacion_objetivos
+            SET rango_obj = %d,
+                pesoxrango_obj = %d
+            WHERE id_eval_admin = %d
+              AND id_odi = %d
+            RETURNING id_obj_result;
+        ",
+            (int)$rango,
+            (int)$pesoXRango,
+            (int)$idEvalAdmin,
+            (int)$idOdi
+        );
+    }
+
+    // ============================================================
+    // 6) Actualizar competencias
+    // ============================================================
+    public function sql_actualizar_competencia($idEvalAdmin, $idComp, $rango, $pesoXRango): string {
+        return sprintf("
+            UPDATE evaluacion_competencias
+            SET rango_comp = %d,
+                pesoxrango_comp = %d
+            WHERE id_eval_admin = %d
+              AND id_competencia = %d
+            RETURNING id_comp_result;
+        ",
+            (int)$rango,
+            (int)$pesoXRango,
+            (int)$idEvalAdmin,
+            (int)$idComp
+        );
+    }
+
     public function getIdEvalAdmin(): int {
         return $this->id_eval_admin;
     }

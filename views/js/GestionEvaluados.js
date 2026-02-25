@@ -19,71 +19,155 @@ function validarcaracter(cadena){
 //   // Validación y CRUD
 // =========================
 function validar_form_evaluado(opc) {
-   // Obtener el formulario
-   var formulario = document.getElementById('formulario_evaluado');
-   //console.log(formulario);
-   // Crear un objeto FormData
-   var Data = new FormData(formulario);
-   let isValid = true; // Variable para controlar si el formulario es válido
-   console.log(Data);
-   // Validar cada campo
-   for (var [key, valor] of Data.entries()) {
-       
-       switch (key) { 
-          
+
+  var formulario = document.getElementById('formulario_evaluado');
+  var Data = new FormData(formulario);
+  let isValid = true;
+
+  // Campos adicionales que NO vienen en FormData
+  let cargo = document.getElementById("id_cargo").value;
+  let uf = document.getElementById("id_uf").value;
+  let fechaIngreso = document.getElementById("fecha_ingreso").value;
+
+  for (var [key, valor] of Data.entries()) {
+
+      valor = valor.trim();
+
+      switch (key) {
+
           case 'cedula_evaluado':
               if (valor === '' || !validarnumero(valor) || valor.length < 7 || valor.length > 10) {
-                  isValid = false;
                   Swal.fire({
                       icon: 'warning',
-                      title: 'Validación',
-                      text: 'La cédula es obligatoria, debe contener solo números y tener entre 7 y 10 dígitos.'
+                      title: 'Cédula inválida',
+                      text: 'Debe ingresar una cédula válida (solo números, entre 7 y 10 dígitos).'
                   });
+                  isValid = false;
               }
-              break;
+          break;
+
           case 'cargo_evaluado':
               if (valor === '') {
-                  isValid = false;
                   Swal.fire({
                       icon: 'warning',
-                      title: 'Validación',
-                      text: 'El cargo del evaluado es obligatorio.'
+                      title: 'Cargo requerido',
+                      text: 'Debe seleccionar el cargo del evaluado.'
                   });
-              }
-              case 'rol':
-                if (valor === '') {
                   isValid = false;
+              }
+          break;
+
+          case 'rol':
+              if (valor === '') {
                   Swal.fire({
                       icon: 'warning',
-                      title: 'Validación',
-                      text: 'El rol del evaluado es obligatorio.'
+                      title: 'Rol requerido',
+                      text: 'Debe seleccionar el rol del evaluado.'
                   });
+                  isValid = false;
               }
-              break;
+          break;
 
+          case 'fullname':
+              if (valor === '' || valor === 'undefined') {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Nombre requerido',
+                      text: 'Debe buscar y cargar los datos del evaluado antes de guardar.'
+                  });
+                  isValid = false;
+              }
+          break;
 
-              default:
-                  console.log(`Campo ${key} no requiere validación específica.`);
-               // Si hay un error, salimos del bucle
-          if (!isValid) {
-              break;
-          }
-          
-          
-       }
+          case 'type_str':
+              if (valor === '') {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Tipo de empleado requerido',
+                      text: 'Debe cargar el tipo de empleado del evaluado.'
+                  });
+                  isValid = false;
+              }
+          break;
 
-      } 
+          case 'additional':
+              if (valor === '') {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Ubicación requerida',
+                      text: 'Debe cargar la ubicación administrativa del evaluado.'
+                  });
+                  isValid = false;
+              }
+          break;
+
+          case 'clave':
+              if (valor === '' || valor.length < 10) {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Clave inválida',
+                      text: 'La clave debe tener al menos 10 caracteres.'
+                  });
+                  isValid = false;
+              }
+              if (/\s/.test(valor)) {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Clave inválida',
+                      text: 'La clave no puede contener espacios.'
+                  });
+                  isValid = false;
+              }
+          break;
+      }
+
+      if (!isValid) break;
+  }
+
+  // ============================
+  // VALIDACIONES DE SELECTS
+  // ============================
 
   if (isValid) {
-         // Obtener el valor del campo id_usuario_modal
-  var idUsuario = document.getElementById("id_usuario_modal").value;
 
-  // Comprobar si el campo está vacío
-  if (idUsuario.trim() === '') {
-    guardarEvaluado(); // Llamar a guardarEvaluado si está vacío
-  } else {
-    actualizarEvaluado(); // Llamar a actualizarEvaluado si no está vacío
-  }
+      if (cargo === "" || cargo === "Seleccione un cargo") {
+          Swal.fire({
+              icon: "warning",
+              title: "Cargo requerido",
+              text: "Debe seleccionar un cargo válido."
+          });
+          return;
+      }
+
+      if (uf === "" || uf === "Seleccione una ubicacion fisica") {
+          Swal.fire({
+              icon: "warning",
+              title: "Ubicación física requerida",
+              text: "Debe seleccionar una ubicación física válida."
+          });
+          return;
+      }
+
+      if (fechaIngreso === "") {
+          Swal.fire({
+              icon: "warning",
+              title: "Fecha requerida",
+              text: "Debe seleccionar una fecha de ingreso válida."
+          });
+          return;
+      }
+
+      // ============================
+      // GUARDAR O ACTUALIZAR
+      // ============================
+
+      var idUsuario = document.getElementById("id_usuario_modal").value;
+
+      if (idUsuario.trim() === '') {
+          guardarEvaluado();
+      } else {
+          actualizarEvaluado();
+      }
   }
 }
 

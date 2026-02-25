@@ -19,138 +19,176 @@ function validarcaracter(cadena){
    
 function validar_form(opc) {
 
-   
-  // Obtener el formulario
   var formulario = document.getElementById('formulario_usuario');
-  //console.log(formulario);
-  // Crear un objeto FormData
   var Data = new FormData(formulario);
-  let isValid = true; // Variable para controlar si el formulario es válido
-  console.log(Data);
-  // Validar cada campo
+  let isValid = true;
+
+  // Campos adicionales que NO están en el FormData original
+  let cargo = document.getElementById("id_cargo").value;
+  let uf = document.getElementById("id_uf").value;
+  let fechaIngreso = document.getElementById("fecha_ingreso").value;
+
   for (var [key, valor] of Data.entries()) {
-      
-      switch (key) {         
 
-          /*case 'login':
-              if (!validarcaracter(valor)) {
-                  alert("El loguin no debe tener caracteres Especiales diferentes a ( _  .  -  )");
-                  isValid = false; // Marca como inválido
-              }
-              break;*/
-          /*case 'clave':
-                  if (!validarcaracter(valor)) {
-                      alert("La clave no debe tener caracteres Especiales diferentes a ( _  .  -  ) ");
-                      isValid = false; // Marca como inválido
-                  }
-          break;*/
-          /*case 'cedula_usuario':
-              if (!validarnumero(valor)) {
-                  alert("La cedula solo debe contener numeros ");
-                  isValid = false; // Marca como inválido
-              }
-              break; */
+      valor = valor.trim();
 
-          /*case 'CargoSupervisor':
-              if (!validarCadena(valor)) {
-                  alert("Opcion Invalida. ");
-                  isValid = false; // Marca como inválido
-              }
-              break;*/
+      switch (key) {
 
-          /*case 'JefeSuperior':
-              if (!validarCadena(valor)) {
-                  alert("Opcion Invalida. ");
-                  isValid = false; // Marca como inválido
+          case 'cedula_usuario':
+              if (valor === "" || !/^[0-9]+$/.test(valor) || valor.length < 6) {
+                  Swal.fire({
+                      icon: "warning",
+                      title: "Cédula inválida",
+                      text: "Debe ingresar una cédula válida (solo números, mínimo 6 dígitos)."
+                  });
+                  isValid = false;
               }
-              break;*/
-          case 'RolSistema':
-              if (!validarCadena(valor)) {
-                  alert("Opcion Invalida. ");
-                  isValid = false; // Marca como inválido
+          break;
+
+          case 'fullname':
+              if (valor === "" || valor === "undefined") {
+                  Swal.fire({
+                      icon: "warning",
+                      title: "Nombre requerido",
+                      text: "Debe buscar y cargar los datos del usuario antes de guardar."
+                  });
+                  isValid = false;
               }
-              break;
-           
+          break;
 
-               
+          case 'type_str':
+              if (valor === "") {
+                  Swal.fire({
+                      icon: "warning",
+                      title: "Tipo de empleado requerido",
+                      text: "Debe cargar el tipo de empleado antes de continuar."
+                  });
+                  isValid = false;
+              }
+          break;
 
-          // Si hay un error, salimos del bucle
-          if (!isValid) {
-              break;
-          }
+          case 'additional':
+              if (valor === "") {
+                  Swal.fire({
+                      icon: "warning",
+                      title: "Ubicación requerida",
+                      text: "Debe cargar la ubicación administrativa antes de continuar."
+                  });
+                  isValid = false;
+              }
+          break;
+
+          case 'clave':
+              if (valor === "" || valor.length < 10) {
+                  Swal.fire({
+                      icon: "warning",
+                      title: "Clave inválida",
+                      text: "La clave debe tener al menos 10 caracteres."
+                  });
+                  isValid = false;
+              }
+              if (/\s/.test(valor)) {
+                  Swal.fire({
+                      icon: "warning",
+                      title: "Clave inválida",
+                      text: "La clave no puede contener espacios."
+                  });
+                  isValid = false;
+              }
+          break;
       }
+
+      if (!isValid) break;
   }
 
-  // Si todas las validaciones pasan
-  if (isValid) {        
-       // Obtener el valor del campo id_usuario_modal
-  var idUsuario = document.getElementById("id_usuario_modal").value;
+  // Validación de selects fuera del FormData
+  if (isValid) {
 
-  // Comprobar si el campo está vacío
-  if (idUsuario.trim() === '') {
-    guardarUsuario(); // Llamar a guardarUsuario si está vacío
-  } else {
-    actualizarUsuario(); // Llamar a actualizarUsuario si no está vacío
-  }
+      if (cargo === "" || cargo === "Seleccione un cargo") {
+          Swal.fire({
+              icon: "warning",
+              title: "Cargo requerido",
+              text: "Debe seleccionar un cargo válido."
+          });
+          return;
+      }
+
+      if (uf === "" || uf === "Seleccione una ubicacion fisica") {
+          Swal.fire({
+              icon: "warning",
+              title: "Ubicación física requerida",
+              text: "Debe seleccionar una ubicación física válida."
+          });
+          return;
+      }
+
+      if (fechaIngreso === "") {
+          Swal.fire({
+              icon: "warning",
+              title: "Fecha requerida",
+              text: "Debe seleccionar una fecha de ingreso válida."
+          });
+          return;
+      }
+
+      // Si todo está correcto → guardar o actualizar
+      var idUsuario = document.getElementById("id_usuario_modal").value;
+
+      if (idUsuario.trim() === '') {
+          guardarUsuario();
+      } else {
+          actualizarUsuario();
+      }
   }
 }
 async function guardarUsuario() {
 
-let clave = document.getElementById('id_clave').value;
+  let clave = document.getElementById('id_clave').value;
 
-// Verificar si la longitud de clave está entre 10 y 16 caracteres
-if (clave.length < 10) {
-  Swal.fire({
-    icon: 'warning',
-    title: 'Longitud inválida',
-    text: 'La clave debe tener entre 10 y 16 caracteres.'
-  });
-  return; // Impide continuar con el guardado
-}
-
-let datosPersona = capturarValoresFormulario('formulario_usuario');
-
-let idCargo = document.getElementById('id_cargo').value;
-datosPersona.append('id_cargo', idCargo);
-
-let idUF = document.getElementById('id_uf').value;
-datosPersona.append('id_uf', idUF);
-
-let nombreCompleto = document.getElementById('fullname_input').value;
-datosPersona.append('nombre_completo', nombreCompleto);
-
-let tipoEmpleado = document.getElementById('type_str_input').value;
-datosPersona.append('tipo_empleado', tipoEmpleado);
-
-let ubicacion = document.getElementById('additional_input').value;
-datosPersona.append('ubicacion_administrativa', ubicacion);
-
-try {
-    const resp = await microApi('controlador/?g_user', datosPersona);
-
-    if (!resp.success) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error al guardar',
-            text: resp.message
-        });
-    } else {
-        valorFormUsuario();
-        listarUsuario();
-        Swal.fire({
-            icon: 'success',
-            title: 'Añadir Usuario',
-            text: resp.message
-        });
-    }
-} catch (err) {
-    console.error("Error en guardarUsuario:", err);
+  // Verificación adicional (por seguridad)
+  if (clave.length < 10) {
     Swal.fire({
-        icon: 'error',
-        title: 'Error inesperado',
-        text: 'Ocurrió un error al guardar el usuario'
+      icon: 'warning',
+      title: 'Longitud inválida',
+      text: 'La clave debe tener al menos 10 caracteres.'
     });
-}
+    return;
+  }
+
+  let datosPersona = capturarValoresFormulario('formulario_usuario');
+
+  datosPersona.append('id_cargo', document.getElementById('id_cargo').value);
+  datosPersona.append('id_uf', document.getElementById('id_uf').value);
+  datosPersona.append('nombre_completo', document.getElementById('fullname_input').value);
+  datosPersona.append('tipo_empleado', document.getElementById('type_str_input').value);
+  datosPersona.append('ubicacion_administrativa', document.getElementById('additional_input').value);
+
+  try {
+      const resp = await microApi('controlador/?g_user', datosPersona);
+
+      if (!resp.success) {
+          Swal.fire({
+              icon: 'error',
+              title: 'Error al guardar',
+              text: resp.message
+          });
+      } else {
+          valorFormUsuario();
+          listarUsuario();
+          Swal.fire({
+              icon: 'success',
+              title: 'Añadir Usuario',
+              text: resp.message
+          });
+      }
+  } catch (err) {
+      console.error("Error en guardarUsuario:", err);
+      Swal.fire({
+          icon: 'error',
+          title: 'Error inesperado',
+          text: 'Ocurrió un error al guardar el usuario'
+      });
+  }
 }
 
 async function listarUsuario(){
@@ -451,35 +489,25 @@ if (result.isConfirmed) {
 }
 
 async function actualizarUsuario() {
-let datosPersona = capturarValoresFormulario('formulario_usuario');
 
-let idCargo = document.getElementById('id_cargo').value;
-datosPersona.append('id_cargo', idCargo);
+  let datosPersona = capturarValoresFormulario('formulario_usuario');
 
-let idUF = document.getElementById('id_uf').value;
-datosPersona.append('id_uf', idUF);
+  datosPersona.append('id_cargo', document.getElementById('id_cargo').value);
+  datosPersona.append('id_uf', document.getElementById('id_uf').value);
+  datosPersona.append('nombre_completo', document.getElementById('fullname_input').value);
+  datosPersona.append('tipo_empleado', document.getElementById('type_str_input').value);
+  datosPersona.append('ubicacion_administrativa', document.getElementById('additional_input').value);
 
-let nombreEditar = document.getElementById('fullname_input').value;
-datosPersona.append('nombre_completo', nombreEditar);
+  var resp = await microApi('controlador/?a_user', datosPersona);
 
-let tipoEmpleadoEditar = document.getElementById('type_str_input').value;
-datosPersona.append('tipo_empleado', tipoEmpleadoEditar);
+  listarTablaUsuarios(resp);
+  valorFormUsuario();
 
-let ubicacionEditar = document.getElementById('additional_input').value;
-datosPersona.append('ubicacion_administrativa', ubicacionEditar);
-
-//let cedulaIdentidad = document.getElementById('cedula_modal').value;
-//datosPersona.append('cedula_usuario', cedulaIdentidad);
-
-var resp = await microApi('controlador/?a_user', datosPersona);
-
-listarTablaUsuarios(resp);
-valorFormUsuario();
-Swal.fire({
-    icon: 'success',
-    title: 'Actualizacion de Usuario',
-    text: 'El usuario se actualizó con éxito'
-});
+  Swal.fire({
+      icon: 'success',
+      title: 'Actualización de Usuario',
+      text: 'El usuario se actualizó con éxito'
+  });
 }
 
 function pa(cad){

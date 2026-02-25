@@ -121,6 +121,13 @@ class Evaluado extends Usuario {
         return sprintf("SELECT u.id_usuario, u.cedula_usuario, u.clave, u.estado_usuario, r.rol_id, r.rol FROM usuarios u JOIN roles_sistema r ON u.rol_id = r.rol_id WHERE id_usuario = %d;", $this->id_usuario);
     }
 
+    public function sql_validar_cedula_evaluado(): string {
+    return sprintf(
+        "SELECT id_usuario FROM usuarios WHERE cedula_usuario = '%s' LIMIT 1;",
+        addslashes($this->cedula_usuario)
+    );
+}
+
     /*public function sql_buscar_user_evaluado(): string {
         return sprintf(
             "SELECT u.id_usuario, u.cedula_usuario, u.clave, r.rol_id, r.rol

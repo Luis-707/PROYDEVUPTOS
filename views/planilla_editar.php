@@ -1,11 +1,7 @@
 <style>
-
-
   .table-bordered th, .table-bordered td {
     border: 1px solid #dee2e6;
-    
   }
-
 </style>
 
 <div class="container mt-4">
@@ -35,11 +31,12 @@
     <!-- Información del Evaluado, Evaluador y Supervisor -->
     <div class="row mt-5">
       <div class="col-md-12">
-      <h6 class="text-muted d-flex justify-content-between">
-  <span>SECCIÓN "A":</span>
-  <span>DATOS DE IDENTIFICACIÓN</span>
-</h6>
+        <h6 class="text-muted d-flex justify-content-between">
+          <span>SECCIÓN "A":</span>
+          <span>DATOS DE IDENTIFICACIÓN</span>
+        </h6>
       </div>
+
       <!-- Evaluado -->
       <div class="col-md-4 mt-3">
         <h5>Evaluado</h5>
@@ -49,7 +46,7 @@
           <li class="list-group-item"><strong>Cargo:</strong> <span id="evaluado_cargo"></span></li>
           <li class="list-group-item"><strong>Ubicación:</strong> <span id="evaluado_ubicacion"></span></li>
         </ul>
-        <input type="hidden" id="id_evaluado" name="id_evaluado">
+        <input type="hidden" id="evaluado_id" name="evaluado_id">
       </div>
 
       <!-- Evaluador -->
@@ -61,7 +58,7 @@
           <li class="list-group-item"><strong>Cargo:</strong> <span id="evaluador_cargo"></span></li>
           <li class="list-group-item"><strong>Ubicación:</strong> <span id="evaluador_ubicacion"></span></li>
         </ul>
-        <input type="hidden" id="id_usuario" name="id_usuario">
+        <input type="hidden" id="evaluador_id" name="evaluador_id">
       </div>
 
       <!-- Supervisor -->
@@ -78,10 +75,10 @@
     <!-- Tablas dinámicas -->
     <div class="row mt-4 justify-content-center">
       <div class="col-md-8 offset-md-2">
-      <h6 class="text-muted d-flex justify-content-between">
-  <span>SECCIÓN "B":</span>
-  <span>ESTABLECIMIENTO Y EVALUACION DE OBJETIVOS DE DESEMPEÑO INDIVIDUAL</span>
-</h6>
+        <h6 class="text-muted d-flex justify-content-between">
+          <span>SECCIÓN "B":</span>
+          <span>ESTABLECIMIENTO Y EVALUACION DE OBJETIVOS DE DESEMPEÑO INDIVIDUAL</span>
+        </h6>
         <table class="table table-bordered mb-0" id="tabla-objetivos-editar">
           <thead>
             <tr>
@@ -102,10 +99,10 @@
       </div>
 
       <div class="col-md-8 mt-5 offset-md-2">
-      <h6 class="text-muted d-flex justify-content-between">
-  <span>SECCIÓN "C":</span>
-  <span>EVALUACION DE LAS COMPETENCIAS</span>
-</h6>
+        <h6 class="text-muted d-flex justify-content-between">
+          <span>SECCIÓN "C":</span>
+          <span>EVALUACION DE LAS COMPETENCIAS</span>
+        </h6>
         <table class="table table-bordered mb-0" id="tabla-competencias-editar">
           <thead>
             <tr>
@@ -129,10 +126,10 @@
     <!-- Resultado Final -->
     <div class="row mt-5">
       <div class="col-md-6 offset-md-3">
-      <h6 class="text-muted d-flex justify-content-between">
-  <span>SECCIÓN "D":</span>
-  <span>RANGOS DE ACTUACION DEL EVALUADO</span>
-</h6>
+        <h6 class="text-muted d-flex justify-content-between">
+          <span>SECCIÓN "D":</span>
+          <span>RANGOS DE ACTUACION DEL EVALUADO</span>
+        </h6>
         <table class="table table-bordered text-center">
           <thead>
             <tr>
@@ -147,12 +144,10 @@
             </tr>
           </tbody>
         </table>
-        <!--<input type="hidden" id="id_eval_admin" name="id_eval_admin" value="">-->
         <input type="hidden" id="id_rango" name="id_rango" value="0">
         <input type="hidden" id="puntaje_final" name="puntaje_final">
       </div>
     </div>
-
 
     <!-- Botón Actualizar -->
     <div class="row mt-5">

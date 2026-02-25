@@ -36,6 +36,10 @@ async function listarEvaluacionesObreros() {
                       onclick="abrirPlanillaObrero('${item.cedula_usuario}', '${item.id_eval_obreros}')">
                       <i class="icon-base bx bx-show me-1"></i>Ver planilla
                   </a>
+                   <a class="dropdown-item" href="javascript:void(0);" 
+               onclick="abrirPlanillaObreroEditar('${item.cedula_usuario}', '${item.id_eval_obreros}')">
+                <i class="icon-base bx bx-edit-alt me-1"></i>Editar planilla
+            </a>
               </div>
           </div>
           `

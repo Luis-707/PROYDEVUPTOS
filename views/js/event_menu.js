@@ -265,23 +265,19 @@ function abrirPlanillaResultadosObrero(cedula, idEvalObrero) {
   }, 300);
 }
   
-    //====================================
-    function abrirPlanillaEditar(cedula, idEvalAdmin){ 
-      console.log("👉 abrirPlanillaEditar() recibió:", cedula);
-      sessionStorage.setItem("cedula_planilla", cedula); 
-      sessionStorage.setItem("id_eval_admin", idEvalAdmin);
-      // Cargar la vista de edición de la planilla
-      mostrarVista('planilla_editar'); 
-  
-      // Una vez cargada la vista, ejecutamos la carga de datos
-      setTimeout(async () => { 
-        
-          await cargarPlanillaEditar();   // 👈 función en planilla_editar.js
-          //debugIdsEvaluacion(); // muestra ids en consola para debug
-          cargarPeriodoEvaluacion(); // carga periodo evaluación
-          await cargarTablasPlanillaEditar(); // inicializa tablas con rangos guardados
-      }, 300); 
-  }
+function abrirPlanillaEditar(cedula, evaluado_id, idEvalAdmin){
+  sessionStorage.setItem("cedula_planilla", cedula);
+  sessionStorage.setItem("evaluado_id", evaluado_id);
+  sessionStorage.setItem("id_eval_admin", idEvalAdmin);
+
+  mostrarVista('planilla_editar');
+
+  setTimeout(async () => {
+      await cargarPlanillaEditar();
+      await cargarPeriodoEvaluacion();
+      await cargarTablasPlanillaEditar();
+  }, 300);
+}
 
   function abrirPlanillaExcepcional(cedula, idEvalAdmin){ 
     console.log("👉 abrirPlanillaExcepcional() recibió:", cedula);
@@ -331,6 +327,24 @@ function abrirPlanillaObreroReadonly(cedula, idEvalObrero) {
   }, 300);
 }
 
+
+function abrirPlanillaObreroEditar(cedula, idEvalObreros) {
+
+  salirDeVista = false;
+
+  // Guardar datos en sessionStorage
+  sessionStorage.setItem("cedula_planilla_obrero", cedula);
+  sessionStorage.setItem("id_eval_obreros", idEvalObreros);
+
+  // Mostrar vista de edición
+  mostrarVista("planilla_obreros_editar");
+
+  // Cargar datos después de que la vista esté visible
+  setTimeout(async () => {
+      await cargarPlanillaObreroEditar();
+      await cargarFactoresObreroEditar();
+  }, 300);
+}
 
 
 
