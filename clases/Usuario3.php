@@ -80,21 +80,32 @@ class Usuario {
     }
 
     // Método para actualizar (UPDATE) según cedula_usuario
-    public function sql_actualizar(): string {
+   public function sql_actualizar(): string {
 
+    $set = [];
+
+    // Campos que siempre se actualizan
+    $set[] = "id_cargo = '{$this->id_cargo}'";
+    $set[] = "id_uf = '{$this->id_uf}'";
+    $set[] = "nombre_completo = '{$this->nombre_completo}'";
+    $set[] = "tipo_empleado = '{$this->tipo_empleado}'";
+    $set[] = "ubicacion_administrativa = '{$this->ubicacion_administrativa}'";
+    $set[] = "fecha_ingreso = '{$this->fecha_ingreso}'";
+
+    // Clave solo si viene en POST
+    if (!empty($this->clave)) {
         $hash = password_hash($this->clave, PASSWORD_DEFAULT);
-        return sprintf(
-            "UPDATE usuarios SET id_cargo = '%d', id_uf = '%d', clave = '%s', nombre_completo = '%s', tipo_empleado = '%s', ubicacion_administrativa = '%s', fecha_ingreso = '%s' WHERE cedula_usuario = '%d';",
-            $this->id_cargo,
-            $this->id_uf,
-            $hash,
-            $this->nombre_completo,
-            $this->tipo_empleado,
-            $this->ubicacion_administrativa,
-            $this->fecha_ingreso,
-            $this->cedula_usuario
-        );
+        $set[] = "clave = '{$hash}'";
     }
+
+    $setStr = implode(", ", $set);
+
+    return "
+        UPDATE usuarios 
+        SET $setStr
+        WHERE cedula_usuario = '{$this->cedula_usuario}';
+    ";
+}
 
     // Método para actualizar el estado del usuario (Activo, Inactivo) según id_usuario
     public function sql_actualizar_estado_usuario(): string {
@@ -142,6 +153,7 @@ class Usuario {
             u.id_usuario,
             u.cedula_usuario,
             u.clave,
+            u.nombre_completo,
             u.id_cargo,
             u.estado_usuario,
             r.rol AS nombre_rol
@@ -170,6 +182,20 @@ public function sql_validar_cargo_unico(): string {
         $this->id_cargo
     );
 }
+
+public function sql_validar_cargo_unico_edicion(): string {
+    return sprintf(
+        "SELECT id_usuario 
+         FROM usuarios 
+         WHERE id_cargo = %d
+           AND estado_usuario = 'Activo'
+           AND id_usuario != %d
+         LIMIT 1;",
+        $this->id_cargo,
+        $this->id_usuario
+    );
+}
+
 
 
 

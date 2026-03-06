@@ -101,24 +101,50 @@ function validar_form_evaluado(opc) {
               }
           break;
 
-          case 'clave':
-              if (valor === '' || valor.length < 10) {
-                  Swal.fire({
-                      icon: 'warning',
-                      title: 'Clave inválida',
-                      text: 'La clave debe tener al menos 10 caracteres.'
-                  });
-                  isValid = false;
-              }
-              if (/\s/.test(valor)) {
-                  Swal.fire({
-                      icon: 'warning',
-                      title: 'Clave inválida',
-                      text: 'La clave no puede contener espacios.'
-                  });
-                  isValid = false;
-              }
-          break;
+        case 'clave':
+  const idUsuarioEval = document.getElementById("id_usuario_modal").value;
+
+  // Nuevo evaluado → clave obligatoria
+  if (idUsuarioEval.trim() === '') {
+    if (valor === '' || valor.length < 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Clave inválida',
+        text: 'La clave debe tener al menos 10 caracteres.'
+      });
+      isValid = false;
+    }
+    if (/\s/.test(valor)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Clave inválida',
+        text: 'La clave no puede contener espacios.'
+      });
+      isValid = false;
+    }
+  }
+
+  // Edición → clave opcional
+  else {
+    if (valor !== '' && valor.length < 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Clave inválida',
+        text: 'Si desea cambiar la clave, debe tener al menos 10 caracteres.'
+      });
+      isValid = false;
+    }
+    if (valor !== '' && /\s/.test(valor)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Clave inválida',
+        text: 'La clave no puede contener espacios.'
+      });
+      isValid = false;
+    }
+  }
+break;
+
       }
 
       if (!isValid) break;
@@ -173,39 +199,31 @@ function validar_form_evaluado(opc) {
 
 async function guardarEvaluado() {
   let datos = capturarValoresFormulario('formulario_evaluado');
-  
   let clave = document.getElementById('id_clave').value;
 
-// Verificar si la longitud de clave está entre 10 y 16 caracteres
-if (clave.length < 10) {
-  Swal.fire({
-    icon: 'warning',
-    title: 'Longitud inválida',
-    text: 'La clave debe tener entre 10 y 16 caracteres.'
-  });
-  return; // Impide continuar con el guardado
-}
+  if (clave.length < 10) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Longitud inválida',
+      text: 'La clave debe tener entre 10 y 16 caracteres.'
+    });
+    return;
+  }
 
-  // Agregar rol_id
-//let idrolEvaluado = document.getElementById('id_rol_evaluado').value;
-//datos.append('rol_id', idrolEvaluado);
+  let idCargo = document.getElementById('id_cargo').value;
+  datos.append('id_cargo', idCargo);
 
-let idCargo = document.getElementById('id_cargo').value;
-datos.append('id_cargo', idCargo);
+  let idUF = document.getElementById('id_uf').value;
+  datos.append('id_uf', idUF);
 
-let idUF = document.getElementById('id_uf').value;
-datos.append('id_uf', idUF);
+  let nombreCompleto = document.getElementById('fullname_input').value;
+  datos.append('nombre_completo', nombreCompleto);
 
-let nombreCompleto = document.getElementById('fullname_input').value;
-datos.append('nombre_completo', nombreCompleto);
+  let tipoEmpleado = document.getElementById('type_str_input').value;
+  datos.append('tipo_empleado', tipoEmpleado);
 
-let tipoEmpleado = document.getElementById('type_str_input').value;
-datos.append('tipo_empleado', tipoEmpleado);
-
-let ubicacion = document.getElementById('additional_input').value;
-datos.append('ubicacion_administrativa', ubicacion);
-
-for (let [k, v] of datos.entries()) console.log(k, v);
+  let ubicacion = document.getElementById('additional_input').value;
+  datos.append('ubicacion_administrativa', ubicacion);
 
   try {
     const resp = await microApi('controlador/?g_user_evaluado', datos);
@@ -221,75 +239,64 @@ for (let [k, v] of datos.entries()) console.log(k, v);
   }
 }
 
+
+
 async function listarGestionEvaluados() {
   const resp = await microApi('controlador/?l_user_evaluado');
-  listarTablaEvaluados(resp);
+  listarTablaEvaluados(resp.data);
 }
 
 //==========================================================//
 // Listar evaluados en tabla DataTables
 async function listarTablaEvaluados(datos) {
-const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
+  const registros = Array.isArray(datos[0]) ? datos.flat() : datos;
 
-// Destruir DataTable existente si existe
-if ($.fn.DataTable.isDataTable('#tabla-GestionEvaluados')) {
+  if ($.fn.DataTable.isDataTable('#tabla-GestionEvaluados')) {
     $('#tabla-GestionEvaluados').DataTable().destroy();
-}
+  }
 
-// Limpiar tbody
-$('#tabla-GestionEvaluados tbody').empty();
+  $('#tabla-GestionEvaluados tbody').empty();
 
-// Preparar datos para DataTables
-const tableData = registros.map(item => {
-  const clave = item.clave ? "******" : "";  // Clave en asteriscos si no existe
-  const cedula = String(item.cedula_usuario || "").trim();
-  const nombreCompleto = item.subordinado || "Sin nombre";
-  const nombreCargo = item.cargo || "Sin cargo";
-  const estadoUsuario = item.estado_usuario;
+  const tableData = registros.map(item => {
+    const clave = item.clave ? "******" : "";
+    const cedula = String(item.cedula_usuario || "").trim();
+    const nombreCompleto = item.subordinado || "Sin nombre";
+    const nombreCargo = item.cargo || "Sin cargo";
+    const estadoUsuario = item.estado_usuario;
 
-  // Acciones con funciones específicas para usuarios
-  const editarEval = `abrirModalUsuarioEval(
-    '${item.id}', 
-    '${cedula}', 
-    '${item.clave ? item.clave : ""}', 
-    '${item.subordinado}', 
-    '${item.tipo_empleado || ""}', 
-    '${item.ubicacion_administrativa || ""}', 
-    '${item.id_cargo}', 
-    '${item.id_uf}', 
-    '${item.fecha_ingreso || ""}')`;
+    const editarEval = `abrirModalUsuarioEval({
+      id_usuario: '${item.id}',
+      cedula_usuario: '${cedula}',
+      nombre_completo: '${item.subordinado}',
+      tipo_empleado: '${item.tipo_empleado || ""}',
+      ubicacion_administrativa: '${item.ubicacion_administrativa || ""}',
+      id_cargo: '${item.id_cargo}',
+      id_uf: '${item.id_uf}',
+      fecha_ingreso: '${item.fecha_ingreso || ""}'
+    })`;
+
     const btnEstadoUsuarioEval = `cambiarEstadoEvaluado('${item.id}', '${item.estado_usuario}')`;
 
-    // Botones de acción
     const acciones = `
-        <div class="dropdown">
-            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                <i class="icon-base bx bx-dots-vertical-rounded"></i>
-            </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="javascript:void(0);" 
-                onclick="${editarEval}">
-                    <i class="icon-base bx bx-edit-alt me-1"></i>Editar
-                </a>
-                <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuarioEval}">
-                    <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
-                </a>
-            </div>
+      <div class="dropdown">
+        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+          <i class="icon-base bx bx-dots-vertical-rounded"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="javascript:void(0);" onclick="${editarEval}">
+            <i class="icon-base bx bx-edit-alt me-1"></i>Editar
+          </a>
+          <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuarioEval}">
+            <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
+          </a>
         </div>
+      </div>
     `;
-    
-    return [
-      clave,
-      cedula,
-      nombreCompleto,
-      nombreCargo,
-      estadoUsuario,
-      acciones
-    ];
-});
 
-// Inicializar DataTable
-$('#tabla-GestionEvaluados').DataTable({
+    return [clave, cedula, nombreCompleto, nombreCargo, estadoUsuario, acciones];
+  });
+
+  $('#tabla-GestionEvaluados').DataTable({
     data: tableData,
     columns: [
       { title: "Clave", width: "100px" },
@@ -297,30 +304,23 @@ $('#tabla-GestionEvaluados').DataTable({
       { title: "Apellidos y nombres" },
       { title: "Cargo" },
       { title: "Estado", width: "100px" },
-      { 
-          title: "Acciones", 
-          width: "140px",
-          orderable: false,
-          searchable: false
-      }
-  ],
+      { title: "Acciones", width: "140px", orderable: false, searchable: false }
+    ],
     pageLength: 25,
     responsive: true,
-    order: [[1, 'asc']], // Ordenar por cédula por defecto
+    order: [[1, 'asc']],
     language: {
-        search: "Buscar:",
-        lengthMenu: "Mostrar _MENU_ registros por página",
-        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-        infoEmpty: "Mostrando 0 a 0 de 0 registros",
-        emptyTable: "No hay datos disponibles en la tabla",
-        zeroRecords: "No se encontraron registros coincidentes",
-        paginate: {
-            previous: "Anterior",
-            next: "Siguiente"
-        }
+      search: "Buscar:",
+      lengthMenu: "Mostrar _MENU_ registros por página",
+      info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+      infoEmpty: "Mostrando 0 a 0 de 0 registros",
+      emptyTable: "No hay datos disponibles en la tabla",
+      zeroRecords: "No se encontraron registros coincidentes",
+      paginate: { previous: "Anterior", next: "Siguiente" }
     }
-});
+  });
 }
+
 
 
 //===============================================================//
@@ -390,11 +390,28 @@ async function actualizarEvaluado() {
   let ubicacionEditar = document.getElementById('additional_input').value;
   datos.append('ubicacion_administrativa', ubicacionEditar);
 
-  var resp = await microApi('controlador/?a_user_evaluado', datos);
-  listarTablaEvaluados(resp);
-  Swal.fire({ icon: 'success', title: 'Actualización', text: 'Evaluado actualizado con éxito' });
+  // 🔥 Si la clave está vacía → no enviarla
+  if (datos.get('clave') === '') {
+    datos.delete('clave');
+  }
+
+  const resp = await microApi('controlador/?a_user_evaluado', datos);
+
+  // 🔥 Refrescar tabla con el listado actualizado
+  listarTablaEvaluados(resp.data);
+
+  // 🔥 Y volver a consultar el servicio real (sin cache)
+  await listarGestionEvaluados();
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Actualización',
+    text: 'Evaluado actualizado con éxito'
+  });
+
   valorFormEvaluado();
 }
+
 
 //Limpiar formulario
 
@@ -430,34 +447,43 @@ document.getElementById('id_usuario_modal').value = idUser;
 // Modal de edición
 // =========================
 // Función para abrir el modal y rellenar el formulario con datos de la fila
-function abrirModalUsuarioEval(id_usuario = '', cedula_usuario = '', clave = '', nombre_completo = '', tipo_empleado = '', ubicacion_administrativa = '', id_cargo = '', id_uf = '', fecha_ingreso = '') {
-// Resetear formulario para asegurar que los campos estén vacíos
-const form = document.getElementById("formulario_evaluado");
-form.reset();
+function abrirModalUsuarioEval({
+  id_usuario = '',
+  cedula_usuario = '',
+  nombre_completo = '',
+  tipo_empleado = '',
+  ubicacion_administrativa = '',
+  id_cargo = '',
+  id_uf = '',
+  fecha_ingreso = ''
+} = {}) {
+  const form = document.getElementById("formulario_evaluado");
+  form.reset();
 
-// Asignar los valores, pero si son undefined, asignar cadena vacía
-document.getElementById("id_usuario_modal").value = id_usuario || '';
-document.getElementById("id_cedula_usuario").value = cedula_usuario || '';
-document.getElementById("fullname_input").value = nombre_completo || '';
-document.getElementById("type_str_input").value = tipo_empleado || '';
-document.getElementById("additional_input").value = ubicacion_administrativa || '';
-document.getElementById("id_clave").value = clave || '';
-document.getElementById("id_cargo").value = id_cargo || '';
-document.getElementById("id_uf").value = id_uf || '';
-document.getElementById("fecha_ingreso").value = fecha_ingreso || '';
+  document.getElementById("id_usuario_modal").value = id_usuario;
+  document.getElementById("id_cedula_usuario").value = cedula_usuario;
+  document.getElementById("fullname_input").value = nombre_completo;
+  document.getElementById("type_str_input").value = tipo_empleado;
+  document.getElementById("additional_input").value = ubicacion_administrativa;
+  document.getElementById("id_cargo").value = id_cargo;
+  document.getElementById("id_uf").value = id_uf;
+  document.getElementById("fecha_ingreso").value = fecha_ingreso;
 
-// Cambiar el título según si hay ID
-const tituloModal = document.querySelector("#modalUsuarioEval .modal-title");
-if (id_usuario) {
-  tituloModal.textContent = "Editar usuario";
-} else {
-  tituloModal.textContent = "Nuevo usuario";
+  const claveInput = document.getElementById("id_clave");
+  claveInput.value = "";
+  claveInput.placeholder = "Dejar en blanco para no cambiar";
+
+  const msg = document.getElementById("mensajeSeguridad");
+  msg.textContent = "La clave actual no se muestra por seguridad.";
+  msg.style.color = "gray";
+
+  const tituloModal = document.querySelector("#modalUsuarioEval .modal-title");
+  tituloModal.textContent = id_usuario ? "Editar usuario" : "Nuevo usuario";
+
+  const modal = new bootstrap.Modal(document.getElementById('modalUsuarioEval'));
+  modal.show();
 }
 
-// Mostrar el modal
-const modal = new bootstrap.Modal(document.getElementById('modalUsuarioEval'));
-modal.show();
-}
 
 //=====================================
 

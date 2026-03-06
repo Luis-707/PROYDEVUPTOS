@@ -115,7 +115,7 @@ async function guardarPeriodoEvaluacion() {
     datos.append('evaluado_id', idEvaluado);
 
     // Validar fechas y periodo antes de enviar
-    const periodo = document.getElementById('periodo_evaluado').value;
+    const periodo = document.getElementById('periodo_evaluado').value.trim();
     const fechaInicio = document.getElementById('fecha_inicio').value;
     const fechaCierre = document.getElementById('fecha_cierre').value;
 
@@ -128,14 +128,37 @@ async function guardarPeriodoEvaluacion() {
       return;
     }
 
-    // Llamada al servicio PHP para guardar
+    // ============================================================
+    // 🔍 VALIDACIÓN PREVIA EN FRONTEND (opcional pero recomendada)
+    // ============================================================
+    const registros = await microApi('controlador/?l_evalAdmin');
+    console.log('l_evalAdmin ->', registros);
+    const lista = Array.isArray(registros[0]) ? registros.flat() : registros;
+
+    const existe = lista.some(r =>
+      r.evaluado_id == idEvaluado &&
+      r.periodo_evaluado == periodo
+    );
+
+    if (existe) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Periodo duplicado',
+        text: 'Este evaluado ya tiene una evaluación registrada en este período.'
+      });
+      return;
+    }
+
+    // ============================================================
+    // Enviar al backend (validación REAL también está allá)
+    // ============================================================
     const resp = await microApi('controlador/?g_EvalAdmin', datos);
 
     // Validar respuesta
     if (resp.success) {
       Swal.fire({
         icon: 'success',
-        title: 'Registro de Evaluacion guardado',
+        title: 'Registro de Evaluación guardado',
         text: resp.message
       });
 

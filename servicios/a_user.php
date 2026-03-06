@@ -1,30 +1,41 @@
 <?php
 include_once "../clases/Usuario3.php";
 
-//$dataCliente['_post']['login'] = $dataCliente['_post']['otros_datos'];
- $data=$dataCliente['_post'];
-// var_dump($data['nombres']);
-/*
-$usuario = new Usuario( $dataCliente['_post']);
-$sql = $usuario->sql_buscar();
-$respuesta = $this->ejecutarConsultaBdds($sql);*/
-/*  echo "---".count($respuesta)."---";
-die(print_r($respuesta));
-*/
-$usuario = new Usuario($dataCliente['_post']);
+$data = $dataCliente['_post'];
+$usuario = new Usuario($dataCliente['_post'], $this->conexion);
 
-$sql = $usuario->sql_buscar();
-$respuesta = $this->ejecutarConsultaBdds($sql);
+// 1) Verificar si el usuario existe
+$sqlBuscar = $usuario->sql_buscar();
+$respBuscar = $this->ejecutarConsultaBdds($sqlBuscar);
 
-if (count($respuesta) == 0) {     
-  $respuesta = $dataCliente['_post']['cedula_usuario'].' No Existe';
- 
-}else{
-  $sql=$usuario->sql_actualizar();
-  $respuesta = $this->ejecutarConsultaBdds($sql);
+if (count($respBuscar) == 0) {
+    echo json_encode([
+        'success' => false,
+        'message' => $data['cedula_usuario'] . ' no existe'
+    ]);
+    exit;
 }
 
+// 2) VALIDAR CARGO ÚNICO (solo un usuario activo por cargo)
+$sqlCargo = $usuario->sql_validar_cargo_unico_edicion();
+$existeCargo = $this->ejecutarConsultaBdds($sqlCargo);
 
-$respuesta = $this->ejecutarConsultaBdds($sql);
-$respuesta = $this->servicio($data,'l_user'); // el parametro no tiene extension pero es el servicio del archivo l_usuario.php
-return $respuesta;
+if (!empty($existeCargo)) {
+    echo json_encode([
+        'success' => false,
+        'message' => '❌ No puede asignar este cargo: ya está ocupado por un usuario ACTIVO.'
+    ]);
+    exit;
+}
+
+// 3) Actualizar usuario
+$sqlUpdate = $usuario->sql_actualizar();
+$this->ejecutarConsultaBdds($sqlUpdate);
+
+// 4) Refrescar tabla
+echo json_encode([
+    'success' => true,
+    'message' => 'Usuario actualizado con éxito',
+    'data' => $this->servicio($data, 'l_user')
+]);
+exit;

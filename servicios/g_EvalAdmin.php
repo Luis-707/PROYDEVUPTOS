@@ -35,17 +35,16 @@ try {
     // 4) Instanciar la clase
     $evaluacion = new EvaluacionesAdministrativos($dataCliente, $this->conexion);
 
-    // 5) Validar duplicados antes de guardar
-    $sqlCheck = $evaluacion->sql_existe_evaluacion();
-    $respCheck = $this->ejecutarConsultaBdds($sqlCheck);
+  $sqlCheck = $evaluacion->sql_existe_duplicado_periodo();
+$respCheck = $this->ejecutarConsultaBdds($sqlCheck);
 
-    if (!empty($respCheck) && !empty($respCheck[0][0]['id_eval_admin'])) {
-        echo json_encode([
-            'success' => false,
-            'message' => '❌ Ya existe una evaluación para este evaluado con el mismo periodo y fechas'
-        ]);
-        exit;
-    }
+if (!empty($respCheck) && !empty($respCheck[0][0]['id_eval_admin'])) {
+    echo json_encode([
+        'success' => false,
+        'message' => '❌ Ya existe una evaluación para este evaluado en este período'
+    ]);
+    exit;
+}
 
     // 6) Ejecutar el INSERT
     $sqlInsert = $evaluacion->sql_guardar_eval_administrativos();

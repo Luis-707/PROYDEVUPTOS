@@ -24,6 +24,30 @@ if (Array.isArray(resp.data[0])) {
     registros = [];
 }
 
+// =============================
+  // Llenar filtro de períodos
+  // =============================
+  const select = document.getElementById("filtroPeriodo");
+  const periodosUnicos = [...new Set(registros.map(r => r.periodo_evaluado))];
+
+  select.innerHTML = `<option value="todos">Todos los períodos</option>`;
+  periodosUnicos.forEach(p => {
+      select.innerHTML += `<option value="${p}">${p}</option>`;
+  });
+
+  // =============================
+  // Construir gráfica al cargar
+  // =============================
+  construirGraficaRangos(registros, "todos");
+
+  // =============================
+  // Actualizar gráfica al cambiar período
+  // =============================
+  select.addEventListener("change", () => {
+      construirGraficaRangos(registros, select.value);
+  });
+
+
   // 2) Reiniciar DataTable si existe
   if ($.fn.DataTable.isDataTable('#tabla-evaluadosResultados')) {
       $('#tabla-evaluadosResultados').DataTable().destroy();
@@ -94,6 +118,55 @@ if (Array.isArray(resp.data[0])) {
       }
   });
 }
+
+
+let graficaRangos = null;
+
+// =============================
+// Construir gráfica
+// =============================
+function construirGraficaRangos(registros, periodoSeleccionado) {
+
+    // Filtrar por período
+    let filtrados = registros;
+    if (periodoSeleccionado !== "todos") {
+        filtrados = registros.filter(r => r.periodo_evaluado === periodoSeleccionado);
+    }
+
+    // Contar por rango
+    const conteo = {};
+    filtrados.forEach(r => {
+        const rango = r.rango_actuacion || "Sin rango";
+        conteo[rango] = (conteo[rango] || 0) + 1;
+    });
+
+    const labels = Object.keys(conteo);
+    const valores = Object.values(conteo);
+
+    // Destruir gráfica previa
+    if (graficaRangos) graficaRangos.destroy();
+
+    const ctx = document.getElementById("graficaRangos");
+
+    graficaRangos = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Cantidad de evaluados",
+                data: valores,
+                backgroundColor: "#4e73df"
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+
 
 // =============================
 // Servicio backend

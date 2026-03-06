@@ -40,42 +40,24 @@ include_once "middleware/auth.php";
     <link rel="stylesheet" href="assets/vendor/css/core.css" />
     <link rel="stylesheet" href="assets/css/demo.css" />
     
-   <!-- <style>
+   <style>
 
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("img/fondo.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    filter: blur(2px);
-    z-index: -2;
-  }
-  
-  /* Capa intermedia para evitar transparencia */
-  body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.65); /* Ajusta según tema */
-    z-index: -1;
-  }
-  
-  /* Mantener el contenido por encima */
-  body {
-    position: relative;
-    z-index: 1;
-  }
+.fondo-odi {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('img/fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(8px); /* Difuminado */
+  opacity: 0.35; /* Transparencia para que no opaque el contenido */
+  z-index: -1; /* Lo envía detrás del contenido */
+}
 
-    </style>-->
+    </style>
 
     
     <!-- Vendors CSS -->
@@ -86,12 +68,19 @@ body::before {
 
     <link rel="stylesheet" href="assets/vendor/fonts/flag-icons.css" />
     <link rel="stylesheet" href="assets/vendor/libs/apex-charts/apex-charts.css" />
+    
 
     <!-- Datatable css -->
     <link rel="stylesheet" href="assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
     <link rel="stylesheet" href="assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
     <link rel="stylesheet" href="assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
     
+
+    <!-- CHARTJS -->
+
+     <script src="assets/vendor/libs/chartjs/chartjs.js"></script>
+     <link rel="stylesheet" href="assets/vendor/libs/chartjs/chartjs.css" />
+
 
     <!-- Helpers -->
     <script src="assets/vendor/js/helpers.js"></script>
@@ -207,8 +196,8 @@ body::before {
                             </div>
                             </div>
                             <div class="flex-grow-1">
-                            <h6 class="mb-0">John Doe</h6>
-                            <small class="text-body-secondary">Admin</small>
+                            <h6 class="mb-0"><?php echo $_SESSION['usuario']['nombre']; ?></h6>
+                            <small class="text-body-secondary"><?php echo implode(', ', $_SESSION['usuario']['roles']?? []); ?></small>
                             </div>
                         </div>
                         </a>
@@ -271,7 +260,7 @@ body::before {
                 <div class="col-md-12 col-lg-12">
                 <h6 class="mt-2 text-body-secondary"></h6>
                 <div class="card mb-6">
-                <div class="card-header d-flex justify-content-between">
+                 <div class="card-header d-flex justify-content-between">
                         <div class="card-title mb-0">
                           <h5 class="mb-1 me-2">ODI</h5>
                           <p class="card-subtitle">(Objetivos de Desempeño Individual)</p>
@@ -288,7 +277,9 @@ body::before {
                 </div>
                 </div>
             </div>
-
+            <div class="fondo-odi">
+           <img src="img/fondo.jpg" alt="ODI"/>
+           </div>
         </div>
         <!-- / Content -->
         

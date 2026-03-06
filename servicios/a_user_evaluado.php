@@ -3,24 +3,31 @@
 include_once "../clases/Evaluado.php";
 
 $data = $dataCliente['_post'];
-
-// Crear objeto Evaluado pasando datos y conexión $this->conexion (asumiendo existe)
 $evaluado = new Evaluado($data, $this->conexion);
 
-// Generar consulta para buscar usuario evaluado por cédula
+// Buscar evaluado
 $sql = $evaluado->sql_buscar();
-$respuesta = $this->ejecutarConsultaBdds($sql);
+$existe = $this->ejecutarConsultaBdds($sql);
 
-if (count($respuesta) == 0) {
-    // No existe el usuario evaluado
-    $respuesta = $data['cedula_usuario'] . ' No Existe';
-} else {
-    // Existe, actualizar clave o datos que quieras actualizar
-    $sql = $evaluado->sql_actualizar();
-    $respuesta = $this->ejecutarConsultaBdds($sql);
+if (count($existe) == 0) {
+    echo json_encode([
+        'success' => false,
+        'message' => $data['cedula_usuario'] . ' no existe',
+        'data' => []
+    ]);
+    exit;
 }
 
-// Llamar a servicio con datos
-$respuesta = $this->servicio($data, 'l_user_evaluado'); // asumiendo archivo l_usuario.php
+// Actualizar evaluado
+$sql = $evaluado->sql_actualizar();
+$this->ejecutarConsultaBdds($sql);
 
-return $respuesta;
+// Devolver listado actualizado
+$listado = $this->servicio($data, 'l_user_evaluado');
+
+echo json_encode([
+    'success' => true,
+    'message' => 'Evaluado actualizado con éxito',
+    'data' => $listado['data'] ?? $listado
+]);
+exit;

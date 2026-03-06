@@ -78,24 +78,33 @@ function validar_form(opc) {
               }
           break;
 
-          case 'clave':
-              if (valor === "" || valor.length < 10) {
-                  Swal.fire({
-                      icon: "warning",
-                      title: "Clave inválida",
-                      text: "La clave debe tener al menos 10 caracteres."
-                  });
-                  isValid = false;
-              }
-              if (/\s/.test(valor)) {
-                  Swal.fire({
-                      icon: "warning",
-                      title: "Clave inválida",
-                      text: "La clave no puede contener espacios."
-                  });
-                  isValid = false;
-              }
-          break;
+         case 'clave':
+    const idUsuario = document.getElementById("id_usuario_modal").value;
+
+    // Nuevo usuario → clave obligatoria
+    if (idUsuario.trim() === '') {
+        if (valor === "" || valor.length < 10) {
+            Swal.fire({
+                icon: "warning",
+                title: "Clave inválida",
+                text: "La clave debe tener al menos 10 caracteres."
+            });
+            isValid = false;
+        }
+    }
+
+    // Edición → clave opcional
+    else {
+        if (valor !== "" && valor.length < 10) {
+            Swal.fire({
+                icon: "warning",
+                title: "Clave inválida",
+                text: "Si desea cambiar la clave, debe tener al menos 10 caracteres."
+            });
+            isValid = false;
+        }
+    }
+break;
       }
 
       if (!isValid) break;
@@ -145,7 +154,6 @@ async function guardarUsuario() {
 
   let clave = document.getElementById('id_clave').value;
 
-  // Verificación adicional (por seguridad)
   if (clave.length < 10) {
     Swal.fire({
       icon: 'warning',
@@ -163,31 +171,56 @@ async function guardarUsuario() {
   datosPersona.append('tipo_empleado', document.getElementById('type_str_input').value);
   datosPersona.append('ubicacion_administrativa', document.getElementById('additional_input').value);
 
-  try {
-      const resp = await microApi('controlador/?g_user', datosPersona);
+  const idCargo = document.getElementById('id_cargo').value;
 
-      if (!resp.success) {
-          Swal.fire({
-              icon: 'error',
-              title: 'Error al guardar',
-              text: resp.message
-          });
-      } else {
-          valorFormUsuario();
-          listarUsuario();
-          Swal.fire({
-              icon: 'success',
-              title: 'Añadir Usuario',
-              text: resp.message
-          });
-      }
-  } catch (err) {
-      console.error("Error en guardarUsuario:", err);
+  // ============================================================
+  // 🔍 VALIDACIÓN DE CARGO OCUPADO POR OTRO USUARIO ACTIVO
+  // ============================================================
+  const usuarios = await microApi('controlador/?l_user');
+  const lista = Array.isArray(usuarios[0]) ? usuarios.flat() : usuarios;
+
+  const ocupado = lista.some(u =>
+    u.id_cargo == idCargo &&
+    u.estado_usuario === 'Activo'
+  );
+
+  if (ocupado) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Cargo ocupado',
+      text: 'Este cargo ya está asignado a un usuario ACTIVO.'
+    });
+    return;
+  }
+
+  // ============================================================
+  // Guardar usuario
+  // ============================================================
+  try {
+    const resp = await microApi('controlador/?g_user', datosPersona);
+
+    if (!resp.success) {
       Swal.fire({
-          icon: 'error',
-          title: 'Error inesperado',
-          text: 'Ocurrió un error al guardar el usuario'
+        icon: 'error',
+        title: 'Error al guardar',
+        text: resp.message
       });
+    } else {
+      valorFormUsuario();
+      listarUsuario();
+      Swal.fire({
+        icon: 'success',
+        title: 'Añadir Usuario',
+        text: resp.message
+      });
+    }
+  } catch (err) {
+    console.error("Error en guardarUsuario:", err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error inesperado',
+      text: 'Ocurrió un error al guardar el usuario'
+    });
   }
 }
 
@@ -338,7 +371,7 @@ const tableData = registros.map(item => {
     const editarF = `abrirModalUsuario(
       '${item.id_usuario}', 
       '${cedula}', 
-      '${item.clave ? item.clave : ""}', 
+      '', 
       '${item.nombre_completo}', 
       '${item.tipo_empleado || ""}', 
       '${item.ubicacion_administrativa || ""}', 
@@ -420,33 +453,73 @@ $('#tabla-usuarios').DataTable({
 //Cambiar estado del usuario
 
 async function cambiarEstadoUsuario(id_usuario, estado_usuario) {
-// Determinar el estado opuesto
-const nuevoEstadoUsuario = estado_usuario === 'Activo' ? 'Inactivo' : 'Activo';
 
-const result = await Swal.fire({
-  title: `¿Está seguro de cambiar el estado a "${nuevoEstadoUsuario}"?`,
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonColor: '#3085d6',
-  cancelButtonColor: '#d33',
-  confirmButtonText: 'Sí, cambiar',
-  cancelButtonText: 'Cancelar'
-});
+  // Determinar el estado opuesto
+  const nuevoEstadoUsuario = estado_usuario === 'Activo' ? 'Inactivo' : 'Activo';
 
-if (result.isConfirmed) {
+  const result = await Swal.fire({
+    title: `¿Está seguro de cambiar el estado a "${nuevoEstadoUsuario}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, cambiar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (!result.isConfirmed) return;
+
+  // ============================================================
+  // 🔍 VALIDACIÓN FRONTEND: evitar activar un usuario cuyo cargo
+  //     ya está ocupado por otro usuario ACTIVO
+  // ============================================================
+  if (nuevoEstadoUsuario === 'Activo') {
+
+    // Obtener lista de usuarios
+    const usuarios = await microApi('controlador/?l_user');
+    const lista = Array.isArray(usuarios[0]) ? usuarios.flat() : usuarios;
+
+    // Buscar al usuario que se está activando
+    const usuarioActual = lista.find(u => u.id_usuario == id_usuario);
+
+    if (usuarioActual) {
+      const idCargo = usuarioActual.id_cargo;
+
+      // Verificar si otro usuario activo tiene este cargo
+      const ocupado = lista.some(u =>
+        u.id_cargo == idCargo &&
+        u.estado_usuario === 'Activo' &&
+        u.id_usuario != id_usuario
+      );
+
+      if (ocupado) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Cargo ocupado',
+          text: 'No puede ACTIVAR este usuario: su cargo ya está ocupado por otro usuario ACTIVO.'
+        });
+        return;
+      }
+    }
+  }
+
+  // ============================================================
+  // Enviar solicitud al backend
+  // ============================================================
   const formData = new FormData();
   formData.append('id_usuario', id_usuario);
-  formData.append('estado_usuario', nuevoEstadoUsuario); // Enviar el estado opuesto
+  formData.append('estado_usuario', nuevoEstadoUsuario);
 
   try {
     const resp = await microApi('controlador/?cambiarEstadoUsuario', formData);
     listarUsuario();
 
     Swal.fire({
-      icon: 'success',
-      title: 'Estado cambiado',
-      text: typeof resp === 'string' ? resp : 'El estado fue cambiado correctamente'
+      icon: resp.success ? 'success' : 'error',
+      title: resp.success ? 'Estado cambiado' : 'Error',
+      text: resp.message || 'El estado fue cambiado correctamente'
     });
+
   } catch (err) {
     console.error("Error al cambiar estado:", err);
     Swal.fire({
@@ -455,7 +528,6 @@ if (result.isConfirmed) {
       text: 'Ocurrió un error al cambiar el estado'
     });
   }
-}
 }
 
 //==========================================================//
@@ -498,16 +570,53 @@ async function actualizarUsuario() {
   datosPersona.append('tipo_empleado', document.getElementById('type_str_input').value);
   datosPersona.append('ubicacion_administrativa', document.getElementById('additional_input').value);
 
-  var resp = await microApi('controlador/?a_user', datosPersona);
+  const idCargo = document.getElementById('id_cargo').value;
+  const idUsuario = document.getElementById('id_usuario_modal').value;
 
-  listarTablaUsuarios(resp);
-  valorFormUsuario();
+  // ============================================================
+  // 🔍 VALIDACIÓN DE CARGO OCUPADO POR OTRO USUARIO ACTIVO
+  // ============================================================
+  const usuarios = await microApi('controlador/?l_user');
+  const lista = Array.isArray(usuarios[0]) ? usuarios.flat() : usuarios;
 
-  Swal.fire({
+  const ocupado = lista.some(u =>
+    u.id_cargo == idCargo &&
+    u.estado_usuario === 'Activo' &&
+    u.id_usuario != idUsuario
+  );
+
+  if (ocupado) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Cargo ocupado',
+      text: 'Este cargo ya está asignado a un usuario ACTIVO.'
+    });
+    return;
+  }
+
+  // ============================================================
+  // Actualizar usuario
+  // ============================================================
+  try {
+    var resp = await microApi('controlador/?a_user', datosPersona);
+
+    listarTablaUsuarios(resp.data);
+    valorFormUsuario();
+
+    Swal.fire({
       icon: 'success',
       title: 'Actualización de Usuario',
       text: 'El usuario se actualizó con éxito'
-  });
+    });
+
+  } catch (err) {
+    console.error("Error en actualizarUsuario:", err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error inesperado',
+      text: 'Ocurrió un error al actualizar el usuario'
+    });
+  }
 }
 
 function pa(cad){
@@ -677,36 +786,46 @@ registros.forEach(item => {
 
 //=================================================================//
 
-// Función para abrir el modal y rellenar el formulario con datos de la fila
-function abrirModalUsuario(id_usuario = '', cedula_usuario = '', clave = '', nombre_completo = '', tipo_empleado = '', ubicacion_administrativa = '', id_cargo = '', id_uf = '', fecha_ingreso = '') {
-// Resetear formulario para asegurar que los campos estén vacíos
-const form = document.getElementById("formulario_usuario");
-form.reset();
+function abrirModalUsuario(
+  id_usuario = '',
+  cedula_usuario = '',
+  clave = '',
+  nombre_completo = '',
+  tipo_empleado = '',
+  ubicacion_administrativa = '',
+  id_cargo = '',
+  id_uf = '',
+  fecha_ingreso = ''
+) {
+    const form = document.getElementById("formulario_usuario");
+    form.reset();
 
-// Asignar los valores, pero si son undefined, asignar cadena vacía
-document.getElementById("id_usuario_modal").value = id_usuario || '';
-document.getElementById("id_cedula_usuario").value = cedula_usuario || '';
-document.getElementById("fullname_input").value = nombre_completo || '';
-document.getElementById("type_str_input").value = tipo_empleado || '';
-document.getElementById("additional_input").value = ubicacion_administrativa || '';
-document.getElementById("id_clave").value = clave || '';
-document.getElementById("id_cargo").value = id_cargo || '';
-document.getElementById("id_uf").value = id_uf || '';
-document.getElementById("fecha_ingreso").value = fecha_ingreso || '';
+    document.getElementById("id_usuario_modal").value = id_usuario || '';
+    document.getElementById("id_cedula_usuario").value = cedula_usuario || '';
+    document.getElementById("fullname_input").value = nombre_completo || '';
+    document.getElementById("type_str_input").value = tipo_empleado || '';
+    document.getElementById("additional_input").value = ubicacion_administrativa || '';
+    document.getElementById("id_cargo").value = id_cargo || '';
+    document.getElementById("id_uf").value = id_uf || '';
+    document.getElementById("fecha_ingreso").value = fecha_ingreso || '';
 
+    // 🔥 Clave SIEMPRE vacía al editar
+    const claveInput = document.getElementById("id_clave");
+    claveInput.value = "";
+    claveInput.placeholder = "Dejar en blanco para no cambiar";
 
-// Cambiar el título según si hay ID
-const tituloModal = document.querySelector("#modalUsuario .modal-title");
-if (id_usuario) {
-  tituloModal.textContent = "Editar usuario";
-} else {
-  tituloModal.textContent = "Nuevo usuario";
+    // 🔐 Mensaje visual de seguridad
+    const msg = document.getElementById("mensajeSeguridad");
+    msg.textContent = "La clave actual no se muestra por seguridad.";
+    msg.style.color = "gray";
+
+    const tituloModal = document.querySelector("#modalUsuario .modal-title");
+    tituloModal.textContent = id_usuario ? "Editar usuario" : "Nuevo usuario";
+
+    const modal = new bootstrap.Modal(document.getElementById('modalUsuario'));
+    modal.show();
 }
 
-// Mostrar el modal
-const modal = new bootstrap.Modal(document.getElementById('modalUsuario'));
-modal.show();
-}
 
 // Lista y renderiza los roles de un usuario en el modal
 async function listarRolesUsuario(id_usuario) {

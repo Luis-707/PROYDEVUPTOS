@@ -29,12 +29,15 @@ try {
 
     $eval = new EvaluacionesObreros($dataCliente, $this->conexion);
 
-    // Validar duplicados
-    $check = $this->ejecutarConsultaBdds($eval->sql_existe_evaluacion_obrero());
-    if (!empty($check) && !empty($check[0][0]['id_eval_obreros'])) {
-        echo json_encode(['success' => false, 'message' => 'Ya existe una evaluación para este periodo']);
-        exit;
-    }
+$check = $this->ejecutarConsultaBdds($eval->sql_existe_duplicado_periodo_obrero());
+
+if (!empty($check) && !empty($check[0][0]['id_eval_obreros'])) {
+    echo json_encode([
+        'success' => false,
+        'message' => '❌ Ya existe una evaluación para este evaluado en este período'
+    ]);
+    exit;
+}
 
     // Insertar
     $resp = $this->ejecutarConsultaBdds($eval->sql_guardar_eval_obreros());

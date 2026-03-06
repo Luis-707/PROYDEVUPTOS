@@ -13,61 +13,62 @@ class ResultadosAdmin
      * LISTADOS (para lista_resultados.php)
      * ============================ */
 
-    // Evaluador ve resultados de evaluaciones que él mismo realizó
-    public static function sql_listar_por_evaluador(int $idUsuarioEvaluador): string
-    {
-        return sprintf("
-            SELECT 
-                ea.id_eval_admin,
-                u_eval.cedula_usuario,
-                u_eval.nombre_completo,
-                cargo_eval.nombre_cargo AS cargo_evaluado,
-                org_eval.nombre AS ubicacion_administrativa,
-                ea.periodo_evaluado,
-                EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
-            FROM evaluacion_administrativos ea
-            JOIN usuarios u_eval       ON u_eval.id_usuario = ea.evaluado_id
-            JOIN cargos   cargo_eval   ON cargo_eval.id_cargo = u_eval.id_cargo
-            JOIN organizaciones org_eval ON org_eval.id_org = cargo_eval.id_org
-            WHERE ea.evaluador_id = %d
-              AND ea.estado_eval_admin = 'Finalizada'
-            ORDER BY u_eval.cedula_usuario ASC
-        ", $idUsuarioEvaluador);
-    }
+   public static function sql_listar_por_evaluador(int $idUsuarioEvaluador): string
+{
+    return sprintf("
+        SELECT 
+            ea.id_eval_admin,
+            u_eval.cedula_usuario,
+            u_eval.nombre_completo,
+            cargo_eval.nombre_cargo AS cargo_evaluado,
+            org_eval.nombre AS ubicacion_administrativa,
+            ea.periodo_evaluado,
+            EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
+            r.rango_actuacion
+        FROM evaluacion_administrativos ea
+        JOIN usuarios u_eval       ON u_eval.id_usuario = ea.evaluado_id
+        JOIN cargos   cargo_eval   ON cargo_eval.id_cargo = u_eval.id_cargo
+        JOIN organizaciones org_eval ON org_eval.id_org = cargo_eval.id_org
+        JOIN rango_actuacion r ON r.id_rango = ea.id_rango
+        WHERE ea.evaluador_id = %d
+          AND ea.estado_eval_admin = 'Finalizada'
+        ORDER BY u_eval.cedula_usuario ASC
+    ", $idUsuarioEvaluador);
+}
 
-    // Supervisor ve resultados de evaluaciones hechas por evaluadores subordinados
-    public static function sql_listar_por_supervisor(int $idUsuarioSupervisor): string
-    {
-        return sprintf("
-            SELECT 
-                ea.id_eval_admin,
-                u_eval.cedula_usuario,
-                u_eval.nombre_completo,
-                cargo_eval.nombre_cargo AS cargo_evaluado,
-                org_eval.nombre AS ubicacion_administrativa,
-                ea.periodo_evaluado,
-                EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
-            FROM evaluacion_administrativos ea
-            JOIN usuarios u_eval        ON u_eval.id_usuario = ea.evaluado_id
-            JOIN cargos   cargo_eval    ON cargo_eval.id_cargo = u_eval.id_cargo
-            JOIN organizaciones org_eval ON org_eval.id_org = cargo_eval.id_org
 
-            -- Evaluador
-            JOIN usuarios u_ev       ON u_ev.id_usuario = ea.evaluador_id
-            JOIN cargos   cargo_ev   ON cargo_ev.id_cargo = u_ev.id_cargo
-            JOIN organizaciones org_ev ON org_ev.id_org = cargo_ev.id_org
+public static function sql_listar_por_supervisor(int $idUsuarioSupervisor): string
+{
+    return sprintf("
+        SELECT 
+            ea.id_eval_admin,
+            u_eval.cedula_usuario,
+            u_eval.nombre_completo,
+            cargo_eval.nombre_cargo AS cargo_evaluado,
+            org_eval.nombre AS ubicacion_administrativa,
+            ea.periodo_evaluado,
+            EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
+            r.rango_actuacion
+        FROM evaluacion_administrativos ea
+        JOIN usuarios u_eval        ON u_eval.id_usuario = ea.evaluado_id
+        JOIN cargos   cargo_eval    ON cargo_eval.id_cargo = u_eval.id_cargo
+        JOIN organizaciones org_eval ON org_eval.id_org = cargo_eval.id_org
 
-            -- Supervisor (usuario en sesión)
-            JOIN usuarios u_sup       ON u_sup.id_usuario = %d
-            JOIN cargos   cargo_sup   ON cargo_sup.id_cargo = u_sup.id_cargo
-            JOIN organizaciones org_sup ON org_sup.id_org = cargo_sup.id_org
+        JOIN usuarios u_ev       ON u_ev.id_usuario = ea.evaluador_id
+        JOIN cargos   cargo_ev   ON cargo_ev.id_cargo = u_ev.id_cargo
+        JOIN organizaciones org_ev ON org_ev.id_org = cargo_ev.id_org
 
-            WHERE org_ev.padre_id = org_sup.id_org
-              AND ea.estado_eval_admin = 'Finalizada'
-            ORDER BY u_eval.cedula_usuario ASC
-        ", $idUsuarioSupervisor);
-    }
+        JOIN usuarios u_sup       ON u_sup.id_usuario = %d
+        JOIN cargos   cargo_sup   ON cargo_sup.id_cargo = u_sup.id_cargo
+        JOIN organizaciones org_sup ON org_sup.id_org = cargo_sup.id_org
 
+        JOIN rango_actuacion r ON r.id_rango = ea.id_rango
+
+        WHERE org_ev.padre_id = org_sup.id_org
+          AND ea.estado_eval_admin = 'Finalizada'
+        ORDER BY u_eval.cedula_usuario ASC
+    ", $idUsuarioSupervisor);
+}
     public function listarResultados(string $sql)
     {
         if ($this->conexion !== null) {

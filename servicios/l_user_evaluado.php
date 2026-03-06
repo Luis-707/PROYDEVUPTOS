@@ -1,18 +1,15 @@
 <?php
-// Habilitar reporte de errores
-//error_reporting(E_ALL);
-ini_set('display_errors', '1');
-//ini_set('display_startup_errors', '1');
-
-// Iniciar sesión para verificar autenticación
 session_start();
 
 $idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
 $cedulaSesion    = $_SESSION['usuario']['cedula'] ?? null;
 
-// Verificar que el usuario esté autenticado (sin rol)
 if (!$idUsuarioSesion || !$cedulaSesion) {
-    echo json_encode(["success" => false, "message" => "Usuario no autenticado"]);
+    echo json_encode([
+        "success" => false,
+        "message" => "Usuario no autenticado",
+        "data" => []
+    ]);
     exit;
 }
 
@@ -20,8 +17,12 @@ include_once "../clases/Evaluado.php";
 
 $usuario = new Evaluado([], $this);
 
-// Pasar el ID del usuario autenticado al método Sql_listar
 $sql = $usuario->sql_listar_sub($idUsuarioSesion);
-             
 $respuesta = $this->ejecutarConsultaBdds($sql);
-return $respuesta;
+
+echo json_encode([
+    "success" => true,
+    "message" => "Listado de evaluados",
+    "data" => $respuesta
+]);
+exit;

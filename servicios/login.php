@@ -61,6 +61,7 @@ try {
                 'id_usuario'        => $row['id_usuario'],
                 'cedula'    => $row['cedula_usuario'],
                 'id_cargo'          => $row['id_cargo'],
+                'nombre'            => $row['nombre_completo'],
                 'roles'             => $roles
             ];
 
@@ -70,6 +71,7 @@ try {
                 "id_usuario"    => $row['id_usuario'],
                 "cedula"        => $row['cedula_usuario'],
                 "id_cargo"      => $row['id_cargo'],
+                "nombre"        => $row['nombre_completo'],
                 "roles"         => $roles
             ]);
 

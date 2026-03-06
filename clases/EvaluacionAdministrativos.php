@@ -38,7 +38,7 @@ class EvaluacionesAdministrativos {
             $this->fecha_cierre = $dataCliente['fecha_cierre'];
         }
         if (isset($dataCliente['periodo_evaluado'])) {
-            $this->periodo_evaluado = $dataCliente['periodo_evaluado'];
+           $this->periodo_evaluado = trim($dataCliente['periodo_evaluado']);
         }
         if (isset($dataCliente['estado_eval_admin'])) {
             $this->estado_eval_admin = $dataCliente['estado_eval_admin'];
@@ -99,22 +99,31 @@ class EvaluacionesAdministrativos {
         );
     }
 
-    // Verificación de duplicados actualizada
-    public function sql_existe_evaluacion(): string {
-        return sprintf(
-            "SELECT id_eval_admin 
-             FROM evaluacion_administrativos 
-             WHERE evaluado_id = %d
-               AND periodo_evaluado = '%s'
-               AND fecha_inicio = '%s'
-               AND fecha_cierre = '%s'
-             LIMIT 1;",
-            $this->evaluado_id,
-            addslashes($this->periodo_evaluado),
-            addslashes($this->fecha_inicio),
-            addslashes($this->fecha_cierre)
-        );
-    }
+public function sql_existe_duplicado_periodo(): string {
+    return sprintf(
+        "SELECT id_eval_admin
+         FROM evaluacion_administrativos
+         WHERE evaluado_id = %d
+           AND TRIM(periodo_evaluado) = '%s'
+         LIMIT 1;",
+        $this->evaluado_id,
+        addslashes($this->periodo_evaluado)
+    );
+}
+
+public function sql_existe_duplicado_periodo_edicion(): string {
+    return sprintf(
+        "SELECT id_eval_admin
+         FROM evaluacion_administrativos
+         WHERE evaluado_id = %d
+           AND TRIM(periodo_evaluado) = '%s'
+           AND id_eval_admin != %d
+         LIMIT 1;",
+        $this->evaluado_id,
+        addslashes($this->periodo_evaluado),
+        $this->id_eval_admin
+    );
+}
 
     // Búsquedas actualizadas (ejemplos clave)
     public function sql_buscarPorEvaluado(): string {

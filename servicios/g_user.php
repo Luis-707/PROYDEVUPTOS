@@ -28,16 +28,17 @@ try {
     // ============================================================
     // 2) VALIDAR CARGO ÚNICO (solo un usuario activo por cargo)
     // ============================================================
-    $sqlCargo = $usuario->sql_validar_cargo_unico();
-    $existeCargo = $this->ejecutarConsultaBdds($sqlCargo);
+   
+$sqlCargo = $usuario->sql_validar_cargo_unico();
+$existeCargo = $this->ejecutarConsultaBdds($sqlCargo);
 
-    if (count($existeCargo) > 0) {
-        echo json_encode([
-            'success' => false,
-            'message' => '❌ Ya existe un usuario activo asignado a este cargo.'
-        ]);
-        exit;
-    }
+if (count($existeCargo) > 0) {
+    echo json_encode([
+        'success' => false,
+        'message' => '❌ Ya existe un usuario ACTIVO asignado a este cargo.'
+    ]);
+    exit;
+}
 
     // ============================================================
     // 3) INSERTAR NUEVO USUARIO

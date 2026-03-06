@@ -3,57 +3,69 @@ error_reporting(E_ALL);
 ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
 
+header('Content-Type: application/json; charset=utf-8');
+
+session_start();
 include_once "../clases/EvaluacionAdministrativos.php";
 
-$data=$dataCliente['_post'];
+try {
 
-// Instanciar clase
-$evalAdmin = new EvaluacionesAdministrativos($dataCliente['_post']);
+    // 1) Validar sesión
+    $idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
+    if (!$idUsuarioSesion) {
+        echo json_encode([
+            'success' => false,
+            'message' => '❌ Usuario no autenticado'
+        ]);
+        exit;
+    }
 
-// Buscar si existe el registro
-$sql = $evalAdmin->sql_buscarPorId(); // o mejor sql_buscarPorId
-$respuesta = $this->ejecutarConsultaBdds($sql);
+    // 2) Recibir datos
+    $data = $dataCliente['_post'] ?? $_POST;
 
+    // 3) Instanciar clase
+    $evalAdmin = new EvaluacionesAdministrativos($data, $this->conexion);
 
-if (count($respuesta) == 0) {
-    $respuesta = $data['id_eval_admin'] . ' No Existe';
-} else {
+    // 4) Verificar que el registro exista
+    $sqlExiste = $evalAdmin->sql_buscarPorId();
+    $respExiste = $this->ejecutarConsultaBdds($sqlExiste);
 
-    $sql=$evalAdmin->sql_actualizar_periodo();
-  $respuesta=$this->ejecutarConsultaBdds($sql);
+    if (empty($respExiste)) {
+        echo json_encode([
+            'success' => false,
+            'message' => $data['id_eval_admin'] . ' No Existe'
+        ]);
+        exit;
+    }
 
+    // 5) Validar duplicado de período (NUEVO)
+    $sqlDup = $evalAdmin->sql_existe_duplicado_periodo_edicion();
+    $respDup = $this->ejecutarConsultaBdds($sqlDup);
+
+    if (!empty($respDup) && !empty($respDup[0][0]['id_eval_admin'])) {
+        echo json_encode([
+            'success' => false,
+            'message' => '❌ No puede cambiar el período: ya existe otra evaluación de este evaluado en ese período'
+        ]);
+        exit;
+    }
+
+    // 6) Actualizar período
+    $sqlUpdate = $evalAdmin->sql_actualizar_periodo();
+    $respUpdate = $this->ejecutarConsultaBdds($sqlUpdate);
+
+    // 7) Respuesta final
+    echo json_encode([
+        'success' => true,
+        'message' => '✅ Período actualizado correctamente',
+        'data'    => $respUpdate
+    ]);
+    exit;
+
+} catch (Throwable $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error en el servidor: ' . $e->getMessage()
+    ]);
 }
-
-$respuesta = $this->ejecutarConsultaBdds($sql);
-  $respuesta = $this->servicio($data, 'l_evalAdmin');
-return $respuesta;
-
- 
-
-/*
-include_once "../clases/Supervisor.php";
-
-
- $data=$dataCliente['_post'];
-
-$cargo = new Supervisor( $dataCliente['_post']);
-$sql = $cargo->sql_buscar_supervisores();
-$respuesta = $this->ejecutarConsultaBdds($sql);
-
-$cargo = new Supervisor($dataCliente['_post']);
-
-$sql = $cargo->sql_buscar_supervisores();
-$respuesta = $this->ejecutarConsultaBdds($sql);
-
-if (count($respuesta) == 0) {     
-  $respuesta = $dataCliente['_post']['id_usuario'].' No Existe';
- 
-}else{
-  $sql=$cargo->sql_actualizar_supervisor();
-  $respuesta = $this->ejecutarConsultaBdds($sql);
-}
-
-
-$respuesta = $this->ejecutarConsultaBdds($sql);
-$respuesta = $this->servicio($data,'l_supervisores'); // el parametro no tiene extension pero es el servicio del archivo l_usuario.php
-return $respuesta;*/
+exit;

@@ -1,3 +1,22 @@
+window.addEventListener('load', () => {
+    const ced = document.getElementById('cedula');
+    const cla = document.getElementById('clave');
+
+    if (ced) ced.value = '';
+    if (cla) cla.value = '';
+});
+
+
+
+// Limpiar campos si venimos del logout
+if (new URLSearchParams(window.location.search).has('clear')) {
+    const ced = document.getElementById('cedula');
+    const cla = document.getElementById('clave');
+
+    if (ced) ced.value = '';
+    if (cla) cla.value = '';
+}
+
 function validarcaracter(cadena){
     var regex = /^[0-9aA-zZàèìòùÁÉÍÓÚ_.-]+$/;
     return regex.test(cadena);

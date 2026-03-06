@@ -93,61 +93,87 @@ function validarCadena(cadena){
   ============================================================ */
   
   async function guardarPeriodoEvaluacionObrero() {
-    try {
-      let datos = capturarValoresFormulario('formularioEvalObrero');
-  
-      let idEvaluado = document.getElementById('evaluado_id').value;
-      if (!idEvaluado) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Falta seleccionar evaluado',
-          text: 'Debe seleccionar un usuario evaluado antes de guardar.'
-        });
-        return;
-      }
-      datos.append('evaluado_id', idEvaluado);
-  
-      const periodo = document.getElementById('periodo_evaluacion').value;
-      const fechaInicio = document.getElementById('fecha_inicio_obrero').value;
-      const fechaCierre = document.getElementById('fecha_cierre_obrero').value;
-  
-      if (!validarFechasPeriodoObrero(fechaInicio, fechaCierre, periodo)) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Fechas inválidas',
-          text: 'Las fechas no corresponden al periodo seleccionado.'
-        });
-        return;
-      }
-  
-      const resp = await microApi('controlador/?g_evalObrero', datos);
-  
-      if (resp.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Registro guardado',
-          text: resp.message
-        });
-  
-        listarEvalObrero();
-        valorFormEvalObrero();
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: resp.message
-        });
-      }
-  
-    } catch (err) {
-      console.error("Error en guardarPeriodoEvaluacionObrero:", err);
+  try {
+    let datos = capturarValoresFormulario('formularioEvalObrero');
+
+    // Obtener evaluado
+    let idEvaluado = document.getElementById('evaluado_id').value;
+    if (!idEvaluado) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Falta seleccionar evaluado',
+        text: 'Debe seleccionar un usuario evaluado antes de guardar.'
+      });
+      return;
+    }
+    datos.append('evaluado_id', idEvaluado);
+
+    // Normalizar período
+    const periodo = document.getElementById('periodo_evaluacion').value.trim();
+    const fechaInicio = document.getElementById('fecha_inicio_obrero').value;
+    const fechaCierre = document.getElementById('fecha_cierre_obrero').value;
+
+    // Validar fechas según período
+    if (!validarFechasPeriodoObrero(fechaInicio, fechaCierre, periodo)) {
       Swal.fire({
         icon: 'error',
-        title: 'Error inesperado',
-        text: 'Ocurrió un error al guardar el periodo'
+        title: 'Fechas inválidas',
+        text: 'Las fechas no corresponden al periodo seleccionado.'
+      });
+      return;
+    }
+
+    // ============================================================
+    // 🔍 VALIDACIÓN PREVIA EN FRONTEND (evita enviar duplicados)
+    // ============================================================
+    const registros = await microApi('controlador/?l_evalOb');
+    const lista = Array.isArray(registros[0]) ? registros.flat() : registros;
+
+    const existe = lista.some(r =>
+      r.evaluado_id == idEvaluado &&
+      r.periodo_evaluacion.trim() === periodo
+    );
+
+    if (existe) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Periodo duplicado',
+        text: 'Este evaluado ya tiene una evaluación registrada en este período.'
+      });
+      return;
+    }
+
+    // ============================================================
+    // Guardar en backend (validación REAL también está allá)
+    // ============================================================
+    const resp = await microApi('controlador/?g_evalObrero', datos);
+
+    if (resp.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Registro guardado',
+        text: resp.message
+      });
+
+      listarEvalObrero();
+      valorFormEvalObrero();
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: resp.message
       });
     }
+
+  } catch (err) {
+    console.error("Error en guardarPeriodoEvaluacionObrero:", err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error inesperado',
+      text: 'Ocurrió un error al guardar el periodo'
+    });
   }
+}
   
   /* ============================================================
      VALIDAR FECHAS SEGÚN PERIODO

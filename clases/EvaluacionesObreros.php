@@ -29,7 +29,7 @@ class EvaluacionesObreros {
             $this->fecha_cierre = $dataCliente['fecha_cierre'];
         }
         if (isset($dataCliente['periodo_evaluacion'])) {
-            $this->periodo_evaluacion = $dataCliente['periodo_evaluacion'];
+            $this->periodo_evaluacion = trim($dataCliente['periodo_evaluacion']);
         }
         if (isset($dataCliente['estado_eval_obrero'])) {
             $this->estado_eval_obreros = $dataCliente['estado_eval_obrero'];
@@ -96,19 +96,29 @@ class EvaluacionesObreros {
     // SQL PARA VALIDAR DUPLICADOS
     // ============================================================
 
-    public function sql_existe_evaluacion_obrero(): string {
+    public function sql_existe_duplicado_periodo_obrero(): string {
         return sprintf(
-            "SELECT id_eval_obreros 
-             FROM evaluacion_obreros 
+            "SELECT id_eval_obreros
+             FROM evaluacion_obreros
              WHERE evaluado_id = %d
-               AND periodo_evaluacion = '%s'
-               AND fecha_inicio = '%s'
-               AND fecha_cierre = '%s'
+               AND TRIM(periodo_evaluacion) = '%s'
+             LIMIT 1;",
+            $this->evaluado_id,
+            addslashes($this->periodo_evaluacion)
+        );
+    }
+
+    public function sql_existe_duplicado_periodo_obrero_edicion(): string {
+        return sprintf(
+            "SELECT id_eval_obreros
+             FROM evaluacion_obreros
+             WHERE evaluado_id = %d
+               AND TRIM(periodo_evaluacion) = '%s'
+               AND id_eval_obreros != %d
              LIMIT 1;",
             $this->evaluado_id,
             addslashes($this->periodo_evaluacion),
-            addslashes($this->fecha_inicio),
-            addslashes($this->fecha_cierre)
+            $this->id_eval_obreros
         );
     }
 
