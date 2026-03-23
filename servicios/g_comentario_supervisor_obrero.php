@@ -34,6 +34,34 @@ if (empty($permiso) || empty($permiso[0])) {
     exit;
 }
 
+$comentario = trim($data['comentario_supervisor'] ?? '');
+$idEval = $data['id_eval_obreros'] ?? '';
+
+if ($comentario === '' || strlen($comentario) < 10) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'El comentario es demasiado corto o está vacío.'
+    ]);
+    exit;
+}
+
+$triviales = ['ok','bien','si','no','.','na','n/a'];
+if (in_array(strtolower($comentario), $triviales)) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'El comentario no es válido.'
+    ]);
+    exit;
+}
+
+if (!$idEval) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'ID de evaluación no recibido.'
+    ]);
+    exit;
+}
+
 // ============================================================
 // 2. Ejecutar UPDATE usando el método de la clase
 // ============================================================

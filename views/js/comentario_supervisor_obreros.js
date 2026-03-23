@@ -17,36 +17,72 @@ function validarCadena(cadena){
   }
 
 function Validar_form_comentario_supervisor_obrero(opc) {
-   var formulario = document.getElementById('form_comentario_supervisor_obrero');
+
+    var formulario = document.getElementById('form_comentario_supervisor_obrero');
     const Data = new FormData(formulario);
     let isValid = true;
-  
+
+    let comentario = "";
+    let idEval = "";
+
     for (let [key, valor] of Data.entries()) {
+
         if (!valor) {
-          console.warn(`⚠️ El campo ${key} está vacío`);
+            console.warn(`⚠️ El campo ${key} está vacío`);
         }
-    
+
         switch (key) {
-          case 'comentario_supervisor':
-            if (!validarCadena(valor)) {
-              alert("El comentario del supervisor no debe tener caracteres Especiales diferentes a ( _  .  -  ) ");
-              isValid = false; // Marca como inválido
-            }
+
+            case 'comentario_supervisor':
+                comentario = valor.trim();
+
+                // ❌ Comentario vacío
+                if (comentario === "") {
+                    alert("Debe escribir un comentario antes de guardar.");
+                    isValid = false;
+                }
+
+                // ❌ Longitud mínima
+                if (comentario.length < 10) {
+                    alert("El comentario debe tener al menos 10 caracteres.");
+                    isValid = false;
+                }
+
+                // ❌ Comentarios triviales
+                const triviales = ["ok", "bien", "si", "no", ".", "na", "n/a"];
+                if (triviales.includes(comentario.toLowerCase())) {
+                    alert("El comentario es demasiado corto o no aporta información.");
+                    isValid = false;
+                }
+
+                // ❌ Caracteres permitidos
+                const regexSup = /^[0-9A-Za-zÁÉÍÓÚáéíóúñÑ.,;:()¿?¡!_\-\s]+$/;
+                if (!regexSup.test(comentario)) {
+                    alert("El comentario contiene caracteres no permitidos.");
+                    isValid = false;
+                }
+            break;
+
+            case 'id_eval_obreros':
+                idEval = valor;
             break;
 
             default:
-            // No hacer nada para otros campos
             break;
         }
-      }
-    
-      if (isValid) {
-        if (opc === 1) {
-            guardarComentarioSupervisorObrero();
-          }
-      }
     }
-  
+
+    // ❌ Validar id_eval_obreros fuera del bucle
+    if (!idEval) {
+        alert("Error interno: No se encontró el ID de evaluación.");
+        isValid = false;
+    }
+
+    if (isValid && opc === 1) {
+        guardarComentarioSupervisorObrero();
+    }
+}
+
     
   
   

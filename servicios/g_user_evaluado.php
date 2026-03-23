@@ -51,7 +51,13 @@ try {
         $evaluado->setIdUsuario($nuevoIdUsuario);
 
         // ============================================================
-        // 4) BUSCAR PERMISO "Comentarios"
+          // 4) INSERTAR ROL EN posee_rol
+            // ============================================================
+                $sqlRol = $evaluado->sql_guardar_rol_evaluado();
+                $this->ejecutarConsultaBdds($sqlRol);
+
+        // ============================================================
+        // 5) BUSCAR PERMISO "Comentarios"
         // ============================================================
         $sqlPermiso = Evaluado::sql_buscar_permiso_comentarios();
         $respPermiso = $this->ejecutarConsultaBdds($sqlPermiso);

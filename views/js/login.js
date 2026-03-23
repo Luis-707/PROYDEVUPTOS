@@ -57,38 +57,67 @@ function validarcaracter(cadena){
     }
   }
   
-  async function loginUsuario() {
-    let datosLogin = capturarValoresFormulario('formLogin');
+async function loginUsuario() {
+  let datosLogin = capturarValoresFormulario('formLogin');
 
-    // Cargar JSON externo
-    const resp = await microApi('views/js/datos_empleado.json');
-    let pin = resp.pin || null;
+  // Cargar JSON externo
+  const resp = await microApi('views/js/datos_empleado.json');
+  let pin = resp.pin || null;
 
-    // Añadir el JSON como string al formData
-    datosLogin.append("extra", JSON.stringify({ pin: pin }));
+  // Añadir el JSON como string al formData
+  datosLogin.append("extra", JSON.stringify({ pin: pin }));
 
-    // Llamar al servicio
-    var respuesta = await microApi('controlador/?login', datosLogin);
+  // Llamar al servicio
+  var respuesta = await microApi('controlador/?login', datosLogin);
 
-    if (respuesta.success) {
-        // Guardar datos en sessionStorage
-        sessionStorage.setItem("id_usuario", respuesta.id_usuario);
-        sessionStorage.setItem("cedula_usuario", respuesta.cedula);
-        sessionStorage.setItem("rol_id", respuesta.rol_id);
-        // Redirigir a la vista principal
-        window.location.href = "index.php";
-    } else {
-        if (respuesta.type === "inactive") {
-            Swal.fire({
-                title: 'Usuario inactivo',
-                text: respuesta.message,
-                icon: 'warning',
-                confirmButtonText: 'Aceptar'
-            });
-        } else {
-            alert(respuesta.message);
-        }
-    }
+  if (respuesta.success) {
+      // ✅ LOGIN EXITOSO - Guardar en sessionStorage
+      sessionStorage.setItem("id_usuario", respuesta.id_usuario);
+      sessionStorage.setItem("cedula_usuario", respuesta.cedula);
+      sessionStorage.setItem("roles", JSON.stringify(respuesta.roles));
+      sessionStorage.setItem("total_permisos", respuesta.total_permisos);
+      
+      // Redirigir
+      window.location.href = "index.php";
+  } else {
+      // 🚫 ERRORES ESPECÍFICOS CON SWEETALERT
+      switch (respuesta.type) {
+          case "inactive":
+              Swal.fire({
+                  title: 'Usuario inactivo',
+                  text: respuesta.message,
+                  icon: 'warning',
+                  confirmButtonText: 'Aceptar'
+              });
+              break;
+              
+          case "no_roles":
+              Swal.fire({
+                  title: 'Sin roles asignados',
+                  text: 'Usuario sin roles asignados. Contacte al administrador.',
+                  icon: 'error',
+                  confirmButtonText: 'Aceptar'
+              });
+              break;
+              
+          case "no_permisos":
+              Swal.fire({
+                  title: 'Sin permisos asignados',
+                  text: 'Usuario sin permisos. No puede acceder al sistema. Contacte al administrador.',
+                  icon: 'error',
+                  confirmButtonText: 'Aceptar'
+              });
+              break;
+              
+          default:
+              Swal.fire({
+                  title: 'Error de login',
+                  text: respuesta.message,
+                  icon: 'error',
+                  confirmButtonText: 'Aceptar'
+              });
+      }
+  }
 }
 
   function pa(cad){

@@ -109,6 +109,13 @@ class Evaluado extends Usuario {
         return sprintf("INSERT INTO posee_permisos (permisos_id, id_usuario) VALUES (%d, %d);", $permisos_id, $this->id_usuario);
     }
 
+    public function sql_guardar_rol_evaluado(): string {
+    return sprintf(
+        "INSERT INTO posee_rol (id_usuario, rol_id) VALUES (%d, 4);",
+        $this->id_usuario
+    );
+}
+
     public function sql_eliminar_permiso(): string {
         return sprintf("DELETE FROM posee_permisos WHERE id_usuario = %d;", $this->id_usuario);
     }

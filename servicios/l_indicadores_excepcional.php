@@ -3,6 +3,19 @@ header('Content-Type: application/json; charset=utf-8');
 include_once "../clases/DesempenoExcepcional.php";
 
 try {
+    // Iniciar sesión y verificar autenticación
+    session_start();
+    $idUsuarioSesion = $_SESSION['usuario']['id_usuario'] ?? null;
+    $cedulaSesion = $_SESSION['usuario']['cedula'] ?? null;
+
+    if (!$idUsuarioSesion || !$cedulaSesion) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Usuario no autenticado'
+        ]);
+        exit;
+    }
+
     // Compatibilidad: aceptamos id_eval_admin aunque no se use
     $data = $_GET;
     if (empty($data)) {
@@ -10,8 +23,9 @@ try {
         $data = json_decode($json, true) ?? [];
     }
 
-    // Consulta de indicadores fijos activos
-    $sql = DesempenoExcepcional::sql_listar_indicadores();
+    // Consulta de indicadores personalizados por usuario
+    $indicador = new DesempenoExcepcional([], $this);
+    $sql = $indicador->sql_listar_indicadores($idUsuarioSesion);
     $res = $this->ejecutarConsultaBdds($sql);
 
     // Aplanar estructura

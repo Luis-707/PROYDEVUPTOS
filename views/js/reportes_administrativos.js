@@ -23,7 +23,7 @@ async function listarReportesAdministrativos() {
           <button type="button" class="btn btn-danger btn-sm" onclick="generarPDF(${item.id_eval_admin})">
             Descargar PDF
           </button>
-          <button type="button" class="btn btn-info btn-sm" onclick="abrirPlanillaExcepcional('${cedula}', ${item.id_eval_admin})">
+          <button type="button" class="btn btn-info btn-sm" onclick="abrirPlanillaExcepcional('${cedula}', ${item.id_eval_admin}, ${item.id_usuario})">
             Planilla Excepcional
           </button>
         `;
@@ -47,6 +47,34 @@ async function listarReportesAdministrativos() {
   } catch (error) {
     console.error("Error al listar reportes:", error);
   }
+}
+
+//funcion filtrarTabla
+function filtrarTabla() {
+  const filtroCedula = document.getElementById('filtroCedula').value.toLowerCase().trim();
+  const filtroNombre = document.getElementById('filtroNombre').value.toLowerCase().trim();
+  const filtroAnio = document.getElementById('filtroAnio').value.toLowerCase().trim();
+  const filtroPeriodo = document.getElementById('filtroPeriodo').value.toLowerCase().trim();
+
+  const filas = document.querySelectorAll("#tabla-reportes tbody tr");
+  
+  filas.forEach(fila => {
+    const cedula = fila.cells[0].textContent.toLowerCase().trim();
+    const nombre = fila.cells[1].textContent.toLowerCase().trim();
+    const anio = fila.cells[3].textContent.toLowerCase().trim();
+    const periodo = fila.cells[4].textContent.toLowerCase().trim();
+
+    const coincideCedula = !filtroCedula || cedula.includes(filtroCedula);
+    const coincideNombre = !filtroNombre || nombre.includes(filtroNombre);
+    const coincideAnio = !filtroAnio || anio.includes(filtroAnio);
+    const coincidePeriodo = !filtroPeriodo || periodo.includes(filtroPeriodo);
+
+    if (coincideCedula && coincideNombre && coincideAnio && coincidePeriodo) {
+      fila.style.display = '';
+    } else {
+      fila.style.display = 'none';
+    }
+  });
 }
 
  // Generar PDF con jsPDF

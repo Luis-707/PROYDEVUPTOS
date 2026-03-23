@@ -86,20 +86,25 @@ class DesempenoExcepcional {
     // ============================================================
     // 5) Listar indicadores fijos activos
     // ============================================================
-    public static function sql_listar_indicadores(): string {
-        return "
-            SELECT 
-                indicador_id,
-                indicador,
-                tipo_indicador,
-                estado_indicador
-            FROM indicadores
-            WHERE tipo_indicador = 'Fijo'
-              AND estado_indicador = 'Activo'
-            ORDER BY indicador_id ASC
-            LIMIT 3;
-        ";
+      // Listar indicadores fijos para desempeño excepcional
+    public static function sql_listar_indicadores(int $idUsuario): string {
+        return sprintf("
+            SELECT i.indicador_id, i.indicador, i.tipo_indicador, i.estado_indicador
+            FROM indicadores i
+            WHERE (i.tipo_indicador = 'Fijo' AND i.estado_indicador = 'Activo')
+               OR (i.tipo_indicador = 'Adicional' 
+                   AND i.estado_indicador = 'Activo' 
+                   AND i.id_usuario = %d)
+            ORDER BY 
+                CASE 
+                    WHEN i.tipo_indicador = 'Fijo' THEN 1 
+                    ELSE 2 
+                END ASC,
+                i.indicador_id ASC
+            LIMIT 5;
+        ", (int)$idUsuario);  // Solo idUsuario en sprintf (idEvalAdmin no se usa en WHERE)
     }
+
 
     // ============================================================
     // 6) Verificar si ya existe planilla excepcional

@@ -110,7 +110,7 @@ include_once "middleware/auth.php";
             <aside id="layout-menu" class="layout-menu menu-vertical menu" data-bs-theme="dark">
             
             <div class="app-brand demo " id="banner"> 
-                <a href="index.html" class="app-brand-link"> 
+                <a href="index.php" class="app-brand-link"> 
                     <span class="app-brand-logo demo">
                         <span class="text-primary"> 
                             <img src="img/logo/logo.png" alt="logo" style="width: 50px; max-height: 100%;"> 
@@ -188,7 +188,7 @@ include_once "middleware/auth.php";
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="pages-account-settings-account.html">
+                        <a class="dropdown-item" href="index.php">
                         <div class="d-flex">
                             <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
@@ -361,8 +361,6 @@ include_once "middleware/auth.php";
     <script src="js/siglab.js"></script>
     <!--<script src="views/js/usuario.js"></script>-->
     <script src="views/js/form_user.js"></script>
-    <script src="views/js/evaluadores.js"></script>
-    <script src="views/js/supervisores.js"></script>
     <script src="views/js/comentario_evaluado.js"></script>
     <script src="views/js/comentario_supervisor.js"></script> 
     <script src="views/js/comentario_evaluado_obreros.js"></script>
@@ -372,13 +370,14 @@ include_once "middleware/auth.php";
     <script src="views/js/evaluados_obreros.js"></script>
     <script src="views/js/evaluados_comentarios.js"></script>
     <script src="views/js/evaluados_comentarios_obreros.js"></script>
+    <script src="views/js/graficas.js"></script>
     <script src="views/js/evaluados_resultados.js"></script>
     <script src="views/js/evaluados_resultados_obreros.js"></script>
     <script src="views/js/logout.js"></script>
     <script src="views/js/GestionEvaluados.js"></script>
+    <script src="views/js/GestionIndicador.js"></script>
     <script src="views/js/evalAdministrativos.js"></script>
     <script src="views/js/evalObreros.js"></script>
-    <script src="views/js/Datos_Evaluados.js"></script>
     <script src="views/js/GestionObjetivos.js"></script>
     <script src="views/js/GestionCompetencias.js"></script>
     <script src="views/js/cargarPerfil.js"></script>

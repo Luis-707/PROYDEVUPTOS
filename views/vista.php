@@ -33,6 +33,7 @@ if (isset($_POST['file']) && isset($_POST['idElemento'])) {
         'planilla_comentario' => $DIR. 'Planilla_Comentarios.php',
         'planilla_comentario_obrero' => $DIR. 'Planilla_Comentarios_Obreros.php',
         'planilla_resultados' => $DIR. 'Planilla_Resultados.php',
+        'graficas' => $DIR. 'graficas.php',
         'planilla_resultados_obrero' => $DIR. 'Planilla_Resultados_Obreros.php',
         'planilla_editar' => $DIR. 'planilla_editar.php',
         'planilla_obreros_editar' => $DIR. 'planilla_obreros_editar.php',
@@ -45,6 +46,7 @@ if (isset($_POST['file']) && isset($_POST['idElemento'])) {
         'perfilUsuario' => $DIR. 'perfilUsuario.php',
         'reportes_despempeno' => $DIR. 'reportes_desemp.php',
         'reportes_administrativos' => $DIR. 'ReportesPlanillasAdmin.php',
+        'gestion_indicadores' => $DIR. 'GestionIndicador.php',
         'reportes_obreros' => $DIR. 'ReportesPlanillasObreros.php',
         'planilla_excepcional' => $DIR. 'Planilla_Excepcional.php',
         //'Registro_Evaluados' => $DIR. 'Registro_Evaluados.php'

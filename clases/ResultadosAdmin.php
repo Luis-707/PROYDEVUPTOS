@@ -24,7 +24,8 @@ class ResultadosAdmin
             org_eval.nombre AS ubicacion_administrativa,
             ea.periodo_evaluado,
             EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
-            r.rango_actuacion
+            r.rango_actuacion,
+            ea.puntaje_final
         FROM evaluacion_administrativos ea
         JOIN usuarios u_eval       ON u_eval.id_usuario = ea.evaluado_id
         JOIN cargos   cargo_eval   ON cargo_eval.id_cargo = u_eval.id_cargo
@@ -48,7 +49,8 @@ public static function sql_listar_por_supervisor(int $idUsuarioSupervisor): stri
             org_eval.nombre AS ubicacion_administrativa,
             ea.periodo_evaluado,
             EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
-            r.rango_actuacion
+            r.rango_actuacion,
+            ea.puntaje_final
         FROM evaluacion_administrativos ea
         JOIN usuarios u_eval        ON u_eval.id_usuario = ea.evaluado_id
         JOIN cargos   cargo_eval    ON cargo_eval.id_cargo = u_eval.id_cargo

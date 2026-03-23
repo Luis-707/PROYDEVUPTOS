@@ -17,36 +17,81 @@ function validarCadena(cadena){
   }
 
 function Validar_form_comentario_evaluado(opc) {
-   var formulario = document.getElementById('form_comentario_evaluado');
-    const Data = new FormData(formulario);
-    let isValid = true;
-  
-    for (let [key, valor] of Data.entries()) {
-        if (!valor) {
-          console.warn(`⚠️ El campo ${key} está vacío`);
-        }
-    
-        switch (key) {
-          case 'comentario_evaluado':
-            if (!validarCadena(valor)) {
-              alert("El comentario del supervisor no debe tener caracteres Especiales diferentes a ( _  .  -  ) ");
-              isValid = false; // Marca como inválido
-            }
-            break;
+  var formulario = document.getElementById('form_comentario_evaluado');
+  const Data = new FormData(formulario);
+  let isValid = true;
 
-            default:
-            // No hacer nada para otros campos
-            break;
-        }
-      }
-    
-      if (isValid) {
-        if (opc === 1) {
-            guardarComentarioEvaluado();
-          }
-      }
+  let comentario = "";
+  let conformidad = "";
+  let idEval = "";
+
+  for (let [key, valor] of Data.entries()) {
+
+    if (!valor) {
+      console.warn(`⚠️ El campo ${key} está vacío`);
     }
-  
+
+    switch (key) {
+
+      case 'comentario_evaluado':
+        comentario = valor.trim();
+
+        // ❌ Comentario vacío
+        if (comentario === "") {
+          alert("Debe escribir un comentario antes de guardar.");
+          isValid = false;
+        }
+
+        // ❌ Longitud mínima
+        if (comentario.length < 10) {
+          alert("El comentario debe tener al menos 10 caracteres.");
+          isValid = false;
+        }
+
+        // ❌ Comentarios triviales
+        const triviales = ["ok", "bien", "si", "no", ".", "na", "n/a"];
+        if (triviales.includes(comentario.toLowerCase())) {
+          alert("El comentario es demasiado corto o no aporta información.");
+          isValid = false;
+        }
+
+        // ❌ Caracteres permitidos
+        const regex = /^[0-9A-Za-zÁÉÍÓÚáéíóúñÑ.,;:()¿?¡!_\-\s]+$/;
+        if (!regex.test(comentario)) {
+          alert("El comentario contiene caracteres no permitidos.");
+          isValid = false;
+        }
+      break;
+
+      case 'conformidad':
+        conformidad = valor;
+      break;
+
+      case 'id_eval_admin':
+        idEval = valor;
+      break;
+
+      default:
+      break;
+    }
+  }
+
+  // ❌ Validar conformidad fuera del bucle
+  if (!conformidad) {
+    alert("Debe seleccionar si está de acuerdo con la evaluación (Sí o No).");
+    isValid = false;
+  }
+
+  // ❌ Validar id_eval_admin fuera del bucle
+  if (!idEval) {
+    alert("Error interno: No se encontró el ID de evaluación.");
+    isValid = false;
+  }
+
+  if (isValid && opc === 1) {
+    guardarComentarioEvaluado();
+  }
+}
     
   
   

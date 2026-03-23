@@ -20,19 +20,7 @@
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioUsuarios">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Gestion de Usuarios" >Usuarios</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="javascript:void(0)" class="menu-link" id="formularioEvaluadores">
-                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Gestión de Evaluadores" >Evaluadores</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="javascript:void(0)" class="menu-link" id="formularioSupervisores">
-                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Gestión de supervisores" >Supervisores</div>
+                        <div data-i18n="Usuarios" >Usuarios</div>
                     </a>
                 </li>
                 <li class="menu-item">
@@ -42,73 +30,89 @@
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="javascript:void(0)" class="menu-link" id="formularioDatosEvaluados">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioObjetivos">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Cargos de Evaluados" >Cargos de Evaluados</div>
+                        <div data-i18n="Objetivos">Objetivos</div>
                     </a>
                 </li>
+
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvalAdministrativos">
                         <!--<i class="menu-icon icon-base bx bx-pinsel"></i>-->
-                        <div data-i18n="Registros Administrativos" >Registros Administrativos</div>
+                        <div data-i18n="Registros de evaluación" >Registros Administrativos</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioRegistroObreros">
                         <!--<i class="menu-icon icon-base bx bx-pinsel"></i>-->
-                        <div data-i18n="Registros Obreros" >Registros Obreros</div>
+                        <div data-i18n="Registros de evaluación" >Registros Obreros</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacion">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Evaluaciones" >Evaluaciones</div>
+                        <div data-i18n="Planillas de evaluación" >Evaluaciones</div>
                     </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioResultados">
+                        <!--<i class="menu-icon icon-base bx bx-chart"></i>-->
+                        <div data-i18n="Resultados">Resultados</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                        <a href="javascript:void(0)" class="menu-link" id="formularioReportesAdmin">
+                            <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                            <div data-i18n="Exportar planillas">Reportes Administrativos</div>
+                        </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioEvaluacionObreros">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Evaluaciones Obrero">Evaluaciones Obrero</div>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="javascript:void(0)" class="menu-link" id="formularioObjetivos">
-                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Gestion de objetivos">Objetivos</div>
+                        <div data-i18n="Planillas de evaluacion">Evaluaciones Obrero</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioCompetencias">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Gestion de competencias">Competencias</div>
+                        <div data-i18n="Competencias">Competencias</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioIndicadores">
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Indicadores">Indicadores</div>
                     </a>
                 </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioReportesDesemp">
                         <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                        <div data-i18n="Reportes">Reportes</div>
+                        <div data-i18n="Reportes de calificaciones">Reportes</div>
                     </a>
                 </li>
 
-                    <li class="menu-item">
-                        <a href="javascript:void(0)" class="menu-link" id="formularioReportesAdmin">
-                            <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                            <div data-i18n="Reportes Administrativos">Reportes Administrativos</div>
-                        </a>
-                    </li>
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioResultadosObreros">
+                            <!--<i class="menu-icon icon-base bx bx-chart"></i>-->
+                        <div data-i18n="Resultados Obreros">Resultados Obreros</div>
+                    </a>
+                </li>
 
-                    <li class="menu-item">
-                        <a href="javascript:void(0)" class="menu-link" id="formularioReportesObreros">
-                            <!--<i class="menu-icon icon-base bx bx-user"></i>-->
-                            <div data-i18n="Reportes Obreros">Reportes Obreros</div>
-                        </a>
-                    </li>
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link" id="formularioGraficas">
+                            <!--<i class="menu-icon icon-base bx bx-chart"></i>-->
+                        <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Graficas">Graficas</div>
+                    </a>
+                </li>
 
                 <li class="menu-item">
                     <a href="javascript:void(0)" class="menu-link" id="formularioComentarios">
@@ -125,19 +129,11 @@
                 </li>
 
                 <li class="menu-item">
-                    <a href="javascript:void(0)" class="menu-link" id="formularioResultados">
-                        <!--<i class="menu-icon icon-base bx bx-chart"></i>-->
-                        <div data-i18n="Resultados">Resultados</div>
+                    <a href="javascript:void(0)" class="menu-link" id="formularioReportesObreros">
+                            <!--<i class="menu-icon icon-base bx bx-user"></i>-->
+                        <div data-i18n="Exportar planillas">Reportes Obreros</div>
                     </a>
                 </li>
-
-                    <li class="menu-item">
-                        <a href="javascript:void(0)" class="menu-link" id="formularioResultadosObreros">
-                            <!--<i class="menu-icon icon-base bx bx-chart"></i>-->
-                            <div data-i18n="Resultados Obreros">Resultados Obreros</div>
-                        </a>
-                    </li>
-
 
                 <!--  Menu Seguridad-->
                 <!-- <li class="menu-header small">

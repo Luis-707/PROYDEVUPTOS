@@ -68,6 +68,34 @@ async function listarReportesObreros() {
     }
 }
 
+//js para filtrar filas
+function filtrarTablaObreros() {
+    const filtroCedula = document.getElementById('filtroCedulaObrero').value.toLowerCase().trim();
+    const filtroNombre = document.getElementById('filtroNombreObrero').value.toLowerCase().trim();
+    const filtroAnio = document.getElementById('filtroAnioObrero').value.toLowerCase().trim();
+    const filtroPeriodo = document.getElementById('filtroPeriodoObrero').value.toLowerCase().trim();
+  
+    const filas = document.querySelectorAll("#tabla-reportes-obrero tbody tr");
+    
+    filas.forEach(fila => {
+      const cedula = fila.cells[0].textContent.toLowerCase().trim();
+      const nombre = fila.cells[1].textContent.toLowerCase().trim();
+      const anio = fila.cells[3].textContent.toLowerCase().trim();
+      const periodo = fila.cells[4].textContent.toLowerCase().trim();
+  
+      const coincideCedula = !filtroCedula || cedula.includes(filtroCedula);
+      const coincideNombre = !filtroNombre || nombre.includes(filtroNombre);
+      const coincideAnio = !filtroAnio || anio.includes(filtroAnio);
+      const coincidePeriodo = !filtroPeriodo || periodo.includes(filtroPeriodo);
+  
+      if (coincideCedula && coincideNombre && coincideAnio && coincidePeriodo) {
+        fila.style.display = '';
+      } else {
+        fila.style.display = 'none';
+      }
+    });
+  }
+
 // =============================
 // GENERAR PDF OBRERO
 // =============================
@@ -120,14 +148,14 @@ img.src = "img/cintillo.jpeg"; // ← coloca aquí tu imagen
 // addImage(imagen, tipo, x, y, width, height)
 doc.addImage(img, "JPEG", 10, 5, 190, 20);
 
+    
+let y = 20;
+y += 20;
 
-    let y = 20;
-    y += 20;
-
-    // Título
-    doc.setFontSize(12);
-    doc.text("EVALUACION DEL DESEMPEÑO - NIVEL OBRERO", 105, y, { align: "center" });
-    y += 10;
+// Título
+doc.setFontSize(12);
+doc.text("EVALUACION DEL DESEMPEÑO - NIVEL OBRERO", 105, y, { align: "center" });
+y += 10;
 
     // =============================
     // SECCIÓN A: DATOS DEL EVALUADO

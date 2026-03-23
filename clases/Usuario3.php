@@ -152,15 +152,20 @@ class Usuario {
             "SELECT 
             u.id_usuario,
             u.cedula_usuario,
-            u.clave,
             u.nombre_completo,
+            u.clave,
             u.id_cargo,
             u.estado_usuario,
-            r.rol AS nombre_rol
+            COALESCE(r.rol, NULL) AS nombre_rol,  -- Permite NULL si no hay roles
+            COUNT(pp.permisos_id) AS total_permisos
         FROM usuarios u
-        JOIN posee_rol pr ON pr.id_usuario = u.id_usuario
-        JOIN roles_sistema r ON r.rol_id = pr.rol_id
-        WHERE u.cedula_usuario = '%s';",
+        LEFT JOIN posee_rol pr ON pr.id_usuario = u.id_usuario  -- ← CAMBIAR A LEFT JOIN
+        LEFT JOIN roles_sistema r ON r.rol_id = pr.rol_id       -- ← CAMBIAR A LEFT JOIN
+        LEFT JOIN posee_permisos pp ON pp.id_usuario = u.id_usuario
+        WHERE u.cedula_usuario = '%s'
+        GROUP BY 
+            u.id_usuario, u.cedula_usuario, u.clave, u.id_cargo, 
+            u.estado_usuario, r.rol;",
             addslashes($this->cedula_usuario)
         );
     }  

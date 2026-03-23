@@ -95,7 +95,7 @@ function generarPDFReportes() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Título principal
+    // Título principal (igual que original)
     doc.setFontSize(20);
     doc.text('Reportes de Evaluador', 20, 20);
     doc.setFontSize(12);
@@ -103,99 +103,48 @@ function generarPDFReportes() {
 
     let y = 50;
 
-    // === ENCABEZADOS DE TABLA ===
-    doc.setFontSize(11);
-    doc.setFont(undefined, 'bold');
-    
-    const encabezados = [
-        { texto: 'CÉDULA', x: 18, ancho: 17 },
-        { texto: 'NOMBRE', x: 35, ancho: 30 },
-        { texto: 'CARGO', x: 65, ancho: 35 },
-        { texto: 'PERÍODO', x: 100, ancho: 20 },
-        { texto: 'AÑO', x: 120, ancho: 20 },
-        { texto: 'PUNTAJE', x: 140, ancho: 20 },
-        { texto: 'RANGO', x: 160, ancho: 20 }
-    ];
+    // Título de sección como en el código original
+    doc.setFontSize(10);
+    doc.text('REPORTES DE EVALUADORES', 10, y);
+    y += 4;
 
-    const altoEncabezado = 8;
-    doc.setFillColor(240, 240, 240);
-    doc.rect(15, y, 180, altoEncabezado, 'F');
-    doc.rect(15, y, 180, altoEncabezado);
-
-    encabezados.forEach(enc => {
-        const textoEnc = doc.splitTextToSize(enc.texto, enc.ancho);
-        textoEnc.forEach((line, i) => 
-            doc.text(line, enc.x, y + 6 + i * 5)
-        );
-    });
-
-    y += altoEncabezado + 2;
-
-    let filasPDF = 0;
+    // Obtener datos filtrados de DataTable
     const table = $('#tabla-reportes').DataTable();
-
+    const filas = [];
     table.rows({ search: 'applied' }).every(function () {
         const datosFila = $(this.node()).find('td').map(function (i) {
             return i < 7 ? $(this).text().trim() : '';
         }).get();
-
-        const cedula = doc.splitTextToSize(datosFila[0], 16);
-        const nombre = doc.splitTextToSize(datosFila[1], 28);
-        const cargo = doc.splitTextToSize(datosFila[2], 32);
-        const periodo = doc.splitTextToSize(datosFila[3], 18);
-        const anio = doc.splitTextToSize(datosFila[4], 18);
-        const puntaje = doc.splitTextToSize(datosFila[5], 18);
-        const rango = doc.splitTextToSize(datosFila[6], 18);
-
-        const altoFila = Math.max(
-            cedula.length, nombre.length, cargo.length, 
-            periodo.length, anio.length, puntaje.length, rango.length
-        ) * 5 + 2;
-
-        if (y + altoFila > 260) {
-            doc.addPage();
-            y = 50;
-
-            doc.setFillColor(240, 240, 240);
-            doc.rect(15, y, 180, altoEncabezado, 'F');
-            doc.rect(15, y, 180, altoEncabezado);
-
-            encabezados.forEach(enc => {
-                const textoEnc = doc.splitTextToSize(enc.texto, enc.ancho);
-                textoEnc.forEach((line, i) => 
-                    doc.text(line, enc.x, y + 6 + i * 5)
-                );
-            });
-
-            y += altoEncabezado + 5;
-        }
-
-        if (filasPDF % 2 === 0) {
-            doc.setFillColor(248, 248, 248);
-            doc.rect(15, y, 180, altoFila, 'F');
-        }
-        doc.rect(15, y, 180, altoFila);
-
-        doc.setFont(undefined, 'normal');
-        doc.setFontSize(9);
-
-        cedula.forEach((line, i) => doc.text(line, 18, y + 6 + i * 5));
-        nombre.forEach((line, i) => doc.text(line, 35, y + 6 + i * 5));
-        cargo.forEach((line, i) => doc.text(line, 65, y + 6 + i * 5));
-        periodo.forEach((line, i) => doc.text(line, 100, y + 6 + i * 5));
-        anio.forEach((line, i) => doc.text(line, 120, y + 6 + i * 5));
-        puntaje.forEach((line, i) => doc.text(line, 140, y + 6 + i * 5));
-        rango.forEach((line, i) => doc.text(line, 160, y + 6 + i * 5));
-
-        y += altoFila;
-        filasPDF++;
+        filas.push(datosFila);
     });
 
-    const paginaFinalY = y + 15;
+    // AutoTable con EXACTO estilo de objetivos/competencias
+    doc.autoTable({
+        startY: y,
+        head: [['CÉDULA', 'NOMBRE', 'CARGO', 'PERÍODO', 'AÑO', 'PUNTAJE', 'RANGO']],
+        body: filas,
+        styles: { 
+            fontSize: 8, 
+            cellPadding: 1 
+        },
+        margin: { left: 10, right: 10 },
+        columnStyles: {
+            0: { cellWidth: 17 },  // CÉDULA
+            1: { cellWidth: 30 },  // NOMBRE  
+            2: { cellWidth: 35 },  // CARGO
+            3: { cellWidth: 25 },  // PERÍODO
+            4: { cellWidth: 20 },  // AÑO
+            5: { cellWidth: 20 },  // PUNTAJE
+            6: { cellWidth: 40 }   // RANGO
+        }
+    });
+
+    // Footer como en el original (después de tabla)
+    y = doc.lastAutoTable.finalY + 6;
     doc.setFontSize(9);
     doc.setFont(undefined, 'italic');
-    doc.text(`Total filas procesadas: ${filasPDF}`, 20, paginaFinalY);
-    doc.text(`Generado el: ${new Date().toLocaleString('es-ES')}`, 20, paginaFinalY + 6);
+    doc.text(`Total filas procesadas: ${filas.length}`, 20, y);
+    doc.text(`Generado el: ${new Date().toLocaleString('es-ES')}`, 20, y + 6);
 
     doc.save('reportes_evaluador.pdf');
 }

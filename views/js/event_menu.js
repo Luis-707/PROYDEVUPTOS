@@ -42,28 +42,6 @@ $(document).on('click', '.menu-link', function() {
         
           return acceso;
         }
-
-
-
-        $("#formularioEvaluadores").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Evaluadores', 'formularioEvaluadores')) {
-            mostrarVista('evaluadores');
-            listarUsuariosEvaluador();
-            listarCargosEvaluadores();
-            listarSupervisoresCargos();
-            listarEvaluadores();
-          }
-        });
-        
-        $("#formularioSupervisores").click(async function(){
-          if (await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores')) {
-            mostrarVista('supervisores');
-            listarUsuariosSupervisor();
-            listarCargosSupervisores();
-            listarSupervisores();
-            //listarSupervisor();
-          }
-        });
         
         $("#formularioEvaluacion").click(async function(){
           if (await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion')) {
@@ -102,18 +80,6 @@ $(document).on('click', '.menu-link', function() {
             listarUbicacionesFisicas();
             /*listarCargosEvaluados();*/ 
            // listarRolesEvaluados();      // Poblar select de roles
-          }
-        });
-
-        $("#formularioDatosEvaluados").click(async function(){
-          if (await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados')) {
-            // Cargar la vista evaluados.php
-            mostrarVista('cargos_evaluados');
-        
-            listarUsuariosEvaluados();
-            listarCargosEvaluados();
-            listarDatosEvaluados();
-           // listarEvaluado();
           }
         });
 
@@ -199,11 +165,41 @@ $(document).on('click', '.menu-link', function() {
             listarEvaluadosResultados();
           }
         });
+$("#formularioGraficas").click(async function(){
+  if (await verificarAccesoMenu('Graficas', 'formularioGraficas')) {
 
+    mostrarVista('graficas');
+
+    // Esperar a que la vista esté cargada
+    const esperarVista = setInterval(async () => {
+
+      const filtroAnio = document.getElementById("filtroAnio");
+      const filtroPeriodo = document.getElementById("filtroPeriodo");
+      const canvas = document.getElementById("graficaRangos");
+
+      if (filtroAnio && filtroPeriodo && canvas) {
+
+        clearInterval(esperarVista);
+
+        // Ahora sí inicializamos la gráfica
+        await inicializarGraficas();
+        construirGraficaPromedios();
+      }
+
+    }, 50);
+  }
+});
         $("#formularioResultadosObreros").click(async function(){
           if (await verificarAccesoMenu('Resultados Obreros', 'formularioResultadosObreros')) {
             mostrarVista('resultados_obreros');
             listarEvaluadosResultadosObreros();
+          }
+        });
+
+        $("#formularioIndicadores").click(async function(){
+          if (await verificarAccesoMenu('Indicadores', 'formularioIndicadores')) {
+            mostrarVista('gestion_indicadores');
+            listarIndicadores();
           }
         });
 
@@ -456,6 +452,38 @@ $(document).on('click', '#toggleClave', function() {
   });
 });
 
+// Delegación de eventos: funciona aunque cambies de vista o recargues la tabla
+$(document).on('click', '#btn_buscar_reportes', function() {
+  filtrarTabla();
+});
+
+$(document).on('click', '#btn_limpiar_reportes', function() {
+  // Limpiar todos los campos
+  $('#filtroCedula').val('');
+  $('#filtroNombre').val('');
+  $('#filtroAnio').val('');
+  $('#filtroPeriodo').val('');
+  
+  // Mostrar todas las filas
+  filtrarTabla();
+});
+
+// Delegación de eventos para reportes obreros
+$(document).on('click', '#btn_buscar_reportes_obrero', function() {
+  filtrarTablaObreros();
+});
+
+$(document).on('click', '#btn_limpiar_reportes_obrero', function() {
+  // Limpiar todos los campos obreros
+  $('#filtroCedulaObrero').val('');
+  $('#filtroNombreObrero').val('');
+  $('#filtroAnioObrero').val('');
+  $('#filtroPeriodoObrero').val('');
+  
+  // Mostrar todas las filas obreras
+  filtrarTablaObreros();
+});
+
 //Validaciones para formulario de objetivos
 
 $(document).on('keypress', '#nombre_objetivo, #nombre_competencia, #nombre_competencia_modal, #nombre_objetivo_modal', function(event) {
@@ -509,10 +537,8 @@ document.addEventListener("visibilitychange", () => {
 document.addEventListener('DOMContentLoaded', async () => {
  
   // 🔹 Al entrar a la sesión, verificar permisos y ocultar menús
-  await verificarAccesoMenu('Gestion de Evaluadores', 'formularioEvaluadores');
-  await verificarAccesoMenu('Gestion de Supervisores', 'formularioSupervisores');
+
   await verificarAccesoMenu('Evaluados', 'formularioGestionEvaluados');
-  await verificarAccesoMenu('Cargos de Evaluados', 'formularioDatosEvaluados');
   await verificarAccesoMenu('Evaluaciones', 'formularioEvaluacion');
   await verificarAccesoMenu('Evaluaciones Obreros', 'formularioEvaluacionObreros');
   await verificarAccesoMenu('Comentarios', 'formularioComentarios');
@@ -527,6 +553,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await verificarAccesoMenu('Reportes Administrativos', 'formularioReportesAdmin');
   await verificarAccesoMenu('Reportes Obreros', 'formularioReportesObreros');
   await verificarAccesoMenu('Registros Obreros', 'formularioRegistroObreros');
+  await verificarAccesoMenu('Indicadores', 'formularioIndicadores');
+  await verificarAccesoMenu('Graficas', 'formularioGraficas');
 
 });
 

@@ -50,10 +50,39 @@ try {
                 exit;
             }
 
-            // Agrupar roles
+           // 🔍 EXTRAER ROLES Y VERIFICAR
             $roles = [];
+            $total_permisos = 0;
             foreach ($filas as $f) {
-                $roles[] = strtolower(trim($f['nombre_rol']));
+                // Roles válidos
+                if (isset($f['nombre_rol']) && !empty(trim($f['nombre_rol']))) {
+                    $roles[] = strtolower(trim($f['nombre_rol']));
+                }
+                // Contar permisos únicos (evita duplicados)
+                if (isset($f['total_permisos']) && $f['total_permisos'] > $total_permisos) {
+                    $total_permisos = $f['total_permisos'];
+                }
+            }
+            $roles = array_unique($roles);
+
+            // 🚫 BLOQUEO: Sin roles
+            if (empty($roles)) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Usuario sin roles asignados. Contacte al administrador.",
+                    "type" => "no_roles"
+                ]);
+                exit;
+            }
+
+            // 🚫 BLOQUEO: Sin permisos
+            if ($total_permisos === 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Usuario sin permisos asignados. Contacte al administrador.",
+                    "type" => "no_permisos"
+                ]);
+                exit;
             }
 
             // Guardar sesión completa
