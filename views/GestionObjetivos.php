@@ -48,11 +48,11 @@ include_once '../servicios/Sesion.php';
         <input type="hidden" id="id_odi_modal" name="id_odi">
         <div class="mb-3">
           <label for="nombre_objetivo_modal" class="form-label">Nombre del Objetivo</label>
-          <input type="text" class="form-control" id="nombre_objetivo_modal" name="nombre_objetivo">
+          <input type="text" class="form-control" id="nombre_objetivo_modal" name="nombre_objetivo" placeholder="Ej: Atender la recepción">
         </div>
         <div class="mb-3">
           <label for="peso_objetivo_modal" class="form-label">Peso del Objetivo</label>
-          <input type="number" class="form-control" id="peso_objetivo_modal" name="peso_objetivo">
+          <input type="number" class="form-control" id="peso_objetivo_modal" name="peso_objetivo" placeholder="Ej: 10">
         </div>
       </div>
       <div class="modal-footer">

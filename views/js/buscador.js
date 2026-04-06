@@ -24,7 +24,7 @@ async function obtenerDatosPorCedula(cedula) {
 // Función para llenar el formulario
 function llenarFormulario(datos) {
 
-  let opcDetener = ["Obrero", "Docente"];
+  let opcDetener = ["Docente"];
   let opcAdministrativo = ["Administrativo"];
 
   if (view !== "" && view === "gestion_evaluados") {

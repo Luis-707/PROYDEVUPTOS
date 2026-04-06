@@ -16,7 +16,7 @@ class Evaluado extends Usuario {
     public static function sql_listar_sub(int $idUsuario): string {
         return sprintf("
             SELECT 
-                sub.ID_USUARIO AS id,
+                sub.ID_USUARIO AS id_usuario,
                 sub.clave,
                 sub.NOMBRE_COMPLETO AS subordinado,
                 sub.cedula_usuario AS cedula_usuario,
@@ -55,14 +55,13 @@ class Evaluado extends Usuario {
             $this->clave, $this->rol_id, $this->nombre_completo, $this->tipo_empleado, $this->ubicacion_administrativa, $this->cedula_usuario);
     }*/
 
-    
     public function sql_guardar(): string {
 
         $hash = password_hash($this->clave, PASSWORD_DEFAULT);
 
 
         return sprintf(
-            "INSERT INTO usuarios (id_cargo, id_uf, clave, cedula_usuario, nombre_completo, tipo_empleado, ubicacion_administrativa, fecha_ingreso, estado_usuario) VALUES (%d, %d, '%s', %d, '%s', '%s', '%s', '%s', '%s') RETURNING id_usuario;",
+            "INSERT INTO usuarios (id_cargo, id_uf, clave, cedula_usuario, nombre_completo, tipo_empleado, ubicacion_administrativa, fecha_ingreso, estado_usuario) VALUES (%d, %d, '%s', %d, '%s', '%s', '%s', '%s', '%s') RETURNING id_usuario, tipo_empleado;",
             $this->id_cargo,
             $this->id_uf,
             $hash,
@@ -134,6 +133,22 @@ class Evaluado extends Usuario {
         addslashes($this->cedula_usuario)
     );
 }
+
+     // Método para buscar cargos por id_cargo incluyendo tipo
+public function sql_buscar_cargos(): string {
+    return sprintf(
+        "SELECT c.nombre_cargo, t.tipo 
+         FROM cargos c 
+         INNER JOIN tipo t ON c.id_tipo = t.id_tipo 
+         WHERE c.id_cargo = %d;", 
+        $this->id_cargo
+    );
+}
+
+    //buscar permiso de comentario de obreros
+    public static function sql_buscar_comentarios_obreros() {
+        return "SELECT permisos_id FROM permisos WHERE nombre_permiso = 'Comentarios Obreros' LIMIT 1;";
+    }
 
     /*public function sql_buscar_user_evaluado(): string {
         return sprintf(

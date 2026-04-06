@@ -40,22 +40,120 @@ include_once "middleware/auth.php";
     <link rel="stylesheet" href="assets/vendor/css/core.css" />
     <link rel="stylesheet" href="assets/css/demo.css" />
     
-   <style>
+    <style>
 
-.fondo-odi {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('img/fondo.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: blur(8px); /* Difuminado */
-  opacity: 0.35; /* Transparencia para que no opaque el contenido */
-  z-index: -1; /* Lo envía detrás del contenido */
-}
+/* Fondo fijo detrás de TODO */
+    .odi {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('img/I437.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            filter: blur(1px); /* Ligero difuminado */
+            opacity: 0.4; /* Semitransparente */
+            z-index: -1; /* DETRÁS de todo el contenido */
+        }
+
+        /* Título BIENVENIDO en CURSIVA */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .titulo-bienvenido {
+            font-size: clamp(3rem, 8vw, 6rem); /* Responsive */
+            font-weight: 300; /* Delgado para elegancia */
+            color: black;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            font-style: italic; /* CURSIVA */
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            font-family: 'Georgia', 'Times New Roman', serif; /* Fuente elegante cursiva */
+        }
+
+        .subtitulo {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            color: rgba(17, 16, 16, 0.95);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-weight: 400;
+            max-width: 600px;
+        }
+
+        /* Resto de estilos existentes */
+        .btn-float {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 10;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content {
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-header {
+            border-bottom: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0 !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .titulo-bienvenido {
+                letter-spacing: 0.05em;
+                padding: 0 1rem;
+            }
+        }
+
+        /* Título del modal en BLANCAS y bien posicionado */
+        /* Título del modal ELEVADO */
+        .modal-title {
+            font-weight: bold !important;
+            color: white !important;
+        }
+
+        /* Botón AZUL FIJO sin cambios */
+        .btn-float.btn-primary {
+            background-color: #0d6efd !important; /* Azul primario fijo */
+            border-color: #0d6efd !important; /* Borde fijo */
+            color: white !important; /* Texto blanco fijo */
+            opacity: 1 !important;
+            filter: none !important;
+        }
+
+        .btn-float.btn-primary:hover,
+        .btn-float.btn-primary:focus,
+        .btn-float.btn-primary:active,
+        .btn-float.btn-primary:visited {
+            background-color: #0d6efd !important; /* ← SIEMPRE azul */
+            border-color: #0d6efd !important;
+            color: white !important; /* ← SIEMPRE blanco */
+            opacity: 1 !important;
+            filter: none !important;
+            transform: none !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
 
     </style>
 
@@ -68,19 +166,16 @@ include_once "middleware/auth.php";
 
     <link rel="stylesheet" href="assets/vendor/fonts/flag-icons.css" />
     <link rel="stylesheet" href="assets/vendor/libs/apex-charts/apex-charts.css" />
-    
 
     <!-- Datatable css -->
     <link rel="stylesheet" href="assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
     <link rel="stylesheet" href="assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
     <link rel="stylesheet" href="assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
     
-
     <!-- CHARTJS -->
 
-     <script src="assets/vendor/libs/chartjs/chartjs.js"></script>
-     <link rel="stylesheet" href="assets/vendor/libs/chartjs/chartjs.css" />
-
+    <script src="assets/vendor/libs/chartjs/chartjs.js"></script>
+    <link rel="stylesheet" href="assets/vendor/libs/chartjs/chartjs.css" />
 
     <!-- Helpers -->
     <script src="assets/vendor/js/helpers.js"></script>
@@ -256,11 +351,11 @@ include_once "middleware/auth.php";
             
             <!-- aqui va el contenido de las paginas -->
             
-            <div class="row mb-12 g-6" id= "CentroPrinci">
+            <!--<div class="row mb-12 g-6" id= "CentroPrinci">
                 <div class="col-md-12 col-lg-12">
                 <h6 class="mt-2 text-body-secondary"></h6>
                 <div class="card mb-6">
-                 <div class="card-header d-flex justify-content-between">
+                <div class="card-header d-flex justify-content-between">
                         <div class="card-title mb-0">
                           <h5 class="mb-1 me-2">ODI</h5>
                           <p class="card-subtitle">(Objetivos de Desempeño Individual)</p>
@@ -270,16 +365,63 @@ include_once "middleware/auth.php";
                         <p class="card-text">
                             Este es un sistema de información pensado para tener un seguimiento y control de las evaluaciones del personal administrativo y obrero de la Universidad Politécnica territorial del oeste de Sucre "Clodosbaldo Rússian" más eficiente.
                         </p>
-                        <!--<p>
+                        <p>
                             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Doloribus labore, non saepe assumenda rem deleniti, architecto repellendus nobis minima temporibus eligendi dolorem sed? Perspiciatis quaerat voluptatum harum adipisci sequi magni non temporibus corporis magnam! Dolor, nobis exercitationem tenetur officiis omnis quas architecto ullam nihil animi suscipit ratione fuga veniam placeat consequuntur porro nostrum! Sapiente cupiditate ipsum quo ratione ullam? Accusantium rem iusto vitae nemo vero voluptatum voluptas itaque, officia ipsum temporibus veritatis eaque non. Distinctio enim quibusdam assumenda dignissimos sequi doloremque ipsa porro beatae, officia dolorum? Perferendis, iure? Cumque sit iusto nihil! Totam, recusandae. Veniam eveniet nulla iusto fugit vitae.
-                        </p>-->
+                        </p>
                     </div>
                 </div>
                 </div>
+            </div>-->
+            <div class="odi"></div>
+            <section class="hero-section">
+                <h1 class="titulo-bienvenido">Bienvenido</h1>
+                <p class="subtitulo">Explora nuestro sistema de evaluación de desempeño</p>
+            </section>
+        
+            <!-- Botón flotante -->
+            <button class="btn btn-primary btn-float shadow-lg" data-bs-toggle="modal" data-bs-target="#modalDescripcion" title="Acerca del sitio">
+                ℹ️
+            </button>
+        
+            <!-- Modal (sin cambios) -->
+            <div class="modal fade" id="modalDescripcion" tabindex="-1" aria-labelledby="modalDescripcionLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalDescripcionLabel">
+                                <i class="bx bx-info-circle me-2"></i>
+                                Acerca del Sitio
+                            </h5>
+                            <!--<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>-->
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    <i class='bx bx-building display-1 text-primary mb-3'></i>
+                                    <h6>Sistema administrativo</h6>
+                                </div>                                
+                                <div class="col-md-8">
+                                    <h4 class="mb-3">Nombre del sistema</h4>
+                                    <p class="lead">ODI (Objetivos de desempeño individual)</p>
+                                    <h4 class="mb-3">Descripción del sistema</h4>
+                                    <p class="lead">Plataforma desarrollada para la gestión eficiente de evaluaciones de empleados, roles jerárquicos y reportes administrativos.</p>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class='bx bx-check-circle text-success me-2'></i>Backend PHP 8.2 + PostgreSQL</li>
+                                <li class="mb-2"><i class='bx bx-check-circle text-success me-2'></i>Sistema de roles y permisos</li>
+                                <li class="mb-2"><i class='bx bx-check-circle text-success me-2'></i>Reportes en PDF con JSPDF</li>
+                                    </ul>
+                                    <p><small class="text-muted">Desarrollado por Deriek Ramos y Luis Galanton - UPTOS "Clodosbaldo Russián"</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Entendido</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="fondo-odi">
-           <img src="img/fondo.jpg" alt="ODI"/>
-           </div>
+
+
         </div>
         <!-- / Content -->
         
@@ -294,16 +436,16 @@ include_once "middleware/auth.php";
                     <script>
                         document.write(new Date().getFullYear());
                     </script>
-                    información de pie de página
+                    <!--información de pie de página-->
                 </div>
-                <div class="d-none d-lg-inline-block">
+                <!--<div class="d-none d-lg-inline-block">
                     
                     <a href="#" class="footer-link me-4" target="_blank">License</a>
                     <a href="#" target="_blank" class="footer-link me-4">More Themes</a>
                     <a href="#" target="_blank" class="footer-link me-4">Documentation</a>            
                     <a href="#" target="_blank" class="footer-link d-none d-sm-inline-block">Support</a>
                     
-                </div>
+                </div>-->
                 </div>
             </div>
         </footer>
@@ -361,6 +503,8 @@ include_once "middleware/auth.php";
     <script src="js/siglab.js"></script>
     <!--<script src="views/js/usuario.js"></script>-->
     <script src="views/js/form_user.js"></script>
+    <script src="views/js/evaluadores.js"></script>
+    <script src="views/js/supervisores.js"></script>
     <script src="views/js/comentario_evaluado.js"></script>
     <script src="views/js/comentario_supervisor.js"></script> 
     <script src="views/js/comentario_evaluado_obreros.js"></script>
@@ -370,20 +514,22 @@ include_once "middleware/auth.php";
     <script src="views/js/evaluados_obreros.js"></script>
     <script src="views/js/evaluados_comentarios.js"></script>
     <script src="views/js/evaluados_comentarios_obreros.js"></script>
-    <script src="views/js/graficas.js"></script>
     <script src="views/js/evaluados_resultados.js"></script>
     <script src="views/js/evaluados_resultados_obreros.js"></script>
     <script src="views/js/logout.js"></script>
     <script src="views/js/GestionEvaluados.js"></script>
-    <script src="views/js/GestionIndicador.js"></script>
     <script src="views/js/evalAdministrativos.js"></script>
     <script src="views/js/evalObreros.js"></script>
+    <script src="views/js/Datos_Evaluados.js"></script>
     <script src="views/js/GestionObjetivos.js"></script>
     <script src="views/js/GestionCompetencias.js"></script>
     <script src="views/js/cargarPerfil.js"></script>
     <script src="views/js/reportes.js"></script>
     <script src="views/js/reportes_administrativos.js"></script>
     <script src="views/js/reportes_obreros.js"></script>
+    <script src="views/js/GestionIndicador.js"></script>
+    <script src="views/js/grafica_comparativo.js"></script>
+    <script src="views/js/graficas.js"></script>
 
     <script>
         var view = "";

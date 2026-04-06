@@ -134,7 +134,7 @@ class Usuario {
         FROM usuarios u
         INNER JOIN cargos c ON u.id_cargo = c.id_cargo
         INNER JOIN ubicacion_fisica uf ON u.id_uf = uf.id_uf
-        WHERE c.es_jefe = TRUE
+        WHERE c.es_jefe = TRUE AND c.nombre_cargo != 'Jefe(a) Analista R.R.H.H'
         ORDER BY u.nombre_completo;";
     }
 

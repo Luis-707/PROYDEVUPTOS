@@ -10,6 +10,7 @@ class EvaluacionesObreros {
     private $fecha_cierre = "";
     private $periodo_evaluacion = "";
     private $estado_eval_obreros = "";
+    private $tiempo_puesto = 0; // Nuevo atributo para almacenar el tiempo en el puesto
 
     public function __construct($dataCliente = array(), $conexion = NULL) {
 
@@ -35,10 +36,24 @@ class EvaluacionesObreros {
             $this->estado_eval_obreros = $dataCliente['estado_eval_obrero'];
         }
 
+        if (isset($dataCliente['tiempo_puesto'])) {
+            $this->tiempo_puesto = $dataCliente['tiempo_puesto'];
+        }
+
         if ($conexion !== NULL) {
             $this->conexion = $conexion;
         }
     }
+
+    public function sql_fecha_ingreso_evaluado(): string {
+    return sprintf(
+        "SELECT fecha_ingreso 
+         FROM usuarios 
+         WHERE id_usuario = %d 
+         LIMIT 1;",
+        $this->evaluado_id
+    );
+}
 
     // ============================================================
     // SQL PARA GUARDAR EVALUACIÓN
@@ -47,14 +62,15 @@ class EvaluacionesObreros {
     public function sql_guardar_eval_obreros(): string {
         return sprintf(
             "INSERT INTO evaluacion_obreros 
-                (evaluador_id, evaluado_id, fecha_inicio, fecha_cierre, periodo_evaluacion, estado_eval_obrero)
-             VALUES (%d, %d, '%s', '%s', '%s', '%s')
+                (evaluador_id, evaluado_id, fecha_inicio, fecha_cierre, periodo_evaluacion, tiempo_puesto, estado_eval_obrero)
+             VALUES (%d, %d, '%s', '%s', '%s', %d, '%s')
              RETURNING id_eval_obreros;",
             $this->evaluador_id,
             $this->evaluado_id,
             addslashes($this->fecha_inicio),
             addslashes($this->fecha_cierre),
             addslashes($this->periodo_evaluacion),
+            $this->tiempo_puesto,
             ('Iniciada')
         );
     }
@@ -96,29 +112,31 @@ class EvaluacionesObreros {
     // SQL PARA VALIDAR DUPLICADOS
     // ============================================================
 
-    public function sql_existe_duplicado_periodo_obrero(): string {
-        return sprintf(
-            "SELECT id_eval_obreros
-             FROM evaluacion_obreros
-             WHERE evaluado_id = %d
-               AND TRIM(periodo_evaluacion) = '%s'
-             LIMIT 1;",
-            $this->evaluado_id,
-            addslashes($this->periodo_evaluacion)
-        );
-    }
+   public function sql_existe_duplicado_periodo_obrero(): string {
+    return sprintf(
+        "SELECT id_eval_obreros
+         FROM evaluacion_obreros
+         WHERE evaluado_id = %d
+           AND TRIM(periodo_evaluacion) = '%s'
+           AND EXTRACT(YEAR FROM fecha_inicio) = EXTRACT(YEAR FROM '%s'::date)
+         LIMIT 1;",
+        $this->evaluado_id,
+        addslashes($this->periodo_evaluacion),
+        addslashes($this->fecha_inicio)
+    );
+}
 
     public function sql_existe_duplicado_periodo_obrero_edicion(): string {
         return sprintf(
             "SELECT id_eval_obreros
-             FROM evaluacion_obreros
-             WHERE evaluado_id = %d
-               AND TRIM(periodo_evaluacion) = '%s'
-               AND id_eval_obreros != %d
-             LIMIT 1;",
-            $this->evaluado_id,
-            addslashes($this->periodo_evaluacion),
-            $this->id_eval_obreros
+         FROM evaluacion_obreros
+         WHERE evaluado_id = %d
+           AND TRIM(periodo_evaluacion) = '%s'
+           AND EXTRACT(YEAR FROM fecha_inicio) = EXTRACT(YEAR FROM '%s'::date)
+         LIMIT 1;",
+        $this->evaluado_id,
+        addslashes($this->periodo_evaluacion),
+        addslashes($this->fecha_inicio)
         );
     }
 

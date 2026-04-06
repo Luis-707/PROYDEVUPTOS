@@ -26,5 +26,5 @@ if (count($respuesta) == 0) {
 }
 
 $respuesta = $this->ejecutarConsultaBdds($sql);
-$respuesta = $this->servicio($data, 'l_gestionIndicador');
+$respuesta = $this->servicio($data, 'l_indic');
 return $respuesta;

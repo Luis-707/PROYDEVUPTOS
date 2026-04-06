@@ -104,10 +104,12 @@ public function sql_existe_duplicado_periodo(): string {
         "SELECT id_eval_admin
          FROM evaluacion_administrativos
          WHERE evaluado_id = %d
-           AND TRIM(periodo_evaluado) = '%s'
+         AND TRIM(periodo_evaluado) = '%s'
+          AND EXTRACT(YEAR FROM fecha_inicio) = EXTRACT(YEAR FROM '%s'::date)
          LIMIT 1;",
         $this->evaluado_id,
-        addslashes($this->periodo_evaluado)
+        addslashes($this->periodo_evaluado),
+        addslashes($this->fecha_inicio)
     );
 }
 
@@ -116,12 +118,12 @@ public function sql_existe_duplicado_periodo_edicion(): string {
         "SELECT id_eval_admin
          FROM evaluacion_administrativos
          WHERE evaluado_id = %d
-           AND TRIM(periodo_evaluado) = '%s'
-           AND id_eval_admin != %d
+         AND TRIM(periodo_evaluado) = '%s'
+          AND EXTRACT(YEAR FROM fecha_inicio) = EXTRACT(YEAR FROM '%s'::date)
          LIMIT 1;",
         $this->evaluado_id,
         addslashes($this->periodo_evaluado),
-        $this->id_eval_admin
+        addslashes($this->fecha_inicio)
     );
 }
 

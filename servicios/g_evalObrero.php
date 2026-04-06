@@ -15,7 +15,7 @@ try {
         exit;
     }
 
-    // 2) Detectar si los datos vienen como JSON o Form-Data
+    // Detectar JSON o POST
     $dataCliente = [];
     if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
         $raw = file_get_contents("php://input");
@@ -24,22 +24,53 @@ try {
         $dataCliente = $_POST;
     }
 
-    //$dataCliente = $_POST;
+    // Inyectar evaluador
     $dataCliente['evaluador_id'] = $idUsuarioSesion;
 
+    // Crear objeto SIN calcular aún tiempo_puesto
     $eval = new EvaluacionesObreros($dataCliente, $this->conexion);
 
-$check = $this->ejecutarConsultaBdds($eval->sql_existe_duplicado_periodo_obrero());
+    // ============================================================
+    // 1. OBTENER FECHA DE INGRESO DESDE LA CLASE
+    // ============================================================
+    $sqlFecha = $eval->sql_fecha_ingreso_evaluado();
+    $fechaRow = $this->ejecutarConsultaBdds($sqlFecha);
+    $fechaIngreso = $fechaRow[0][0]['fecha_ingreso'] ?? null;
 
-if (!empty($check) && !empty($check[0][0]['id_eval_obreros'])) {
-    echo json_encode([
-        'success' => false,
-        'message' => '❌ Ya existe una evaluación para este evaluado en este período'
-    ]);
-    exit;
-}
+    // ============================================================
+    // 2. CALCULAR TIEMPO EN EL PUESTO
+    // ============================================================
+    $tiempoPuesto = 0;
 
-    // Insertar
+    if ($fechaIngreso) {
+        $f1 = new DateTime($fechaIngreso);
+        $f2 = new DateTime();
+        $diff = $f1->diff($f2);
+        $tiempoPuesto = $diff->y;
+    }
+
+    // Inyectar en el array original
+    $dataCliente['tiempo_puesto'] = $tiempoPuesto;
+
+    // Recrear objeto con tiempo_puesto incluido
+    $eval = new EvaluacionesObreros($dataCliente, $this->conexion);
+
+    // ============================================================
+    // 3. VALIDAR DUPLICADOS
+    // ============================================================
+    $check = $this->ejecutarConsultaBdds($eval->sql_existe_duplicado_periodo_obrero());
+
+    if (!empty($check) && !empty($check[0][0]['id_eval_obreros'])) {
+        echo json_encode([
+            'success' => false,
+            'message' => '❌ Ya existe una evaluación para este evaluado en este período'
+        ]);
+        exit;
+    }
+
+    // ============================================================
+    // 4. GUARDAR
+    // ============================================================
     $resp = $this->ejecutarConsultaBdds($eval->sql_guardar_eval_obreros());
     $registro = $resp[0][0] ?? null;
 
@@ -57,4 +88,3 @@ if (!empty($check) && !empty($check[0][0]['id_eval_obreros'])) {
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 exit;
-

@@ -265,7 +265,7 @@ async function listarTablaEvaluados(datos) {
     const estadoUsuario = item.estado_usuario;
 
     const editarEval = `abrirModalUsuarioEval({
-      id_usuario: '${item.id}',
+      id_usuario: '${item.id_usuario}',
       cedula_usuario: '${cedula}',
       nombre_completo: '${item.subordinado}',
       tipo_empleado: '${item.tipo_empleado || ""}',
@@ -275,7 +275,7 @@ async function listarTablaEvaluados(datos) {
       fecha_ingreso: '${item.fecha_ingreso || ""}'
     })`;
 
-    const btnEstadoUsuarioEval = `cambiarEstadoEvaluado('${item.id}', '${item.estado_usuario}')`;
+    const btnEstadoUsuarioEval = `cambiarEstadoEvaluado('${item.id_usuario}', '${item.estado_usuario}')`;
 
     const acciones = `
       <div class="dropdown">
@@ -460,22 +460,25 @@ function abrirModalUsuarioEval({
   const form = document.getElementById("formulario_evaluado");
   form.reset();
 
-  document.getElementById("id_usuario_modal").value = id_usuario;
-  document.getElementById("id_cedula_usuario").value = cedula_usuario;
-  document.getElementById("fullname_input").value = nombre_completo;
-  document.getElementById("type_str_input").value = tipo_empleado;
-  document.getElementById("additional_input").value = ubicacion_administrativa;
-  document.getElementById("id_cargo").value = id_cargo;
-  document.getElementById("id_uf").value = id_uf;
-  document.getElementById("fecha_ingreso").value = fecha_ingreso;
+  document.getElementById("id_usuario_modal").value = id_usuario || '';
+  document.getElementById("id_cedula_usuario").value = cedula_usuario || '';
+  document.getElementById("fullname_input").value = nombre_completo || '';
+  document.getElementById("type_str_input").value = tipo_empleado || '';
+  document.getElementById("additional_input").value = ubicacion_administrativa || '';
+  document.getElementById("id_cargo").value = id_cargo || '';
+  document.getElementById("id_uf").value = id_uf || '';
+  document.getElementById("fecha_ingreso").value = fecha_ingreso || '';
 
-  const claveInput = document.getElementById("id_clave");
-  claveInput.value = "";
-  claveInput.placeholder = "Dejar en blanco para no cambiar";
+  // 🔥 Solo en modo EDICIÓN (cuando hay id_usuario)
+  if (id_usuario) {
+    const claveInput = document.getElementById("id_clave");
+    claveInput.value = "";
+    claveInput.placeholder = "Dejar en blanco para no cambiar";
 
-  const msg = document.getElementById("mensajeSeguridad");
-  msg.textContent = "La clave actual no se muestra por seguridad.";
-  msg.style.color = "gray";
+    const msg = document.getElementById("mensajeSeguridad");
+    msg.textContent = "La clave actual no se muestra por seguridad.";
+    msg.style.color = "gray";
+  }
 
   const tituloModal = document.querySelector("#modalUsuarioEval .modal-title");
   tituloModal.textContent = id_usuario ? "Editar usuario" : "Nuevo usuario";

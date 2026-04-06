@@ -26,7 +26,42 @@ try {
     }
 
     // ============================================================
-    // 2) VALIDAR SI YA EXISTE COMO EVALUADO (sql_buscar heredado)
+    // 2) VALIDAR TIPO_EMPLEADO CON TIPO DEL CARGO
+    // ============================================================
+    $sqlCargo = $evaluado->sql_buscar_cargos(); // JOIN con tipos
+    $cargoData = $this->ejecutarConsultaBdds($sqlCargo);
+    
+    if (empty($cargoData) || empty($cargoData[0][0])) {
+        echo json_encode([
+            'success' => false,
+            'message' => '❌ Cargo no encontrado.'
+        ]);
+        exit;
+    }
+    
+    $tipoCargo = $cargoData[0][0]['tipo']; // Tipo del cargo
+    
+    $tipoEmpleadoPost = $dataCliente['_post']['tipo_empleado'] ?? '';
+    $tiposTexto = array_map('trim', explode(',', $tipoEmpleadoPost));
+    
+    $coincide = false;
+    foreach ($tiposTexto as $texto) {
+        if ($texto === $tipoCargo) {
+            $coincide = true;
+            break;
+        }
+    }
+    
+    if (!$coincide) {
+        echo json_encode([
+            'success' => false,
+            'message' => "❌ Tipo empleado no válido. Debe ser '{$tipoCargo}' para este cargo."
+        ]);
+        exit;
+    }
+
+    // ============================================================
+    // 3) VALIDAR SI YA EXISTE COMO EVALUADO (heredado)
     // ============================================================
     $sql = $evaluado->sql_buscar();
     $respuesta = $this->ejecutarConsultaBdds($sql);
@@ -34,12 +69,12 @@ try {
     if (count($respuesta) == 0) {
 
         // ============================================================
-        // 3) INSERTAR NUEVO USUARIO EVALUADO
+        // 4) INSERTAR NUEVO USUARIO EVALUADO (RETORNA id_usuario + tipo_empleado)
         // ============================================================
         $sqlInsert = $evaluado->sql_guardar();
         $respInsert = $this->ejecutarConsultaBdds($sqlInsert);
 
-        if (empty($respInsert) || empty($respInsert[0][0]['id_usuario'])) {
+        if (empty($respInsert) || empty($respInsert[0][0])) {
             echo json_encode([
                 'success' => false,
                 'message' => '❌ No se pudo crear el usuario evaluado'
@@ -48,24 +83,37 @@ try {
         }
 
         $nuevoIdUsuario = (int)$respInsert[0][0]['id_usuario'];
+        $tipoEmpleado = $respInsert[0][0]['tipo_empleado']; // ← NUEVO: Tipo guardado
         $evaluado->setIdUsuario($nuevoIdUsuario);
 
         // ============================================================
-          // 4) INSERTAR ROL EN posee_rol
-            // ============================================================
-                $sqlRol = $evaluado->sql_guardar_rol_evaluado();
-                $this->ejecutarConsultaBdds($sqlRol);
+        // 5) INSERTAR ROL EN posee_rol
+        // ============================================================
+        $sqlRol = $evaluado->sql_guardar_rol_evaluado();
+        $this->ejecutarConsultaBdds($sqlRol);
 
         // ============================================================
-        // 5) BUSCAR PERMISO "Comentarios"
+        // 6) ASIGNAR PERMISO SEGÚN TIPO_EMPLEADO (OBRERO vs OTROS)
         // ============================================================
-        $sqlPermiso = Evaluado::sql_buscar_permiso_comentarios();
+        $permisoId = null;
+        $sqlPermiso = null;
+
+        if (stripos($tipoEmpleado, 'Obrero') !== false) {
+            // Obrero → Permiso especial
+            $sqlPermiso = Evaluado::sql_buscar_comentarios_obreros();
+            $permisoUsado = 'Comentarios obreros';
+        } else {
+            // Otros → Permiso estándar
+            $sqlPermiso = Evaluado::sql_buscar_permiso_comentarios();
+            $permisoUsado = 'Comentarios';
+        }
+
         $respPermiso = $this->ejecutarConsultaBdds($sqlPermiso);
 
         if (empty($respPermiso) || empty($respPermiso[0][0]['permisos_id'])) {
             echo json_encode([
                 'success' => false,
-                'message' => '❌ No se encontró el permiso Comentarios'
+                'message' => "❌ No se encontró el permiso '{$permisoUsado}'"
             ]);
             exit;
         }
@@ -73,23 +121,25 @@ try {
         $permisoId = (int)$respPermiso[0][0]['permisos_id'];
 
         // ============================================================
-        // 5) INSERTAR PERMISO EN posee_permisos
+        // 7) INSERTAR PERMISO EN posee_permisos
         // ============================================================
         $sqlPosee = $evaluado->sql_guardar_permiso($permisoId);
         $this->ejecutarConsultaBdds($sqlPosee);
 
         // ============================================================
-        // 6) RESPUESTA FINAL
+        // 8) RESPUESTA FINAL
         // ============================================================
         echo json_encode([
-            'success'    => true,
-            'message'    => '✅ Usuario evaluado creado con éxito y permiso asignado',
-            'id_usuario' => $nuevoIdUsuario,
-            'permisos_id'=> $permisoId
+            'success'       => true,
+            'message'       => '✅ Usuario evaluado creado con éxito y permiso asignado',
+            'id_usuario'    => $nuevoIdUsuario,
+            'permisos_id'   => $permisoId,
+            'tipo_empleado' => $tipoEmpleado,
+            'permiso_usado' => $permisoUsado,
+            'tipo_cargo'    => $tipoCargo
         ]);
 
     } else {
-
         echo json_encode([
             'success' => false,
             'message' => '❌ Ya existe un usuario evaluado con esta cédula.'

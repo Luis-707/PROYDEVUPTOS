@@ -184,6 +184,59 @@ public static function sql_listar_por_supervisor(int $idUsuarioSupervisor): stri
         ", $idEvalAdmin);
     }
 
+    // Dentro de la clase ResultadosAdmin
+
+public static function sql_comparativo_rangos_semestrales(int $anioActual, int $periodo): string
+{
+    $anioAnterior = $anioActual - 1;
+
+    return sprintf("
+        WITH evaluaciones_filtradas AS (
+            SELECT 
+                EXTRACT(YEAR FROM ea.fecha_inicio)::int AS anio,
+                CASE 
+                    WHEN ea.periodo_evaluado = 'Enero-Junio' THEN 1
+                    WHEN ea.periodo_evaluado = 'Julio-Diciembre' THEN 2
+                END AS periodo,
+                ea.puntaje_final,
+                r.rango_actuacion
+            FROM evaluacion_administrativos ea
+            JOIN rango_actuacion r
+              ON ea.puntaje_final BETWEEN r.puntaje_minimo AND r.puntaje_maximo
+            WHERE ea.estado_eval_admin = 'Finalizada'
+              AND EXTRACT(YEAR FROM ea.fecha_inicio)::int IN (%d, %d)
+        ),
+        agregados AS (
+            SELECT
+                anio,
+                periodo,
+                rango_actuacion AS rango,
+                COUNT(*) AS total_rango
+            FROM evaluaciones_filtradas
+            WHERE periodo = %d
+            GROUP BY anio, periodo, rango_actuacion
+        ),
+        totales AS (
+            SELECT
+                anio,
+                periodo,
+                SUM(total_rango) AS total_periodo
+            FROM agregados
+            GROUP BY anio, periodo
+        )
+        SELECT
+            a.anio,
+            a.periodo,
+            a.rango,
+            ROUND((a.total_rango::numeric / t.total_periodo::numeric) * 100, 1) AS porcentaje
+        FROM agregados a
+        JOIN totales t
+          ON t.anio = a.anio
+         AND t.periodo = a.periodo
+        ORDER BY a.anio, a.rango;
+    ", $anioAnterior, $anioActual, $periodo);
+}
+
     public function ejecutar(string $sql)
     {
         if ($this->conexion !== null) {

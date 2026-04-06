@@ -18,19 +18,31 @@ class Listados {
 
     public static function sql_listar_evaluaciones_admin(int $idEvaluador): string {
         return sprintf("
-            SELECT 
-                ea.id_eval_admin,
-                ea.evaluado_id,
-                u.cedula_usuario AS cedula,
-                u.nombre_completo,
-                c.nombre_cargo AS cargo,
-                ea.periodo_evaluado,
-                EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio
-            FROM evaluacion_administrativos ea
-            JOIN usuarios u ON u.id_usuario = ea.evaluado_id
-            JOIN cargos c ON c.id_cargo = u.id_cargo
-            WHERE ea.evaluador_id = %d
-            ORDER BY u.cedula_usuario ASC;
+        SELECT 
+        ea.id_eval_admin,
+        ea.evaluado_id,
+        u.cedula_usuario AS cedula,
+        u.nombre_completo,
+        c.nombre_cargo AS cargo,
+        ea.periodo_evaluado,
+        EXTRACT(YEAR FROM ea.fecha_inicio) AS anio_inicio,
+        COUNT(con.id_odi) AS cantidad_objetivos,
+        COALESCE(SUM(o.peso_objetivo), 0) AS suma_pesos
+    FROM evaluacion_administrativos ea
+    JOIN usuarios u ON u.id_usuario = ea.evaluado_id
+    JOIN cargos c ON c.id_cargo = u.id_cargo
+    LEFT JOIN contiene con ON con.id_eval_admin = ea.id_eval_admin
+    LEFT JOIN objetivos_desempeno_individual o ON o.id_odi = con.id_odi
+    WHERE ea.evaluador_id = %d
+    GROUP BY 
+        ea.id_eval_admin,
+        ea.evaluado_id,
+        u.cedula_usuario,
+        u.nombre_completo,
+        c.nombre_cargo,
+        ea.periodo_evaluado,
+        ea.fecha_inicio
+    ORDER BY u.cedula_usuario ASC;
         ", $idEvaluador);
 
     }
@@ -259,6 +271,13 @@ ORDER BY ea.fecha_inicio DESC;
     }
 
     public function listarEvalAdmin(string $sql) {
+        if ($this->conexion != NULL) {
+            return $this->conexion->ejecutarConsultaBdds($sql);
+        }
+        return "No se ha definido la conexión";
+    }
+
+    public function listarReportes(string $sql) {
         if ($this->conexion != NULL) {
             return $this->conexion->ejecutarConsultaBdds($sql);
         }

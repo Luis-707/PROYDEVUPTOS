@@ -395,7 +395,7 @@ const tableData = registros.map(item => {
                     <i class="icon-base bx bx-lock-open me-1"></i>Permisos
                 </a>
                 <a class="dropdown-item" href="javascript:void(0);" onclick="${btnrol}">
-                    <i class="icon-base bx bx-lock-open me-1"></i>Roles
+                    <i class="icon-base bx bx-group me-1"></i>Roles
                 </a>
                 <a class="dropdown-item" href="javascript:void(0);" onclick="${btnEstadoUsuario}">
                     <i class="icon-base bx bx-toggle-right me-1"></i>Cambiar estado
@@ -809,15 +809,16 @@ function abrirModalUsuario(
     document.getElementById("id_uf").value = id_uf || '';
     document.getElementById("fecha_ingreso").value = fecha_ingreso || '';
 
-    // 🔥 Clave SIEMPRE vacía al editar
-    const claveInput = document.getElementById("id_clave");
-    claveInput.value = "";
-    claveInput.placeholder = "Dejar en blanco para no cambiar";
+    // 🔥 Solo en modo EDICIÓN (cuando hay id_usuario)
+    if (id_usuario) {
+        const claveInput = document.getElementById("id_clave");
+        claveInput.value = "";
+        claveInput.placeholder = "Dejar en blanco para no cambiar";
 
-    // 🔐 Mensaje visual de seguridad
-    const msg = document.getElementById("mensajeSeguridad");
-    msg.textContent = "La clave actual no se muestra por seguridad.";
-    msg.style.color = "gray";
+        const msg = document.getElementById("mensajeSeguridad");
+        msg.textContent = "La clave actual no se muestra por seguridad.";
+        msg.style.color = "gray";
+    }
 
     const tituloModal = document.querySelector("#modalUsuario .modal-title");
     tituloModal.textContent = id_usuario ? "Editar usuario" : "Nuevo usuario";

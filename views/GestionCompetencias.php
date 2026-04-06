@@ -49,11 +49,11 @@ include_once '../servicios/Sesion.php';
         <input type="hidden" id="id_competencia_modal" name="id_competencia">
         <div class="mb-3">
           <label for="nombre_competencia_modal" class="form-label">Nombre de la competencia</label>
-          <input type="text" class="form-control" id="nombre_competencia_modal" name="nombre_competencia">
+          <input type="text" class="form-control" id="nombre_competencia_modal" name="nombre_competencia" placeholder="Ej: Puntualidad">
         </div>
         <div class="mb-3">
           <label for="peso_competencia_modal" class="form-label">Peso de la competencia</label>
-          <input type="number" class="form-control" id="peso_competencia_modal" name="peso_competencia">
+          <input type="number" class="form-control" id="peso_competencia_modal" name="peso_competencia" placeholder="Ej: 10">
         </div>
       </div>
       <div class="modal-footer">
